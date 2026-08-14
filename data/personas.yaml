@@ -1,8 +1,8 @@
 # 페르소나 5종 — Persona Bot Lab 의 고객 봇 정의.
 #
-# customer_id 는 **Phase 2 에서 만든 실제 고객**이다(합성 인물을 새로 만들지 않는다).
-# 소유 자산이 실제로 있어야 전략 S2(소유 자산 연계형)를 검증할 수 있기 때문이다.
-# 바인딩 근거는 각 페르소나의 binding_note 에 적어 두었다.
+# customer_id 는 `fixtures/customers.json` 의 실제 시드 고객이다(6명 중 5명 바인딩, CU-0006 예비).
+# 소유 자산이 있는 고객이어야 전략 S2(소유 자산 연계형)를 검증할 수 있다.
+# 바인딩 정합성은 `python -m scripts.validate_fixtures` 가 검사한다.
 #
 # 파라미터 의미 (0.0~1.0)
 #   budget_sensitivity : 가격 언급에 민감한 정도
@@ -15,9 +15,9 @@
 personas:
   - id: P1
     name: 첫 구매 신중형
-    customer_id: CU-0030
-    target_product_id: LX-0008
-    binding_note: NEW 티어 / 개체 1개(가방 98점) — 이력이 얕아 자산 근거가 약한 조건
+    customer_id: CU-0005
+    target_product_id: LX-0002
+    binding_note: NEW 티어 / 개체 1개(AS-0016 클러치 97점) — 자산 근거가 얕은 조건, S2 의 하한
     initial_hesitation: STYLE_DOUBT
     goal: 첫 구매를 실패하지 않는 것. 반품·후회를 가장 두려워한다.
     budget_sensitivity: 0.6
@@ -35,9 +35,9 @@ personas:
 
   - id: P2
     name: 가격 민감 리피터
-    customer_id: CU-0016
-    target_product_id: LX-0019
-    binding_note: ESTABLISHED / 개체 5개(최저 76점) — 보유 평균가보다 비싼 대상을 붙였다
+    customer_id: CU-0004
+    target_product_id: LX-0001
+    binding_note: ESTABLISHED / 개체 3개(지갑·벨트, 평균가 낮음) — 890만원 가방은 큰 폭의 상향
     initial_hesitation: PRICE_HESITANT
     goal: 지출을 정당화할 근거. 같은 돈으로 더 나은 선택이 있는지 확인한다.
     budget_sensitivity: 0.9
@@ -55,9 +55,9 @@ personas:
 
   - id: P3
     name: 온라인 사이즈 불안형
-    customer_id: CU-0014
-    target_product_id: LX-0005
-    binding_note: ESTABLISHED / 개체 6개에 동일 카테고리(SHOES) 보유 — 같은 라스트 근거가 성립한다
+    customer_id: CU-0003
+    target_product_id: LX-0006
+    binding_note: ESTABLISHED / AS-0010(Aurelia Derby, LAST-AURELIA) 보유 — 대상과 동일 last_code
     initial_hesitation: SIZE_UNCERTAIN
     goal: 반품 없이 맞는 사이즈를 고르는 것.
     budget_sensitivity: 0.4
@@ -69,15 +69,15 @@ personas:
     needs: [size_fit]
     tone: 실용적이다. 자기 발/치수 기준으로 확인받고 싶어한다.
     openings:
-      - 온라인으로 신발 사이즈 고르는 게 늘 불안해요. 38인지 38.5인지 모르겠어요.
+      - 온라인으로 신발 사이즈 고르는 게 늘 불안해요. 38.5인지 39인지 모르겠어요.
       - 지난번에 사이즈 때문에 반품한 적이 있어서 조심스러워요.
       - 제 기준으로 어떤 사이즈가 맞을지 알 수 있나요?
 
   - id: P4
     name: 리세일 관심 컬렉터
-    customer_id: CU-0004
-    target_product_id: LX-0031
-    binding_note: VIP / 개체 10개, 최저 컨디션 61점 — 저컨디션 자산이 있어 상태 관리 대화가 성립한다
+    customer_id: CU-0002
+    target_product_id: LX-0008
+    binding_note: VIP / 개체 4개 중 AS-0007(54점, 앞창 관통 마모) 보유 — 상태 관리 대화가 성립
     initial_hesitation: STYLE_DOUBT
     goal: 자산 가치 유지. 컨디션 관리와 향후 가치가 판단 기준이다.
     budget_sensitivity: 0.35
@@ -96,8 +96,8 @@ personas:
   - id: P5
     name: 장기 VIP
     customer_id: CU-0001
-    target_product_id: LX-0025
-    binding_note: VIP / 개체 13개, 케어 임박 3개 + 컨디션 71점 핸들 마모(데모 대본 자산)
+    target_product_id: LX-0009
+    binding_note: VIP / 개체 5개. AS-0001(71점 핸들 마모 임계 근접) + AS-0002(동일 카테고리 시계) 보유
     initial_hesitation: NONE
     goal: 담당자가 내 기록을 알고 있다는 확인. 관계가 판단 기준이다.
     budget_sensitivity: 0.2

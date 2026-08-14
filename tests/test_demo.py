@@ -123,5 +123,6 @@ def test_health_detail_exposes_switches(client):
     modules = {a["module"] for a in detail["adapters"]}
     assert modules == {"intent", "clienteling", "asset", "fingerprint", "condition"}
     assert detail["demo"]["scenarios"] == 3
-    assert detail["data"]["products"] == 40
+    assert detail["data"]["products"] == 12
+    assert detail["data"]["seed_source"] == "fixture"
     assert "llm" in detail and "cache_entries" in detail["llm"]

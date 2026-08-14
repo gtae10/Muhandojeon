@@ -17,9 +17,19 @@ dependencies = [
     "pillow>=10.3",
     "numpy>=1.26",
     "jinja2>=3.1",
+    # A: 고전 CV 컨디션 진단 (비전 API 없이 독립 동작)
+    "opencv-python-headless>=4.9",
+    "scikit-image>=0.22",
+    # A-6: RAG 기본 경로 (임베딩 API 의존 제거)
+    "rank-bm25>=0.2.2",
 ]
 
+
+
 [project.optional-dependencies]
+# A-6: 개체 지문 임베딩(로컬 DINOv2). 대회 API 와 무관하다.
+# 없으면 고전 기술자(ORB/LBP 히스토그램)로 동작하므로 필수는 아니다.
+fingerprint = ["torch>=2.2", "timm>=1.0"]
 dev = [
     "ruff>=0.5",
     "mypy>=1.10",
@@ -37,9 +47,10 @@ packages = ["app", "contracts"]
 [tool.ruff]
 line-length = 100
 target-version = "py311"
-# 생성 산출물은 포맷 대상이 아니다. (exports/README.md 의 코드 블록을 ruff format 이 손대면
-# 다음 `make data` 에서 되돌아가 `make check` 가 영구 실패한다)
-extend-exclude = ["exports", "data"]
+# 보류 코드와 데이터 산출물은 검사 대상이 아니다.
+#  - scripts/_deferred: 데이터셋 확정 전까지 실행 경로에서 분리한 코드(현재 앱 구조와 어긋날 수 있다)
+#  - data: 생성 산출물. 마크다운 안의 코드 블록을 ruff format 이 손대면 재생성 때 되돌아간다
+extend-exclude = ["scripts/_deferred", "data", "fixtures"]
 
 [tool.ruff.lint]
 select = ["E", "F", "I", "UP", "B", "SIM", "ANN"]
@@ -58,6 +69,12 @@ warn_return_any = true
 disallow_untyped_defs = true
 ignore_missing_imports = true
 plugins = ["pydantic.mypy"]
+
+exclude = ["^scripts/_deferred/"]
+
+[[tool.mypy.overrides]]
+module = ["scripts._deferred.*"]
+ignore_errors = true
 
 [[tool.mypy.overrides]]
 module = ["tests.*"]

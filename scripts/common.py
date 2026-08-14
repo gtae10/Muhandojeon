@@ -14,7 +14,11 @@ from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any
 
-from app.config import KST, PROCESSED_DIR, RAW_DIR, REFERENCE_NOW, get_settings
+from app.config import DATA_DIR, KST, REFERENCE_NOW, get_settings
+
+# 보류된 데이터셋 빌더(scripts/_deferred/)가 참조하는 경로다. 런타임은 쓰지 않는다.
+PROCESSED_DIR = DATA_DIR / "_deferred" / "processed"
+RAW_DIR = DATA_DIR / "raw"
 
 __all__ = ["KST", "REFERENCE_NOW"]  # 기준시각의 정의는 app.config 에 있다(빌더와 런타임 공유)
 
@@ -75,8 +79,7 @@ def decide_source(name: str, path: Path) -> SourceDecision:
     - `DATA_SOURCE=synth` → 무조건 합성 (원본이 있어도 무시)
     - `DATA_SOURCE=external` → 파일이 있으면 원본, 없으면 자동 합성 폴백
     """
-    settings = get_settings()
-    if settings.data_source == "synth":
+    if os.environ.get("DATA_SOURCE", "external") == "synth":
         return SourceDecision(name, path, False, "DATA_SOURCE=synth (강제 합성)")
     if path.exists():
         size_mb = path.stat().st_size / 1e6

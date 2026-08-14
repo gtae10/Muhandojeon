@@ -42,15 +42,13 @@ def health_detail() -> dict[str, Any]:
         from sqlalchemy import func, select
 
         from app.db import session_scope
-        from app.models import AssetRow, FingerprintRow, LabSessionRow, ProductRow, SessionRow
+        from app.models import LabRunRow, LabSessionRow, LlmUsageRow
 
         with session_scope() as db:
             for name, model in (
-                ("products", ProductRow),
-                ("assets", AssetRow),
-                ("sessions", SessionRow),
-                ("fingerprints", FingerprintRow),
+                ("lab_runs", LabRunRow),
                 ("lab_sessions", LabSessionRow),
+                ("llm_usage", LlmUsageRow),
             ):
                 counted = db.execute(select(func.count()).select_from(model)).scalar()
                 db_counts[name] = int(counted or 0)
@@ -70,8 +68,9 @@ def health_detail() -> dict[str, Any]:
         "status": "ok" if store.ready else "degraded",
         "adapters": adapter_report(),
         "data": {
-            "data_source_setting": settings.data_source,
-            "actual_sources": store_stats.get("generated_with", {}),
+            "seed_source": store_stats["seed_source"],
+            "seed_source_setting": settings.seed_source,
+            "label_mismatch": store_stats["label_mismatch"],
             "products": store_stats["products"],
             "customers": store_stats["customers"],
             "assets": store_stats["assets"],

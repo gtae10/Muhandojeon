@@ -1,22 +1,20 @@
-"""규칙 엔진·데이터 무결성·품질 게이트 검증.
+"""규칙 엔진과 시드 픽스처 무결성 검증.
 
-데모가 깨지는 조건(고정 상품 40개, 컨디션 71점 자산, 라벨 5종)을 테스트로 못박는다.
+데모가 깨지는 조건(픽스처 규모, 71점 자산, 시나리오 라벨, provider 경계)을 테스트로 못박는다.
 """
 
 from __future__ import annotations
 
 from datetime import timedelta
 
-import numpy as np
 import pytest
-from PIL import Image, ImageFilter
 
 from app.config import REFERENCE_NOW
+from app.data.provider import DatasetProvider, FixtureProvider, build_provider
 from app.domain import CARE_THRESHOLD, condition_score, findings_for, next_service_months
 from app.intent_rules import classify
 from app.store import get_store
 from contracts.common import EventType, HesitationType, ProductCategory, SessionEvent
-from scripts.register_fingerprint import measure
 
 
 def _event(kind: EventType, minute: int, **meta: object) -> SessionEvent:
@@ -50,8 +48,7 @@ def test_price_filter_yields_price_hesitant():
         _event(EventType.PRICE_FILTER_CHANGE, 2, product_id=None, max_price_krw=3_000_000),
         _event(EventType.VIEW_PRODUCT, 3, product_id="LX-0002", cheaper_alternative=True),
     ]
-    result = classify(events)
-    assert result.hesitation_type is HesitationType.PRICE_HESITANT
+    assert classify(events).hesitation_type is HesitationType.PRICE_HESITANT
 
 
 def test_stock_check_yields_stock_concern():
@@ -72,31 +69,76 @@ def test_empty_events_is_none_not_crash():
     assert result.signals
 
 
-# ── 컨디션 규칙 ────────────────────────────────────────────────
+# ── 컨디션 규칙 (보류된 빌더·레거시 매퍼가 쓰는 계산) ─────────────
 def test_condition_is_deterministic_and_category_sensitive():
     purchased = REFERENCE_NOW - timedelta(days=365 * 3)
-    shoes = condition_score(purchased, REFERENCE_NOW, ProductCategory.SHOES, "AS-000001")
-    bag = condition_score(purchased, REFERENCE_NOW, ProductCategory.BAG, "AS-000001")
+    shoes = condition_score(purchased, REFERENCE_NOW, ProductCategory.SHOES, "AS-0001")
+    bag = condition_score(purchased, REFERENCE_NOW, ProductCategory.BAG, "AS-0001")
     assert shoes < bag, "같은 연수라면 신발이 가방보다 낮아야 한다"
-    assert shoes == condition_score(purchased, REFERENCE_NOW, ProductCategory.SHOES, "AS-000001")
+    assert shoes == condition_score(purchased, REFERENCE_NOW, ProductCategory.SHOES, "AS-0001")
 
 
 def test_near_threshold_findings_flag_proximity():
     findings = findings_for(71, ProductCategory.BAG)
     assert findings
     assert "임계 근접" in findings[0].note
-    assert next_service_months(71, ProductCategory.BAG, "AS-000001") >= 1
-    assert next_service_months(CARE_THRESHOLD, ProductCategory.BAG, "AS-000001") == 0
+    assert next_service_months(71, ProductCategory.BAG, "AS-0001") >= 1
+    assert next_service_months(CARE_THRESHOLD, ProductCategory.BAG, "AS-0001") == 0
 
 
-# ── 데이터 무결성 (데모 전제) ────────────────────────────────────
-def test_catalog_and_customers_are_intact():
+# ── provider 경계 ─────────────────────────────────────────────
+def test_fixture_provider_is_the_only_fixture_reader():
+    provider = build_provider("fixture")
+    assert isinstance(provider, FixtureProvider)
+    assert provider.name == "fixture"
+    assert len(provider.get_products()) == 12
+    assert len(provider.get_customers()) == 6
+    assert len(provider.get_assets()) == 18
+    assert len(provider.get_scenarios()) == 3
+    assert len(provider.get_assets("CU-0001")) == 5
+
+
+def test_dataset_provider_is_an_explicit_stub():
+    """데이터셋 미확정. 조용히 빈 결과를 주지 않고 명시적으로 실패해야 한다."""
+    provider = build_provider("dataset")
+    assert isinstance(provider, DatasetProvider)
+    for call in (
+        provider.get_products,
+        provider.get_customers,
+        provider.get_assets,
+        provider.get_scenarios,
+    ):
+        with pytest.raises(NotImplementedError):
+            call()
+
+
+def test_seed_product_exposes_stock_and_last_code():
+    provider = build_provider("fixture")
+    by_id = {p.product_id: p for p in provider.get_products()}
+    oxford = by_id["LX-0006"]
+    assert oxford.last_code == "LAST-AURELIA"
+    assert oxford.stock_by_size["38"] == 0
+    assert "38" not in oxford.available_sizes, "재고 0 은 가용 사이즈에서 빠져야 한다"
+    assert "Aurelia" in oxford.size_system
+    shoulder = by_id["LX-0002"]
+    assert shoulder.is_scarce, "재고 2점 이하면 희소로 판정해야 한다(S3 문구의 사실 근거)"
+
+
+# ── 시드 무결성 (데모 전제) ────────────────────────────────────
+def test_store_loads_fixtures_without_errors():
     store = get_store()
-    assert len(store.products) == 40, "카탈로그 40개가 데모 화면 전제다"
-    assert len({p.name for p in store.products.values()}) == 40, "상품명 중복 금지"
-    assert len(store.customers) == 30
+    stats = store.stats()
+    assert stats["load_errors"] == []
+    assert stats["seed_source"] == "fixture"
+    assert (stats["products"], stats["customers"], stats["assets"], stats["sessions"]) == (
+        12,
+        6,
+        18,
+        3,
+    )
     tiers = {c.tier.value for c in store.customers.values()}
-    assert tiers == {"NEW", "ESTABLISHED", "VIP"}, "페르소나 바인딩에 3개 티어가 모두 필요하다"
+    assert tiers == {"NEW", "ESTABLISHED", "VIP"}
+    assert len({p.name for p in store.products.values()}) == 12
     assert all(1_500_000 <= p.price_krw <= 12_000_000 for p in store.products.values())
 
 
@@ -110,40 +152,46 @@ def test_demo_pinned_asset_exists():
         and a.category is ProductCategory.BAG
         and any("핸들" in f.note for f in a.findings)
     ]
-    assert matches, "컨디션 71점 핸들 마모 자산이 없다 (build_customers 보정 확인)"
+    assert matches, "컨디션 71점 핸들 마모 자산이 없다 (fixtures/assets.json 확인)"
     assert matches[0].next_service_months <= 3
 
 
-def test_sessions_cover_all_labels():
+def test_contrast_assets_exist():
+    """대비용 신품급(90+)과 리세일 시나리오용 저컨디션(<60)."""
+    scores = [a.condition_score for a in get_store().assets.values()]
+    assert max(scores) >= 90
+    assert min(scores) < 60
+
+
+def test_scenario_labels_are_derived_from_events():
+    """라벨을 픽스처에 적어 두는 것이 아니라 이벤트에서 규칙으로 도출한다."""
     store = get_store()
-    assert len(store.sessions) == 60
-    labels = {s.hesitation_label for s in store.sessions.values()}
-    assert labels == {h.value for h in HesitationType}, f"라벨 누락: {labels}"
+    expected = {
+        "SC-SIZE": "SIZE_UNCERTAIN",
+        "SC-PRICE": "PRICE_HESITANT",
+        "SC-STOCK": "STOCK_CONCERN",
+    }
+    for session_id, label in expected.items():
+        record = store.sessions[session_id]
+        assert record.hesitation_label == label
+        assert record.label_matches_hint
+        assert 8 <= len(record.events) <= 15
+        assert record.signals
 
 
-# ── 지문 품질 게이트 ──────────────────────────────────────────
-def test_quality_gate_rejects_blur_and_low_resolution(tmp_path):
-    rng = np.random.default_rng(0)
-    sharp_arr = rng.integers(70, 190, size=(1000, 1000), dtype=np.uint8)
-    sharp = Image.fromarray(sharp_arr, "L").convert("RGB")
+def test_same_last_asset_supports_size_consultation():
+    """P3 시나리오의 근거: 대상과 같은 last_code 개체를 고객이 보유."""
+    store = get_store()
+    same_last = store.same_last_assets("CU-0003", "LX-0006")
+    assert [a.asset_id for a in same_last] == ["AS-0010"]
 
-    ok_path = tmp_path / "handle_01.jpg"
-    sharp.save(ok_path, quality=95)
-    assert measure(ok_path, "handle", 1).passed
 
-    blurred = tmp_path / "handle_02.jpg"
-    sharp.filter(ImageFilter.GaussianBlur(5)).save(blurred, quality=95)
-    result = measure(blurred, "handle", 2)
-    assert not result.passed and "흐림" in result.reason
-
-    small = tmp_path / "handle_03.jpg"
-    sharp.resize((300, 300)).save(small, quality=95)
-    assert "해상도 부족" in measure(small, "handle", 3).reason
-
-    bright = tmp_path / "handle_04.jpg"
-    Image.fromarray(np.full((1000, 1000), 254, dtype=np.uint8), "L").convert("RGB").save(bright)
-    reason = measure(bright, "handle", 4).reason
-    assert "과노출" in reason and "밝기 이탈" in reason
+def test_fixture_timestamps_are_fixed_not_now():
+    """이벤트 시각이 고정값이어야 LLM 프롬프트 캐시가 유지된다."""
+    store = get_store()
+    for record in store.sessions.values():
+        for event in record.events:
+            assert event.timestamp <= REFERENCE_NOW
 
 
 @pytest.mark.parametrize("strategy_id", ["S1", "S2", "S3"])

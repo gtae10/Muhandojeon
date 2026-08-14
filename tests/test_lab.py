@@ -32,10 +32,10 @@ def test_personas_bind_to_real_customers_with_assets():
     assert len(personas) == 5
     # 티어별로 골라야 P1(NEW)~P5(VIP) 시나리오가 성립한다.
     assert {p.customer_id for p in personas.values()} == {
-        "CU-0030",
-        "CU-0016",
-        "CU-0014",
+        "CU-0005",
         "CU-0004",
+        "CU-0003",
+        "CU-0002",
         "CU-0001",
     }
 
@@ -52,8 +52,8 @@ def test_judge_and_persona_bot_never_see_strategy():
 def test_evidence_increases_trust_more_than_no_evidence(personas):
     persona = personas["P4"]  # evidence_need 0.95
     with_evidence = ClientelingReplyResponse(
-        message="2023년에 함께하신 Aurelia Oxford는 컨디션 71점입니다. 케어를 함께 잡아 드릴까요?",
-        cited_asset_ids=["AS-000031"],
+        message="2023년에 함께하신 Aurelia Derby는 컨디션 71점입니다. 케어를 함께 잡아 드릴까요?",
+        cited_asset_ids=["AS-0010"],
         cta=CTA.CARE_BOOKING,
     )
     without = ClientelingReplyResponse(
@@ -71,8 +71,8 @@ def test_repeated_evidence_has_diminishing_returns(personas):
     """같은 근거를 반복해도 신뢰가 계속 오르면 턴 수만으로 전환되어 측정이 무의미해진다."""
     persona = personas["P5"]
     reply = ClientelingReplyResponse(
-        message="2022년의 Nocturne Shoulder는 컨디션 71점입니다. 케어 예약을 잡아 드릴까요?",
-        cited_asset_ids=["AS-000001"],
+        message="2022년의 Aurelia Top Handle는 컨디션 71점입니다. 케어 예약을 잡아 드릴까요?",
+        cited_asset_ids=["AS-0001"],
         cta=CTA.CARE_BOOKING,
     )
     feats = extract_features(reply)

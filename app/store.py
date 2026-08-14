@@ -1,30 +1,27 @@
-"""정규화 산출물 접근 계층 — 목 어댑터가 **실제 데이터**로 응답하게 하는 곳.
+"""런타임 조회 캐시 — `SeedDataProvider` 위에 얹은 얇은 인메모리 층.
 
-`data/processed/*.json` 이 사실의 원본이다(CLAUDE.md 참고). 목 어댑터는 이 스토어를 통해
-Phase 2 산출물을 읽는다. 하드코딩된 더미 문자열은 쓰지 않는다.
+목 어댑터·오케스트레이터·Lab·데모는 **이 스토어(→ provider)만** 통해 데이터를 본다.
+픽스처 파일을 여는 코드는 `app/data/provider.py` 의 `FixtureProvider` 하나뿐이므로,
+데이터셋이 확정되면 `DatasetProvider` 만 채우고 `SEED_SOURCE=dataset` 으로 바꾸면 된다.
 
-프로세스 시작 시 한 번 읽어 메모리에 들고 있는다(40상품/30고객/60세션 규모라 문제 없다).
-파일이 없으면 빈 스토어로 뜨고 `/health/detail` 에서 그 사실이 보인다 — 서버가 죽지 않는 편이
+규모가 작아(상품 12 / 고객 6 / 개체 18 / 시나리오 3) 프로세스 시작 시 한 번 읽어 들고 있는다.
+provider 가 실패하면 빈 스토어로 뜨고 그 사실이 `/health/detail` 에 보인다 — 서버가 죽는 편보다
 데모에 안전하다.
 """
 
 from __future__ import annotations
 
-import json
 import logging
 from dataclasses import dataclass, field
 from functools import lru_cache
-from pathlib import Path
 from typing import Any
 
-from app.config import PROCESSED_DIR
-from contracts.common import CustomerTier, OwnedAsset, Product, SessionEvent
+from app.data.provider import SeedDataProvider, get_provider
+from app.data.types import Customer, ScenarioSeed, SeedProduct
+from app.intent_rules import classify
+from contracts.common import CustomerTier, OwnedAsset, SessionEvent
 
 logger = logging.getLogger("app.store")
-
-CATALOG_PATH = PROCESSED_DIR / "catalog_luxury.json"
-CUSTOMERS_PATH = PROCESSED_DIR / "customers.json"
-SESSIONS_PATH = PROCESSED_DIR / "sessions.json"
 
 
 @dataclass
@@ -36,15 +33,20 @@ class CustomerRecord:
     tier: CustomerTier
     purchase_count: int
     assets: list[OwnedAsset] = field(default_factory=list)
+    seed: Customer | None = None
 
     def ranked_assets(self) -> list[OwnedAsset]:
         """상담에서 인용할 우선순위. 서비스 임박 → 컨디션 낮은 순."""
         return sorted(self.assets, key=lambda a: (a.next_service_months, a.condition_score))
 
+    @property
+    def size_profile(self) -> dict[str, str]:
+        return self.seed.size_profile if self.seed else {}
+
 
 @dataclass
 class SessionRecord:
-    """이탈 세션 1건."""
+    """세션 시나리오 1건. 라벨은 이벤트 시퀀스에 규칙을 적용해 도출한다(손으로 적지 않는다)."""
 
     session_id: str
     customer_id: str
@@ -54,86 +56,92 @@ class SessionRecord:
     profile: str
     events: list[SessionEvent] = field(default_factory=list)
     signals: list[dict[str, Any]] = field(default_factory=list)
+    title: str = ""
+    label_hint: str = ""
+
+    @property
+    def label_matches_hint(self) -> bool:
+        return not self.label_hint or self.label_hint == self.hesitation_label
 
 
 class DataStore:
-    """카탈로그·고객·세션을 한 번 읽어 들고 있는 읽기 전용 스토어."""
+    """provider 결과를 조회하기 쉬운 형태로 들고 있는 읽기 전용 스토어."""
 
-    def __init__(self, processed_dir: Path | None = None) -> None:
-        base = processed_dir or PROCESSED_DIR
-        self.catalog_path = base / "catalog_luxury.json"
-        self.customers_path = base / "customers.json"
-        self.sessions_path = base / "sessions.json"
-
-        self.products: dict[str, Product] = {}
+    def __init__(self, provider: SeedDataProvider | None = None) -> None:
+        self.provider: SeedDataProvider = provider or get_provider()
+        self.products: dict[str, SeedProduct] = {}
         self.customers: dict[str, CustomerRecord] = {}
         self.sessions: dict[str, SessionRecord] = {}
         self.assets: dict[str, OwnedAsset] = {}
         self.load_errors: list[str] = []
-        self.generated_with: dict[str, Any] = {}
         self._load()
 
     # ── 로딩 ──────────────────────────────────────────────────
-    def _read(self, path: Path) -> dict[str, Any] | None:
-        if not path.exists():
-            msg = f"{path.name} 없음 (make data 를 실행하라)"
-            self.load_errors.append(msg)
-            logger.warning("스토어 로드 실패: %s", msg)
-            return None
-        try:
-            loaded = json.loads(path.read_text(encoding="utf-8"))
-        except (json.JSONDecodeError, OSError) as exc:
-            self.load_errors.append(f"{path.name} 읽기 실패: {exc}")
-            logger.warning("스토어 로드 실패: %s (%s)", path.name, exc)
-            return None
-        return loaded if isinstance(loaded, dict) else None
-
     def _load(self) -> None:
-        catalog = self._read(self.catalog_path)
-        if catalog:
-            for item in catalog.get("items", []):
-                product = Product.model_validate(item)
+        try:
+            for product in self.provider.get_products():
                 self.products[product.product_id] = product
-            self.generated_with["catalog"] = catalog.get("generated_with", {})
+        except (OSError, ValueError, NotImplementedError) as exc:
+            self.load_errors.append(f"상품 로드 실패: {exc}")
+            logger.warning("상품 로드 실패: %s", exc)
 
-        customers = self._read(self.customers_path)
-        if customers:
-            for raw in customers.get("customers", []):
-                assets = [OwnedAsset.model_validate(a) for a in raw.get("assets", [])]
-                record = CustomerRecord(
-                    customer_id=str(raw["customer_id"]),
-                    display_name=str(raw.get("display_name", "")),
-                    tier=CustomerTier(raw["tier"]),
-                    purchase_count=int(raw.get("purchase_count", 0)),
-                    assets=assets,
+        try:
+            assets = self.provider.get_assets()
+            for asset in assets:
+                self.assets[asset.asset_id] = asset
+            for customer in self.provider.get_customers():
+                owned = [a for a in assets if a.customer_id == customer.customer_id]
+                self.customers[customer.customer_id] = CustomerRecord(
+                    customer_id=customer.customer_id,
+                    display_name=customer.name,
+                    tier=customer.tier,
+                    purchase_count=len(owned),
+                    assets=owned,
+                    seed=customer,
                 )
-                self.customers[record.customer_id] = record
-                for asset in assets:
-                    self.assets[asset.asset_id] = asset
-            self.generated_with["customers"] = customers.get("generated_with", {})
+        except (OSError, ValueError, NotImplementedError) as exc:
+            self.load_errors.append(f"고객/개체 로드 실패: {exc}")
+            logger.warning("고객/개체 로드 실패: %s", exc)
 
-        sessions = self._read(self.sessions_path)
-        if sessions:
-            for raw in sessions.get("sessions", []):
-                session_record = SessionRecord(
-                    session_id=str(raw["session_id"]),
-                    customer_id=str(raw["customer_id"]),
-                    target_product_id=str(raw["target_product_id"]),
-                    hesitation_label=str(raw["hesitation_label"]),
-                    label_confidence=float(raw.get("label_confidence", 0.0)),
-                    profile=str(raw.get("profile", "")),
-                    events=[SessionEvent.model_validate(e) for e in raw.get("events", [])],
-                    signals=list(raw.get("signals", [])),
-                )
-                self.sessions[session_record.session_id] = session_record
-            self.generated_with["sessions"] = sessions.get("generated_with", {})
+        try:
+            for scenario in self.provider.get_scenarios():
+                self.sessions[scenario.scenario_id] = self._to_session(scenario)
+        except (OSError, ValueError, NotImplementedError) as exc:
+            self.load_errors.append(f"시나리오 로드 실패: {exc}")
+            logger.warning("시나리오 로드 실패: %s", exc)
+
+    def _to_session(self, scenario: ScenarioSeed) -> SessionRecord:
+        result = classify(scenario.events)
+        if scenario.label_hint.value != result.hesitation_type.value:
+            logger.warning(
+                "시나리오 %s: 규칙 라벨 %s ≠ 픽스처 힌트 %s (validate_fixtures 로 확인하라)",
+                scenario.scenario_id,
+                result.hesitation_type.value,
+                scenario.label_hint.value,
+            )
+        return SessionRecord(
+            session_id=scenario.scenario_id,
+            customer_id=scenario.customer_id,
+            target_product_id=scenario.target_product_id,
+            hesitation_label=result.hesitation_type.value,
+            label_confidence=result.confidence,
+            profile="fixture",
+            events=list(scenario.events),
+            signals=[s.model_dump(mode="json") for s in result.signals],
+            title=scenario.title,
+            label_hint=scenario.label_hint.value,
+        )
 
     # ── 조회 ──────────────────────────────────────────────────
     @property
     def ready(self) -> bool:
         return bool(self.products and self.customers)
 
-    def product(self, product_id: str) -> Product | None:
+    @property
+    def seed_source(self) -> str:
+        return getattr(self.provider, "name", "unknown")
+
+    def product(self, product_id: str) -> SeedProduct | None:
         return self.products.get(product_id)
 
     def customer(self, customer_id: str) -> CustomerRecord | None:
@@ -152,7 +160,7 @@ class DataStore:
     def sessions_by_label(self, label: str) -> list[SessionRecord]:
         return [s for s in self.sessions.values() if s.hesitation_label == label]
 
-    def cheaper_alternative(self, product_id: str) -> Product | None:
+    def cheaper_alternative(self, product_id: str) -> SeedProduct | None:
         """같은 카테고리에서 한 단계 저렴한 상품(가격 상담용)."""
         target = self.product(product_id)
         if target is None:
@@ -165,21 +173,35 @@ class DataStore:
         return cheaper[-1] if cheaper else None
 
     def same_category_assets(self, customer_id: str, product_id: str) -> list[OwnedAsset]:
-        """대상 상품과 같은 카테고리의 소유 개체(사이즈·라스트 상담의 근거)."""
+        """대상 상품과 같은 카테고리의 소유 개체(사이즈·소재 상담의 근거)."""
         target = self.product(product_id)
         if target is None:
             return []
         return [a for a in self.customer_assets(customer_id) if a.category is target.category]
 
+    def same_last_assets(self, customer_id: str, product_id: str) -> list[OwnedAsset]:
+        """대상 상품과 **같은 사이즈 체계(last_code)** 의 소유 개체. 사이즈 상담의 직접 근거다."""
+        target = self.product(product_id)
+        if target is None:
+            return []
+        out: list[OwnedAsset] = []
+        for asset in self.customer_assets(customer_id):
+            owned_product = self.product(asset.product_id)
+            if owned_product is not None and owned_product.last_code == target.last_code:
+                out.append(asset)
+        return out
+
     def stats(self) -> dict[str, Any]:
         """`/health/detail` 노출용 요약."""
+        label_mismatch = [s.session_id for s in self.sessions.values() if not s.label_matches_hint]
         return {
+            "seed_source": self.seed_source,
             "products": len(self.products),
             "customers": len(self.customers),
             "assets": len(self.assets),
             "sessions": len(self.sessions),
             "load_errors": self.load_errors,
-            "generated_with": self.generated_with,
+            "label_mismatch": label_mismatch,
         }
 
 
@@ -190,6 +212,9 @@ def get_store() -> DataStore:
 
 
 def reload_store() -> DataStore:
-    """데이터를 다시 빌드한 뒤 서버를 재시작하지 않고 반영하기 위한 우회로."""
+    """픽스처를 고친 뒤 서버 재시작 없이 반영하기 위한 우회로."""
+    from app.data.provider import reload_provider
+
     get_store.cache_clear()
+    reload_provider()
     return get_store()

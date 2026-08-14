@@ -1,7 +1,7 @@
 """데모 시나리오 — `data/demo_scenarios.yaml` 로딩과 실행.
 
-시나리오는 고객·상품·전략을 id 로 못박은 고정 입력이다. 세션 이벤트는 라벨로 지정하고
-**실제 세션 중 id 순서로 첫 번째**를 쓴다(무작위 선택 금지 → 매번 같은 흐름).
+시나리오는 고객·상품·전략·세션을 **픽스처 id 로 못박은** 고정 입력이다(무작위 선택 금지 →
+매번 같은 흐름). 세션 이벤트는 `fixtures/session_events.json` 의 시나리오를 provider 경유로 읽는다.
 
 `expect` 블록은 `scripts/check_demo.py` 가 검증한다. 발표 직전에 이 검증이 통과해야 한다.
 """
@@ -32,7 +32,7 @@ class Scenario:
     narrative: str
     customer_id: str
     target_product_id: str
-    session_label: str
+    session_id: str
     strategy_id: str
     talking_points: tuple[str, ...]
     expect: dict[str, Any] = field(default_factory=dict)
@@ -44,7 +44,7 @@ class Scenario:
             "narrative": self.narrative.strip(),
             "customer_id": self.customer_id,
             "target_product_id": self.target_product_id,
-            "session_label": self.session_label,
+            "session_id": self.session_id,
             "strategy_id": self.strategy_id,
             "talking_points": list(self.talking_points),
             "expect": self.expect,
@@ -58,7 +58,7 @@ def _parse(raw: dict[str, Any]) -> Scenario:
         narrative=str(raw.get("narrative", "")),
         customer_id=str(raw["customer_id"]),
         target_product_id=str(raw["target_product_id"]),
-        session_label=str(raw.get("session_id_label", "NONE")),
+        session_id=str(raw["session_id"]),
         strategy_id=str(raw.get("strategy_id", "S2")),
         talking_points=tuple(str(t) for t in raw.get("talking_points", [])),
         expect=dict(raw.get("expect", {})),
@@ -76,12 +76,9 @@ def load_scenarios(path: Path | None = None) -> dict[str, Scenario]:
 
 
 def pick_session(scenario: Scenario, store: DataStore | None = None) -> SessionRecord | None:
-    """라벨에 해당하는 세션 중 **id 순 첫 번째**. 무작위 선택을 하지 않는다."""
+    """시나리오가 지정한 픽스처 세션. id 로 고정돼 있어 매 실행 동일하다."""
     target = store or get_store()
-    candidates = sorted(
-        target.sessions_by_label(scenario.session_label), key=lambda s: s.session_id
-    )
-    return candidates[0] if candidates else None
+    return target.sessions.get(scenario.session_id)
 
 
 def build_request(scenario: Scenario, store: DataStore | None = None) -> AdviseRequest:

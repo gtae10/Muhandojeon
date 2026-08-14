@@ -1,10 +1,10 @@
 """개체 지문 매칭 어댑터 (백엔드).
 
-목 구현은 임베딩을 만들지 않는다(그건 백엔드 담당 몫). 대신 **실제 등록 기록**으로 판정한다.
+목 구현은 임베딩을 만들지 않는다(그건 백엔드 담당 몫이고, 대회 API 에는 비전 모델이 없다).
+대신 **경로 규약과 시드 개체 목록**으로 판정한다.
 
-1. `fingerprints` 테이블에 그 경로가 `passed=true` 로 등록돼 있으면 그 개체로 매칭(유사도 0.9+)
-2. 경로가 `data/fingerprints/{asset_id}/...` 규약을 따르고 그 개체가 존재하면 0.86
-3. 둘 다 아니면 후보를 유사도 낮은 값으로 돌려주고 `is_match=false`
+1. 경로가 `data/fingerprints/{asset_id}/...` 규약을 따르고 그 개체가 시드에 있으면 매칭(0.9+)
+2. 아니면 후보를 유사도 낮은 값으로 돌려주고 `is_match=false`
 
 유사도는 경로 해시 기반 결정적 값이다. 데모가 매번 달라지지 않게 하려는 의도이며, 실제 임베딩
 유사도가 아니라는 점은 `/health/detail` 의 target 표시와 문서에 남긴다.
@@ -14,7 +14,6 @@ from __future__ import annotations
 
 import re
 import time
-from pathlib import Path
 from typing import Any
 
 from app.adapters.base import AdapterBase
@@ -35,30 +34,8 @@ class MockFingerprintAdapter(AdapterBase):
     """등록 기록 + 경로 규약 기반 매칭."""
 
     def __init__(self, store: DataStore | None = None) -> None:
-        super().__init__(
-            module="fingerprint", mode="mock", target="fingerprints 테이블 + 경로 규약"
-        )
+        super().__init__(module="fingerprint", mode="mock", target="경로 규약 + 시드 개체 목록")
         self.store = store or get_store()
-
-    def _registered_asset(self, image_path: str) -> str | None:
-        """등록 테이블에서 경로를 찾는다. DB 가 없으면 조용히 None."""
-        try:
-            from app.db import session_scope
-            from app.models import FingerprintRow
-        except ImportError:  # pragma: no cover
-            return None
-        normalized = str(Path(image_path)).lstrip("./")
-        try:
-            with session_scope() as db:
-                row = (
-                    db.query(FingerprintRow)
-                    .filter(FingerprintRow.path.like(f"%{normalized}"))
-                    .filter(FingerprintRow.passed.is_(True))
-                    .first()
-                )
-                return str(row.asset_id) if row else None
-        except Exception:  # pragma: no cover - DB 미생성 등
-            return None
 
     def match(self, request: FingerprintMatchRequest) -> FingerprintMatchResponse:
         started = time.perf_counter()
@@ -68,17 +45,11 @@ class MockFingerprintAdapter(AdapterBase):
         similarity = 0.0
         detail = ""
 
-        registered = self._registered_asset(request.image_path) if request.image_path else None
-        if registered and self.store.asset(registered) is not None:
-            matched = registered
-            similarity = 0.90 + (stable_hash("sim", key) % 90) / 1000.0
-            detail = "등록 이미지 일치"
-        else:
-            found = ASSET_ID_RE.search(key)
-            if found and self.store.asset(found.group(1)) is not None:
-                matched = found.group(1)
-                similarity = 0.82 + (stable_hash("sim", key) % 40) / 1000.0
-                detail = "경로 규약 일치(미등록 이미지)"
+        found = ASSET_ID_RE.search(key)
+        if found and self.store.asset(found.group(1)) is not None:
+            matched = found.group(1)
+            similarity = 0.90 + (stable_hash("sim", key) % 60) / 1000.0
+            detail = "경로 규약 일치"
 
         pool = (
             self.store.customer_assets(request.customer_id)

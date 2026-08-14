@@ -108,7 +108,7 @@ def test_hallucinated_citation_is_dropped(store, pinned):
         def reply(self, request: ClientelingReplyRequest) -> ClientelingReplyResponse:
             return ClientelingReplyResponse(
                 message="존재하지 않는 개체를 근거로 든 응답",
-                cited_asset_ids=["AS-999999"],
+                cited_asset_ids=["AS-9999"],
                 cta=CTA.CARE_BOOKING,
                 reasoning="test",
             )

@@ -1,6 +1,6 @@
 # data
 data/raw/
-data/processed/images/
+data/_deferred/processed/images/
 data/fingerprints/
 *.db
 *.sqlite3

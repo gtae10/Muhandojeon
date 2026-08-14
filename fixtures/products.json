@@ -1,0 +1,209 @@
+{
+  "_meta": {
+    "note": "손으로 작성한 시드 픽스처. 외부 데이터셋 확정 전까지 이것이 유일한 시드 소스다.",
+    "access": "app/data/provider.py 의 SeedDataProvider 를 경유해서만 읽는다(직접 읽지 않는다).",
+    "brand_names": "실존 브랜드명을 쓰지 않는다. 라인명·컬렉션명 모두 가상이다.",
+    "prices": "150만~1,200만원 대역",
+    "images": "image_path 는 플레이스홀더다. 프론트 담당이 더미 이미지를 채우고, 실물은 데이터셋 확정 후 붙인다.",
+    "last_code": "사이즈 체계 코드. 같은 last_code 는 치수가 호환된다 → 사이즈 상담의 근거가 된다.",
+    "count": 12
+  },
+  "products": [
+    {
+      "product_id": "LX-0001",
+      "name": "Aurelia Top Handle",
+      "category": "BAG",
+      "material": "그레인 토고 카프스킨 / 팔라듐 하드웨어",
+      "color": "Noir",
+      "collection": "Maison Nord",
+      "price_krw": 8900000,
+      "last_code": "BAG-25/30/35",
+      "stock_by_size": {
+        "25": 2,
+        "30": 1,
+        "35": 0
+      },
+      "care_notes": "월 1회 무색 크림 보습. 핸들은 6개월마다 상태 점검 권장",
+      "image_path": "images/placeholder/LX-0001.jpg"
+    },
+    {
+      "product_id": "LX-0002",
+      "name": "Solène Shoulder",
+      "category": "BAG",
+      "material": "박스카프 카프스킨 / 골드 하드웨어",
+      "color": "Cognac",
+      "collection": "Atelier Lumière",
+      "price_krw": 6400000,
+      "last_code": "BAG-25/30/35",
+      "stock_by_size": {
+        "25": 1,
+        "30": 1,
+        "35": 0
+      },
+      "care_notes": "우천 시 즉시 건조 후 보습. 어깨끈 접합부 연 1회 점검",
+      "image_path": "images/placeholder/LX-0002.jpg"
+    },
+    {
+      "product_id": "LX-0003",
+      "name": "Marée Tote",
+      "category": "BAG",
+      "material": "베지터블 탠드 새들 레더",
+      "color": "Sable",
+      "collection": "Continuité",
+      "price_krw": 5200000,
+      "last_code": "BAG-30/35",
+      "stock_by_size": {
+        "30": 4,
+        "35": 2
+      },
+      "care_notes": "무게 8kg 이상 수납 지양. 바닥 코너 마찰 주의",
+      "image_path": "images/placeholder/LX-0003.jpg"
+    },
+    {
+      "product_id": "LX-0004",
+      "name": "Nocturne Clutch",
+      "category": "BAG",
+      "material": "샤그린 엠보스 레더",
+      "color": "Bleu Nuit",
+      "collection": "Signature Noir",
+      "price_krw": 3800000,
+      "last_code": "BAG-ONE",
+      "stock_by_size": {
+        "ONE": 1
+      },
+      "care_notes": "엠보스 결 사이 먼지는 마른 브러시로 제거",
+      "image_path": "images/placeholder/LX-0004.jpg"
+    },
+    {
+      "product_id": "LX-0005",
+      "name": "Aurelia Derby",
+      "category": "SHOES",
+      "material": "박스카프 카프스킨 / 굿이어 웰트",
+      "color": "Ebony",
+      "collection": "Maison Nord",
+      "price_krw": 2400000,
+      "last_code": "LAST-AURELIA",
+      "stock_by_size": {
+        "38": 1,
+        "38.5": 2,
+        "39": 1,
+        "40": 0
+      },
+      "care_notes": "착화 후 슈트리 필수. 3개월마다 크림 보습 및 앞창 마모 점검",
+      "image_path": "images/placeholder/LX-0005.jpg"
+    },
+    {
+      "product_id": "LX-0006",
+      "name": "Aurelia Oxford",
+      "category": "SHOES",
+      "material": "패티나 카프 / 굿이어 웰트",
+      "color": "Cognac",
+      "collection": "Maison Nord",
+      "price_krw": 2700000,
+      "last_code": "LAST-AURELIA",
+      "stock_by_size": {
+        "38": 0,
+        "38.5": 1,
+        "39": 2,
+        "40": 1
+      },
+      "care_notes": "패티나 유지 위해 왁스는 3개월 간격. 우천 착화 지양",
+      "image_path": "images/placeholder/LX-0006.jpg"
+    },
+    {
+      "product_id": "LX-0007",
+      "name": "Vesper Ankle Boot",
+      "category": "SHOES",
+      "material": "스웨이드 카프 / 레더 솔",
+      "color": "Taupe",
+      "collection": "Rive Atelier",
+      "price_krw": 3100000,
+      "last_code": "LAST-VESPER",
+      "stock_by_size": {
+        "37": 1,
+        "38": 1,
+        "39": 0
+      },
+      "care_notes": "스웨이드 전용 브러시로 결 정리. 발수 스프레이 시즌 1회",
+      "image_path": "images/placeholder/LX-0007.jpg"
+    },
+    {
+      "product_id": "LX-0008",
+      "name": "Meridian Chronograph",
+      "category": "WATCH",
+      "material": "폴리시드 스틸 / 사파이어 크리스탈",
+      "color": "Argent",
+      "collection": "Héritage 1948",
+      "price_krw": 9600000,
+      "last_code": "CASE-41",
+      "stock_by_size": {
+        "41mm": 1
+      },
+      "care_notes": "2년마다 오버홀. 브레이슬릿 유격은 연 1회 점검",
+      "image_path": "images/placeholder/LX-0008.jpg"
+    },
+    {
+      "product_id": "LX-0009",
+      "name": "Tessera Automatic",
+      "category": "WATCH",
+      "material": "브러시드 티타늄 / 인하우스 오토매틱",
+      "color": "Étain",
+      "collection": "Continuité",
+      "price_krw": 7300000,
+      "last_code": "CASE-38/41",
+      "stock_by_size": {
+        "38mm": 2,
+        "41mm": 1
+      },
+      "care_notes": "자성 물체 근접 보관 지양. 3년마다 방수 패킹 교체",
+      "image_path": "images/placeholder/LX-0009.jpg"
+    },
+    {
+      "product_id": "LX-0010",
+      "name": "Lisière Long Wallet",
+      "category": "WALLET",
+      "material": "에푸옴 카프스킨",
+      "color": "Bordeaux",
+      "collection": "Atelier Lumière",
+      "price_krw": 1900000,
+      "last_code": "WALLET-ONE",
+      "stock_by_size": {
+        "ONE": 5
+      },
+      "care_notes": "카드 과다 수납 지양. 엣지 코트 벗겨짐은 초기 보수 권장",
+      "image_path": "images/placeholder/LX-0010.jpg"
+    },
+    {
+      "product_id": "LX-0011",
+      "name": "Lisière Card Holder",
+      "category": "WALLET",
+      "material": "그레인 토고 카프스킨",
+      "color": "Noir",
+      "collection": "Atelier Lumière",
+      "price_krw": 1500000,
+      "last_code": "WALLET-ONE",
+      "stock_by_size": {
+        "ONE": 6
+      },
+      "care_notes": "뒷주머니 보관 지양(형태 변형). 오염 시 즉시 마른 천으로 처리",
+      "image_path": "images/placeholder/LX-0011.jpg"
+    },
+    {
+      "product_id": "LX-0012",
+      "name": "Cadence Belt",
+      "category": "BELT",
+      "material": "박스카프 카프스킨 / 브러시드 버클",
+      "color": "Ebony",
+      "collection": "Rive Atelier",
+      "price_krw": 1700000,
+      "last_code": "BELT-80/85/90",
+      "stock_by_size": {
+        "80": 2,
+        "85": 3,
+        "90": 1
+      },
+      "care_notes": "접어 보관하지 않고 걸어 보관. 버클은 마른 천으로 관리",
+      "image_path": "images/placeholder/LX-0012.jpg"
+    }
+  ]
+}

@@ -1,0 +1,71 @@
+{
+  "_meta": {
+    "note": "고객 6명. 페르소나 5종에 하나씩 바인딩하고 CU-0006 은 예비(미바인딩)다.",
+    "tier": "NEW / ESTABLISHED / VIP — 보유 개체 수와 관계 깊이를 반영한 값이며 손으로 지정했다.",
+    "names": "전부 가상 인물이다. 실제 고객 데이터가 아니다.",
+    "size_profile": "상담에서 사이즈를 말할 때 근거로 쓰는 고객 치수 기록.",
+    "count": 6
+  },
+  "customers": [
+    {
+      "customer_id": "CU-0001",
+      "name": "한지원",
+      "tier": "VIP",
+      "joined_at": "2019-03-11T00:00:00+09:00",
+      "preferred_categories": ["BAG", "WATCH"],
+      "size_profile": { "shoes": "38.5", "belt": "85", "bag": "30" },
+      "persona_binding": "P5 장기 VIP",
+      "note": "8년 거래. 개체 5개 보유. 컨디션 71점 핸들 마모 자산(AS-0001)의 소유자 — 데모 대본 핵심"
+    },
+    {
+      "customer_id": "CU-0002",
+      "name": "오세린",
+      "tier": "VIP",
+      "joined_at": "2020-07-02T00:00:00+09:00",
+      "preferred_categories": ["BAG", "SHOES"],
+      "size_profile": { "shoes": "39", "belt": "85", "bag": "25" },
+      "persona_binding": "P4 리세일 관심 컬렉터",
+      "note": "개체 4개. 컨디션 54점 저컨디션 자산(AS-0007) 보유 → 자산 가치·케어 대화가 성립"
+    },
+    {
+      "customer_id": "CU-0003",
+      "name": "정민서",
+      "tier": "ESTABLISHED",
+      "joined_at": "2022-01-20T00:00:00+09:00",
+      "preferred_categories": ["SHOES"],
+      "size_profile": { "shoes": "38.5", "belt": "80" },
+      "persona_binding": "P3 온라인 사이즈 불안형",
+      "note": "LAST-AURELIA 라스트 신발(AS-0010) 보유 → 같은 라스트 근거로 사이즈 상담 가능"
+    },
+    {
+      "customer_id": "CU-0004",
+      "name": "배도윤",
+      "tier": "ESTABLISHED",
+      "joined_at": "2023-05-08T00:00:00+09:00",
+      "preferred_categories": ["WALLET", "BELT"],
+      "size_profile": { "belt": "90", "shoes": "42" },
+      "persona_binding": "P2 가격 민감 리피터",
+      "note": "보유 개체 평균가가 낮아 상위 가격대 제안 시 가격 저항이 생긴다"
+    },
+    {
+      "customer_id": "CU-0005",
+      "name": "서하람",
+      "tier": "NEW",
+      "joined_at": "2026-05-30T00:00:00+09:00",
+      "preferred_categories": ["BAG"],
+      "size_profile": { "bag": "25" },
+      "persona_binding": "P1 첫 구매 신중형",
+      "note": "개체 1개(신품급 97점). 자산 근거가 얕은 조건 — S2 전략의 하한을 보는 케이스"
+    },
+    {
+      "customer_id": "CU-0006",
+      "name": "문가율",
+      "tier": "ESTABLISHED",
+      "joined_at": "2021-11-15T00:00:00+09:00",
+      "preferred_categories": ["WATCH"],
+      "size_profile": { "watch": "41mm", "shoes": "40" },
+      "persona_binding": null,
+      "note": "예비 고객. 페르소나에 바인딩하지 않았고 수동 데모/디버깅용으로 남겨둔다"
+    }
+  ]
+}

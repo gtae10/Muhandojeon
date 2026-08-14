@@ -36,12 +36,15 @@ async def lifespan(_: FastAPI) -> AsyncIterator[None]:
     init_db()
     store = get_store()
     logger.info(
-        "기동 — adapter_mode=%s demo_mode=%s data=%s 상품 %d / 고객 %d / 세션 %d",
+        "기동 — adapter_mode=%s demo_mode=%s seed=%s dry_run=%s | "
+        "상품 %d / 고객 %d / 개체 %d / 시나리오 %d",
         settings.adapter_mode,
         settings.demo_mode,
-        settings.data_source,
+        store.seed_source,
+        settings.llm_dry_run,
         len(store.products),
         len(store.customers),
+        len(store.assets),
         len(store.sessions),
     )
     for err in store.load_errors:

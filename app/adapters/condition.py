@@ -1,7 +1,12 @@
 """컨디션 점수 어댑터 (백엔드).
 
-목 구현은 Phase 2 에서 결정적으로 계산해 둔 점수·소견을 그대로 반환한다(시간 기반 추정치).
-실제 이미지 기반 판정은 백엔드 담당의 실구현 몫이다.
+**대회 제공 API 에 비전 모델이 없다(확정).** 그래서 목 구현은 이미지를 보지 않는다 —
+`asset_id` 로 픽스처의 컨디션 점수와 findings 를 그대로 반환한다. `image_paths` 가 와도 무시하고
+그 사실을 상태에 남긴다(조용히 다른 값을 내지 않는다).
+
+이미지 기반 실시간 채점은 **백엔드 담당이 고전 CV(OpenCV)로 구현할 예정**이며 계약
+(`POST /condition/score` 의 입출력)은 그대로 유지된다. 즉 이 어댑터를 `http` 로 전환하는 것만으로
+교체된다.
 """
 
 from __future__ import annotations
@@ -26,10 +31,12 @@ GRADE_TO_SCORE: dict[str, int] = {
 
 
 class MockConditionAdapter(AdapterBase):
-    """저장된 결정적 컨디션 값을 반환한다."""
+    """픽스처의 컨디션 값을 반환한다(이미지 미사용)."""
 
     def __init__(self, store: DataStore | None = None) -> None:
-        super().__init__(module="condition", mode="mock", target="data/processed/customers.json")
+        super().__init__(
+            module="condition", mode="mock", target="fixtures/assets.json (이미지 미사용)"
+        )
         self.store = store or get_store()
 
     def score(self, request: ConditionScoreRequest) -> ConditionScoreResponse:
@@ -39,15 +46,15 @@ class MockConditionAdapter(AdapterBase):
         if asset is None:
             self.status.record_failure(elapsed, f"미등록 개체: {request.asset_id}")
             raise UpstreamError(f"개체를 찾을 수 없다: {request.asset_id}")
-        # 스캔 이미지가 주어졌는지에 따라 확신도만 달라진다(점수 자체는 결정적 추정치).
-        confidence = 0.85 if request.image_paths else 0.7
-        self.status.record_success(elapsed, f"{asset.condition_score}점")
+        # 비전 모델이 없으므로 이미지는 채점에 쓰지 않는다. 왔다는 사실만 상태에 남긴다.
+        ignored = f" (이미지 {len(request.image_paths)}장 무시)" if request.image_paths else ""
+        self.status.record_success(elapsed, f"{asset.condition_score}점{ignored}")
         return ConditionScoreResponse(
             asset_id=asset.asset_id,
             score=asset.condition_score,
             findings=asset.findings,
             next_service_months=asset.next_service_months,
-            confidence=confidence,
+            confidence=0.8,
         )
 
 

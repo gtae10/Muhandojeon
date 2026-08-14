@@ -20,7 +20,8 @@ RAW_DIR = DATA_DIR / "raw"
 PROCESSED_DIR = DATA_DIR / "processed"
 IMAGES_DIR = PROCESSED_DIR / "images"
 FINGERPRINT_DIR = DATA_DIR / "fingerprints"
-EXPORTS_DIR = ROOT / "exports"
+FIXTURES_DIR = ROOT / "fixtures"
+CONFIG_DIR = ROOT / "config"
 CACHE_DIR = ROOT / ".cache"
 DOCS_DIR = ROOT / "docs"
 
@@ -73,20 +74,37 @@ class Settings(BaseSettings):
     fingerprint_base_url: str = "http://localhost:8104"
     condition_base_url: str = "http://localhost:8105"
 
-    # ── 데이터 ────────────────────────────────────────────────
-    data_source: Literal["external", "synth"] = "external"
+    # ── 시드 데이터 ────────────────────────────────────────────
+    # 외부 데이터셋 미확정 → 손으로 쓴 픽스처가 기본. 데이터셋 확정 시 dataset 으로 전환한다.
+    seed_source: Literal["fixture", "dataset"] = "fixture"
     db_path: Path = DATA_DIR / "app.db"
     seed: int = 42
 
     # ── LLM ───────────────────────────────────────────────────
     llm_base_url: str = "https://api.openai.com/v1"
     llm_api_key: str = ""
+    #: 상위 티어(상담·심판). config/model_routing.yaml 의 tier→model 매핑에서 덮어쓸 수 있다.
     llm_model: str = "gpt-4o-mini"
+    #: 저가 티어(페르소나·분류·컨디션 소견). 비어 있으면 llm_model 을 쓴다.
+    llm_model_cheap: str = ""
     llm_judge_model: str = ""
     llm_temperature: float = 0.0
     llm_seed: int = 42
     llm_timeout_seconds: float = 30.0
     llm_max_tokens: int = 700
+    llm_max_concurrency: int = 4
+    #: 캐시는 기본 활성화다. 끄려면 명시적으로 false 로 둬야 한다(예산 사고 방지).
+    llm_cache_enabled: bool = True
+    #: true 면 실제 호출 없이 토큰/비용만 추정한다(make estimate).
+    llm_dry_run: bool = False
+    llm_models_discovery: bool = True
+
+    # ── 예산 (총액 100달러, 초과 시 복구 수단 없음) ──────────────
+    llm_budget_total_usd: float = 100.0
+    llm_budget_warn_usd: float = 60.0
+    llm_budget_hard_usd: float = 85.0
+    #: 세션 원가를 원화로 환산할 때 쓰는 고정 환율(실시간 조회하지 않는다).
+    usd_krw: float = 1380.0
 
     # ── 데모 안정화 ────────────────────────────────────────────
     demo_mode: bool = False
@@ -94,7 +112,7 @@ class Settings(BaseSettings):
     upstream_retries: int = 1
 
     # ── Persona Bot Lab ───────────────────────────────────────
-    lab_concurrency: int = 4
+    lab_concurrency: int = 4  # 하위 호환. 실제 동시성은 lab_max_concurrency 를 본다
     lab_runs_per_pair: int = 3
     lab_max_turns: int = 6
 
@@ -110,6 +128,15 @@ class Settings(BaseSettings):
     @property
     def judge_model(self) -> str:
         return self.llm_judge_model or self.llm_model
+
+    @property
+    def cheap_model(self) -> str:
+        return self.llm_model_cheap or self.llm_model
+
+    @property
+    def lab_max_concurrency(self) -> int:
+        """LLM_MAX_CONCURRENCY 가 우선. 없으면 기존 LAB_CONCURRENCY 를 쓴다."""
+        return self.llm_max_concurrency or self.lab_concurrency
 
     @property
     def llm_enabled(self) -> bool:
