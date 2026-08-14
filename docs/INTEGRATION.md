@@ -1,4 +1,7 @@
-# Luxe Clienteling — 통합/데모 레이어
+# 통합/데모 레이어 (integration layer)
+
+> 이 문서는 **통합/데모 파트**의 사용 설명서다. 리포 전체 안내는 루트 `README.md`,
+> 이어받아 작업하는 사람은 [`HANDOFF.md`](HANDOFF.md) 를 먼저 읽는다.
 
 럭셔리 브랜드용 AI 클라이언텔링 서비스의 **통합/데모 담당** 코드베이스.
 "고객을 아는 AI"가 아니라 **"고객의 물건을 아는 AI"**라는 것이 이 제품의 차별점이고,
@@ -17,10 +20,10 @@
 `DatasetProvider` 를 채우고 `SEED_SOURCE=dataset` 으로 바꾸면 된다.
 데이터셋 관련 코드는 지우지 않고 `scripts/_deferred/` 에 보관돼 있다.
 
-관련 문서: [`docs/CONTRACTS.md`](docs/CONTRACTS.md) (팀 인터페이스) ·
-[`docs/BACKEND_INTEGRATION.md`](docs/BACKEND_INTEGRATION.md) ·
-[`docs/DEMO_RUNBOOK.md`](docs/DEMO_RUNBOOK.md) ·
-[`scripts/_deferred/README.md`](scripts/_deferred/README.md) (보류 코드 복원 절차)
+관련 문서: [`CONTRACTS.md`](CONTRACTS.md) (팀 인터페이스) ·
+[`BACKEND_INTEGRATION.md`](BACKEND_INTEGRATION.md) ·
+[`DEMO_RUNBOOK.md`](DEMO_RUNBOOK.md) ·
+[`scripts/_deferred/README.md`](../scripts/_deferred/README.md) (보류 코드 복원 절차)
 
 ## 1. 실행 방법
 
