@@ -1,0 +1,1189 @@
+{
+  "generated_with": {
+    "source": "external",
+    "rewriter": [
+      "template"
+    ],
+    "llm_model": null,
+    "quota": {
+      "BAG": 12,
+      "SHOES": 12,
+      "WATCH": 8,
+      "WALLET": 4,
+      "BELT": 4
+    }
+  },
+  "items": [
+    {
+      "product_id": "LX-0001",
+      "name": "Rivage Tote",
+      "category": "BAG",
+      "collection": "Atelier Lumière",
+      "material": "베지터블 탠드 새들 레더",
+      "color": "Rouge Profond",
+      "price_krw": 11600000,
+      "size_system": "Size 25 / 30 / 35 cm",
+      "available_sizes": [
+        "25",
+        "30"
+      ],
+      "care_notes": "월 1회 무색 크림으로 보습, 핸들은 6개월마다 상태 점검 권장",
+      "rewriter": "template",
+      "image_path": "images/LX-0001.jpg",
+      "source": {
+        "dataset": "fashion-product-images-small",
+        "image_px": [
+          60,
+          80
+        ],
+        "raw_id": "21947",
+        "raw_article_type": "Handbags",
+        "raw_base_colour": "Red",
+        "raw_display_name": "Murcia Women Red Leatherite Handbag",
+        "raw_year": 2015
+      }
+    },
+    {
+      "product_id": "LX-0002",
+      "name": "Alcove Zip Wallet",
+      "category": "WALLET",
+      "collection": "Rive Atelier",
+      "material": "그레인 토고 카프스킨",
+      "color": "Sable",
+      "price_krw": 2100000,
+      "size_system": "One size",
+      "available_sizes": [
+        "One size"
+      ],
+      "care_notes": "카드 과다 수납 지양, 엣지 코트 벗겨짐은 초기 보수 권장",
+      "rewriter": "template",
+      "image_path": "images/LX-0002.jpg",
+      "source": {
+        "dataset": "fashion-product-images-small",
+        "image_px": [
+          60,
+          80
+        ],
+        "raw_id": "20466",
+        "raw_article_type": "Wallets",
+        "raw_base_colour": "Beige",
+        "raw_display_name": "Baggit Women Udaan Jhuti Beige Wallet",
+        "raw_year": 2015
+      }
+    },
+    {
+      "product_id": "LX-0003",
+      "name": "Serein Chronograph",
+      "category": "WATCH",
+      "collection": "Signature Noir",
+      "material": "폴리시드 스틸 / 사파이어 크리스탈",
+      "color": "Bleu Orage",
+      "price_krw": 9800000,
+      "size_system": "Case 38mm / 41mm",
+      "available_sizes": [
+        "38mm",
+        "41mm"
+      ],
+      "care_notes": "2년마다 오버홀, 브레이슬릿 유격은 1년 단위 점검",
+      "rewriter": "template",
+      "image_path": "images/LX-0003.jpg",
+      "source": {
+        "dataset": "fashion-product-images-small",
+        "image_px": [
+          60,
+          80
+        ],
+        "raw_id": "43148",
+        "raw_article_type": "Watches",
+        "raw_base_colour": "Blue",
+        "raw_display_name": "Fastrack Women Blue Watch",
+        "raw_year": 2016
+      }
+    },
+    {
+      "product_id": "LX-0004",
+      "name": "Meridian Hobo",
+      "category": "BAG",
+      "collection": "Signature Noir",
+      "material": "베지터블 탠드 새들 레더",
+      "color": "Fuchsia Profond",
+      "price_krw": 11200000,
+      "size_system": "Size 25 / 30 / 35 cm",
+      "available_sizes": [
+        "25",
+        "30"
+      ],
+      "care_notes": "월 1회 무색 크림으로 보습, 핸들은 6개월마다 상태 점검 권장",
+      "rewriter": "template",
+      "image_path": "images/LX-0004.jpg",
+      "source": {
+        "dataset": "fashion-product-images-small",
+        "image_px": [
+          60,
+          80
+        ],
+        "raw_id": "30706",
+        "raw_article_type": "Clutches",
+        "raw_base_colour": "Magenta",
+        "raw_display_name": "Fabindia Women Magenta & Golden Potli",
+        "raw_year": 2012
+      }
+    },
+    {
+      "product_id": "LX-0005",
+      "name": "Solène Oxford",
+      "category": "SHOES",
+      "collection": "Héritage 1948",
+      "material": "패티나 카프 / 블레이크 스티치",
+      "color": "Cognac",
+      "price_krw": 3000000,
+      "size_system": "EU 35-42 (하프 사이즈 제작 가능) / Last: Solène",
+      "available_sizes": [
+        "36",
+        "37",
+        "38",
+        "38.5",
+        "39",
+        "40"
+      ],
+      "care_notes": "착화 후 슈트리 필수, 3개월마다 크림 보습 및 앞창 마모 점검",
+      "rewriter": "template",
+      "image_path": "images/LX-0005.jpg",
+      "source": {
+        "dataset": "fashion-product-images-small",
+        "image_px": [
+          60,
+          80
+        ],
+        "raw_id": "51750",
+        "raw_article_type": "Heels",
+        "raw_base_colour": "Brown",
+        "raw_display_name": "Catwalk Women Brown Flats",
+        "raw_year": 2015
+      }
+    },
+    {
+      "product_id": "LX-0006",
+      "name": "Étoile Derby",
+      "category": "SHOES",
+      "collection": "Rive Atelier",
+      "material": "박스카프 카프스킨 / 굿이어 웰트",
+      "color": "Noir",
+      "price_krw": 2000000,
+      "size_system": "EU 35-42 (하프 사이즈 제작 가능) / Last: Étoile",
+      "available_sizes": [
+        "36",
+        "37",
+        "38",
+        "38.5",
+        "39",
+        "40"
+      ],
+      "care_notes": "착화 후 슈트리 필수, 3개월마다 크림 보습 및 앞창 마모 점검",
+      "rewriter": "template",
+      "image_path": "images/LX-0006.jpg",
+      "source": {
+        "dataset": "fashion-product-images-small",
+        "image_px": [
+          60,
+          80
+        ],
+        "raw_id": "45622",
+        "raw_article_type": "Formal Shoes",
+        "raw_base_colour": "Black",
+        "raw_display_name": "Red Tape Men Black Shoes",
+        "raw_year": 2018
+      }
+    },
+    {
+      "product_id": "LX-0007",
+      "name": "Vesper Pump",
+      "category": "SHOES",
+      "collection": "Rive Atelier",
+      "material": "패티나 카프 / 블레이크 스티치",
+      "color": "Cognac",
+      "price_krw": 2800000,
+      "size_system": "EU 35-42 (하프 사이즈 제작 가능) / Last: Vesper",
+      "available_sizes": [
+        "36",
+        "37",
+        "38",
+        "38.5",
+        "39",
+        "40"
+      ],
+      "care_notes": "착화 후 슈트리 필수, 3개월마다 크림 보습 및 앞창 마모 점검",
+      "rewriter": "template",
+      "image_path": "images/LX-0007.jpg",
+      "source": {
+        "dataset": "fashion-product-images-small",
+        "image_px": [
+          60,
+          80
+        ],
+        "raw_id": "16155",
+        "raw_article_type": "Formal Shoes",
+        "raw_base_colour": "Brown",
+        "raw_display_name": "Enroute Men Leather Brown Formal Shoes",
+        "raw_year": 2011
+      }
+    },
+    {
+      "product_id": "LX-0008",
+      "name": "Serein Ankle Boot",
+      "category": "SHOES",
+      "collection": "Héritage 1948",
+      "material": "스웨이드 카프 / 레더 솔",
+      "color": "Noir",
+      "price_krw": 1500000,
+      "size_system": "EU 35-42 (하프 사이즈 제작 가능) / Last: Serein",
+      "available_sizes": [
+        "36",
+        "37",
+        "38",
+        "38.5",
+        "39",
+        "40"
+      ],
+      "care_notes": "착화 후 슈트리 필수, 3개월마다 크림 보습 및 앞창 마모 점검",
+      "rewriter": "template",
+      "image_path": "images/LX-0008.jpg",
+      "source": {
+        "dataset": "fashion-product-images-small",
+        "image_px": [
+          60,
+          80
+        ],
+        "raw_id": "23796",
+        "raw_article_type": "Flats",
+        "raw_base_colour": "Black",
+        "raw_display_name": "Clarks Women Black Leather Ballerinas",
+        "raw_year": 2011
+      }
+    },
+    {
+      "product_id": "LX-0009",
+      "name": "Rivage Clutch",
+      "category": "BAG",
+      "collection": "Continuité",
+      "material": "그레인 토고 카프스킨",
+      "color": "Abricot",
+      "price_krw": 11600000,
+      "size_system": "Size 25 / 30 / 35 cm",
+      "available_sizes": [
+        "25",
+        "30"
+      ],
+      "care_notes": "월 1회 무색 크림으로 보습, 핸들은 6개월마다 상태 점검 권장",
+      "rewriter": "template",
+      "image_path": "images/LX-0009.jpg",
+      "source": {
+        "dataset": "fashion-product-images-small",
+        "image_px": [
+          60,
+          80
+        ],
+        "raw_id": "25144",
+        "raw_article_type": "Handbags",
+        "raw_base_colour": "Orange",
+        "raw_display_name": "Lino Perros Women Leatherite Orange Handbag",
+        "raw_year": 2015
+      }
+    },
+    {
+      "product_id": "LX-0010",
+      "name": "Tessera Corset Belt",
+      "category": "BELT",
+      "collection": "Rive Atelier",
+      "material": "그레인 카프 / 브러시드 버클",
+      "color": "Cognac",
+      "price_krw": 2200000,
+      "size_system": "80 / 85 / 90 / 95 cm",
+      "available_sizes": [
+        "80",
+        "90"
+      ],
+      "care_notes": "접어 보관하지 않고 걸어 보관, 버클은 마른 천으로 관리",
+      "rewriter": "template",
+      "image_path": "images/LX-0010.jpg",
+      "source": {
+        "dataset": "fashion-product-images-small",
+        "image_px": [
+          60,
+          80
+        ],
+        "raw_id": "20423",
+        "raw_article_type": "Belts",
+        "raw_base_colour": "Brown",
+        "raw_display_name": "Baggit Women Fiancee Taj Brown Belt",
+        "raw_year": 2015
+      }
+    },
+    {
+      "product_id": "LX-0011",
+      "name": "Aurelia Ankle Boot",
+      "category": "SHOES",
+      "collection": "Rive Atelier",
+      "material": "패티나 카프 / 블레이크 스티치",
+      "color": "Noir",
+      "price_krw": 3000000,
+      "size_system": "EU 35-42 (하프 사이즈 제작 가능) / Last: Aurelia",
+      "available_sizes": [
+        "36"
+      ],
+      "care_notes": "착화 후 슈트리 필수, 3개월마다 크림 보습 및 앞창 마모 점검",
+      "rewriter": "template",
+      "image_path": "images/LX-0011.jpg",
+      "source": {
+        "dataset": "fashion-product-images-small",
+        "image_px": [
+          60,
+          80
+        ],
+        "raw_id": "56927",
+        "raw_article_type": "Heels",
+        "raw_base_colour": "Black",
+        "raw_display_name": "HM Women Black Flats",
+        "raw_year": 2012
+      }
+    },
+    {
+      "product_id": "LX-0012",
+      "name": "Aurelia Corset Belt",
+      "category": "BELT",
+      "collection": "Atelier Lumière",
+      "material": "그레인 카프 / 브러시드 버클",
+      "color": "Cognac",
+      "price_krw": 2100000,
+      "size_system": "80 / 85 / 90 / 95 cm",
+      "available_sizes": [
+        "80",
+        "90"
+      ],
+      "care_notes": "접어 보관하지 않고 걸어 보관, 버클은 마른 천으로 관리",
+      "rewriter": "template",
+      "image_path": "images/LX-0012.jpg",
+      "source": {
+        "dataset": "fashion-product-images-small",
+        "image_px": [
+          60,
+          80
+        ],
+        "raw_id": "33462",
+        "raw_article_type": "Belts",
+        "raw_base_colour": "Brown",
+        "raw_display_name": "Baggit Women Getz Taj Brown Belt",
+        "raw_year": 2012
+      }
+    },
+    {
+      "product_id": "LX-0013",
+      "name": "Vesper Tote",
+      "category": "BAG",
+      "collection": "Héritage 1948",
+      "material": "스웨이드 스플릿 스킨",
+      "color": "Rouge Profond",
+      "price_krw": 11600000,
+      "size_system": "Size 25 / 30 / 35 cm",
+      "available_sizes": [
+        "25",
+        "30"
+      ],
+      "care_notes": "월 1회 무색 크림으로 보습, 핸들은 6개월마다 상태 점검 권장",
+      "rewriter": "template",
+      "image_path": "images/LX-0013.jpg",
+      "source": {
+        "dataset": "fashion-product-images-small",
+        "image_px": [
+          60,
+          80
+        ],
+        "raw_id": "16762",
+        "raw_article_type": "Handbags",
+        "raw_base_colour": "Red",
+        "raw_display_name": "Spice Art Women Printed Design Multi Handbags",
+        "raw_year": 2015
+      }
+    },
+    {
+      "product_id": "LX-0014",
+      "name": "Vesper Hobo",
+      "category": "BAG",
+      "collection": "Atelier Lumière",
+      "material": "베지터블 탠드 새들 레더",
+      "color": "Bleu Céladon",
+      "price_krw": 11000000,
+      "size_system": "Size 25 / 30 / 35 cm",
+      "available_sizes": [
+        "25",
+        "30"
+      ],
+      "care_notes": "월 1회 무색 크림으로 보습, 핸들은 6개월마다 상태 점검 권장",
+      "rewriter": "template",
+      "image_path": "images/LX-0014.jpg",
+      "source": {
+        "dataset": "fashion-product-images-small",
+        "image_px": [
+          60,
+          80
+        ],
+        "raw_id": "20523",
+        "raw_article_type": "Handbags",
+        "raw_base_colour": "Teal",
+        "raw_display_name": "Baggit Women Hail Taj Teal Handbag",
+        "raw_year": 2015
+      }
+    },
+    {
+      "product_id": "LX-0015",
+      "name": "Lisière Corset Belt",
+      "category": "BELT",
+      "collection": "Continuité",
+      "material": "박스카프 카프스킨 / 팔라듐 버클",
+      "color": "Cognac",
+      "price_krw": 1800000,
+      "size_system": "80 / 85 / 90 / 95 cm",
+      "available_sizes": [
+        "80",
+        "90"
+      ],
+      "care_notes": "접어 보관하지 않고 걸어 보관, 버클은 마른 천으로 관리",
+      "rewriter": "template",
+      "image_path": "images/LX-0015.jpg",
+      "source": {
+        "dataset": "fashion-product-images-small",
+        "image_px": [
+          60,
+          80
+        ],
+        "raw_id": "51768",
+        "raw_article_type": "Belts",
+        "raw_base_colour": "Brown",
+        "raw_display_name": "Hidedge Men Brown Leather Belt",
+        "raw_year": 2012
+      }
+    },
+    {
+      "product_id": "LX-0016",
+      "name": "Meridian Oxford",
+      "category": "SHOES",
+      "collection": "Signature Noir",
+      "material": "패티나 카프 / 블레이크 스티치",
+      "color": "Noir",
+      "price_krw": 2400000,
+      "size_system": "EU 35-42 (하프 사이즈 제작 가능) / Last: Meridian",
+      "available_sizes": [
+        "36"
+      ],
+      "care_notes": "착화 후 슈트리 필수, 3개월마다 크림 보습 및 앞창 마모 점검",
+      "rewriter": "template",
+      "image_path": "images/LX-0016.jpg",
+      "source": {
+        "dataset": "fashion-product-images-small",
+        "image_px": [
+          60,
+          80
+        ],
+        "raw_id": "35489",
+        "raw_article_type": "Formal Shoes",
+        "raw_base_colour": "Black",
+        "raw_display_name": "Bata Men Remo Black Formal Shoes",
+        "raw_year": 2012
+      }
+    },
+    {
+      "product_id": "LX-0017",
+      "name": "Halcyon Zip Wallet",
+      "category": "WALLET",
+      "collection": "Continuité",
+      "material": "샤그린 엠보스 레더",
+      "color": "Noir",
+      "price_krw": 1700000,
+      "size_system": "One size",
+      "available_sizes": [
+        "One size"
+      ],
+      "care_notes": "카드 과다 수납 지양, 엣지 코트 벗겨짐은 초기 보수 권장",
+      "rewriter": "template",
+      "image_path": "images/LX-0017.jpg",
+      "source": {
+        "dataset": "fashion-product-images-small",
+        "image_px": [
+          60,
+          80
+        ],
+        "raw_id": "42082",
+        "raw_article_type": "Wallets",
+        "raw_base_colour": "Black",
+        "raw_display_name": "American Tourister Black Passport Holder",
+        "raw_year": 2015
+      }
+    },
+    {
+      "product_id": "LX-0018",
+      "name": "Ombré Reversible Belt",
+      "category": "BELT",
+      "collection": "Atelier Lumière",
+      "material": "그레인 카프 / 브러시드 버클",
+      "color": "Bleu Nuit",
+      "price_krw": 2000000,
+      "size_system": "80 / 85 / 90 / 95 cm",
+      "available_sizes": [
+        "80",
+        "90"
+      ],
+      "care_notes": "접어 보관하지 않고 걸어 보관, 버클은 마른 천으로 관리",
+      "rewriter": "template",
+      "image_path": "images/LX-0018.jpg",
+      "source": {
+        "dataset": "fashion-product-images-small",
+        "image_px": [
+          60,
+          80
+        ],
+        "raw_id": "42898",
+        "raw_article_type": "Belts",
+        "raw_base_colour": "Navy Blue",
+        "raw_display_name": "French Connection Women Navy Blue Belt",
+        "raw_year": 2012
+      }
+    },
+    {
+      "product_id": "LX-0019",
+      "name": "Rivage Shoulder",
+      "category": "BAG",
+      "collection": "Atelier Lumière",
+      "material": "그레인 토고 카프스킨",
+      "color": "Noir",
+      "price_krw": 7700000,
+      "size_system": "Size 25 / 30 / 35 cm",
+      "available_sizes": [
+        "25",
+        "30"
+      ],
+      "care_notes": "월 1회 무색 크림으로 보습, 핸들은 6개월마다 상태 점검 권장",
+      "rewriter": "template",
+      "image_path": "images/LX-0019.jpg",
+      "source": {
+        "dataset": "fashion-product-images-small",
+        "image_px": [
+          60,
+          80
+        ],
+        "raw_id": "58263",
+        "raw_article_type": "Clutches",
+        "raw_base_colour": "Black",
+        "raw_display_name": "Baggit Women Black Clutch",
+        "raw_year": 2012
+      }
+    },
+    {
+      "product_id": "LX-0020",
+      "name": "Tessera Automatic",
+      "category": "WATCH",
+      "collection": "Continuité",
+      "material": "폴리시드 스틸 / 사파이어 크리스탈",
+      "color": "Craie",
+      "price_krw": 7300000,
+      "size_system": "Case 38mm / 41mm",
+      "available_sizes": [
+        "38mm",
+        "41mm"
+      ],
+      "care_notes": "2년마다 오버홀, 브레이슬릿 유격은 1년 단위 점검",
+      "rewriter": "template",
+      "image_path": "images/LX-0020.jpg",
+      "source": {
+        "dataset": "fashion-product-images-small",
+        "image_px": [
+          60,
+          80
+        ],
+        "raw_id": "36942",
+        "raw_article_type": "Watches",
+        "raw_base_colour": "White",
+        "raw_display_name": "Fossil Men Quartz White Dial Chronograph Watch CH2622",
+        "raw_year": 2016
+      }
+    },
+    {
+      "product_id": "LX-0021",
+      "name": "Solène Clutch",
+      "category": "BAG",
+      "collection": "Rive Atelier",
+      "material": "그레인 토고 카프스킨",
+      "color": "Vert Cyprès",
+      "price_krw": 8300000,
+      "size_system": "Size 25 / 30 / 35 cm",
+      "available_sizes": [
+        "25",
+        "30"
+      ],
+      "care_notes": "월 1회 무색 크림으로 보습, 핸들은 6개월마다 상태 점검 권장",
+      "rewriter": "template",
+      "image_path": "images/LX-0021.jpg",
+      "source": {
+        "dataset": "fashion-product-images-small",
+        "image_px": [
+          60,
+          80
+        ],
+        "raw_id": "32724",
+        "raw_article_type": "Clutches",
+        "raw_base_colour": "Green",
+        "raw_display_name": "Fabindia Women Green Brocade Clutch",
+        "raw_year": 2012
+      }
+    },
+    {
+      "product_id": "LX-0022",
+      "name": "Ombré Ultra Thin",
+      "category": "WATCH",
+      "collection": "Maison Nord",
+      "material": "폴리시드 스틸 / 사파이어 크리스탈",
+      "color": "Noir",
+      "price_krw": 10300000,
+      "size_system": "Case 38mm / 41mm",
+      "available_sizes": [
+        "38mm",
+        "41mm"
+      ],
+      "care_notes": "2년마다 오버홀, 브레이슬릿 유격은 1년 단위 점검",
+      "rewriter": "template",
+      "image_path": "images/LX-0022.jpg",
+      "source": {
+        "dataset": "fashion-product-images-small",
+        "image_px": [
+          60,
+          80
+        ],
+        "raw_id": "54654",
+        "raw_article_type": "Watches",
+        "raw_base_colour": "Black",
+        "raw_display_name": "Fastrack Women Black Dial Watch",
+        "raw_year": 2016
+      }
+    },
+    {
+      "product_id": "LX-0023",
+      "name": "Marée Shoulder",
+      "category": "BAG",
+      "collection": "Maison Nord",
+      "material": "베지터블 탠드 새들 레더",
+      "color": "Rose Poudré",
+      "price_krw": 6600000,
+      "size_system": "Size 25 / 30 / 35 cm",
+      "available_sizes": [
+        "25",
+        "30"
+      ],
+      "care_notes": "월 1회 무색 크림으로 보습, 핸들은 6개월마다 상태 점검 권장",
+      "rewriter": "template",
+      "image_path": "images/LX-0023.jpg",
+      "source": {
+        "dataset": "fashion-product-images-small",
+        "image_px": [
+          60,
+          80
+        ],
+        "raw_id": "25213",
+        "raw_article_type": "Handbags",
+        "raw_base_colour": "Pink",
+        "raw_display_name": "Lino Perros Women Leatherette Pink Handbag",
+        "raw_year": 2015
+      }
+    },
+    {
+      "product_id": "LX-0024",
+      "name": "Aubade Derby",
+      "category": "SHOES",
+      "collection": "Rive Atelier",
+      "material": "패티나 카프 / 블레이크 스티치",
+      "color": "Étain",
+      "price_krw": 2700000,
+      "size_system": "EU 35-42 (하프 사이즈 제작 가능) / Last: Aubade",
+      "available_sizes": [
+        "36",
+        "39"
+      ],
+      "care_notes": "착화 후 슈트리 필수, 3개월마다 크림 보습 및 앞창 마모 점검",
+      "rewriter": "template",
+      "image_path": "images/LX-0024.jpg",
+      "source": {
+        "dataset": "fashion-product-images-small",
+        "image_px": [
+          60,
+          80
+        ],
+        "raw_id": "35819",
+        "raw_article_type": "Heels",
+        "raw_base_colour": "Grey",
+        "raw_display_name": "Enroute Women Bluish Grey Flats",
+        "raw_year": 2012
+      }
+    },
+    {
+      "product_id": "LX-0025",
+      "name": "Aubade Top Handle",
+      "category": "BAG",
+      "collection": "Héritage 1948",
+      "material": "스웨이드 스플릿 스킨",
+      "color": "Vert Cyprès",
+      "price_krw": 6900000,
+      "size_system": "Size 25 / 30 / 35 cm",
+      "available_sizes": [
+        "25"
+      ],
+      "care_notes": "월 1회 무색 크림으로 보습, 핸들은 6개월마다 상태 점검 권장",
+      "rewriter": "template",
+      "image_path": "images/LX-0025.jpg",
+      "source": {
+        "dataset": "fashion-product-images-small",
+        "image_px": [
+          60,
+          80
+        ],
+        "raw_id": "4613",
+        "raw_article_type": "Handbags",
+        "raw_base_colour": "Green",
+        "raw_display_name": "Wildcraft Unisex Green & Grey Printed Sling Bag",
+        "raw_year": 2015
+      }
+    },
+    {
+      "product_id": "LX-0026",
+      "name": "Solène Tote",
+      "category": "BAG",
+      "collection": "Signature Noir",
+      "material": "스웨이드 스플릿 스킨",
+      "color": "Doré",
+      "price_krw": 8100000,
+      "size_system": "Size 25 / 30 / 35 cm",
+      "available_sizes": [
+        "25",
+        "30"
+      ],
+      "care_notes": "월 1회 무색 크림으로 보습, 핸들은 6개월마다 상태 점검 권장",
+      "rewriter": "template",
+      "image_path": "images/LX-0026.jpg",
+      "source": {
+        "dataset": "fashion-product-images-small",
+        "image_px": [
+          60,
+          80
+        ],
+        "raw_id": "49532",
+        "raw_article_type": "Clutches",
+        "raw_base_colour": "Gold",
+        "raw_display_name": "Rocia Women Gold Clutch",
+        "raw_year": 2012
+      }
+    },
+    {
+      "product_id": "LX-0027",
+      "name": "Vesper Oxford",
+      "category": "SHOES",
+      "collection": "Héritage 1948",
+      "material": "박스카프 카프스킨 / 굿이어 웰트",
+      "color": "Noir",
+      "price_krw": 2000000,
+      "size_system": "EU 35-42 (하프 사이즈 제작 가능) / Last: Solène",
+      "available_sizes": [
+        "36"
+      ],
+      "care_notes": "착화 후 슈트리 필수, 3개월마다 크림 보습 및 앞창 마모 점검",
+      "rewriter": "template",
+      "image_path": "images/LX-0027.jpg",
+      "source": {
+        "dataset": "fashion-product-images-small",
+        "image_px": [
+          60,
+          80
+        ],
+        "raw_id": "56886",
+        "raw_article_type": "Heels",
+        "raw_base_colour": "Black",
+        "raw_display_name": "HM Women Black Heels",
+        "raw_year": 2012
+      }
+    },
+    {
+      "product_id": "LX-0028",
+      "name": "Halcyon Pump",
+      "category": "SHOES",
+      "collection": "Atelier Lumière",
+      "material": "패티나 카프 / 블레이크 스티치",
+      "color": "Noir",
+      "price_krw": 2300000,
+      "size_system": "EU 35-42 (하프 사이즈 제작 가능) / Last: Halcyon",
+      "available_sizes": [
+        "36",
+        "37",
+        "38",
+        "38.5",
+        "39",
+        "40"
+      ],
+      "care_notes": "착화 후 슈트리 필수, 3개월마다 크림 보습 및 앞창 마모 점검",
+      "rewriter": "template",
+      "image_path": "images/LX-0028.jpg",
+      "source": {
+        "dataset": "fashion-product-images-small",
+        "image_px": [
+          60,
+          80
+        ],
+        "raw_id": "7244",
+        "raw_article_type": "Formal Shoes",
+        "raw_base_colour": "Black",
+        "raw_display_name": "Rockport Men's Allander Black Shoe",
+        "raw_year": 2011
+      }
+    },
+    {
+      "product_id": "LX-0029",
+      "name": "Nocturne Shoulder",
+      "category": "BAG",
+      "collection": "Rive Atelier",
+      "material": "그레인 토고 카프스킨",
+      "color": "Noir",
+      "price_krw": 3900000,
+      "size_system": "Size 25 / 30 / 35 cm",
+      "available_sizes": [
+        "25"
+      ],
+      "care_notes": "월 1회 무색 크림으로 보습, 핸들은 6개월마다 상태 점검 권장",
+      "rewriter": "template",
+      "image_path": "images/LX-0029.jpg",
+      "source": {
+        "dataset": "fashion-product-images-small",
+        "image_px": [
+          60,
+          80
+        ],
+        "raw_id": "42890",
+        "raw_article_type": "Handbags",
+        "raw_base_colour": "Black",
+        "raw_display_name": "French Connection Women Black Sling Bag",
+        "raw_year": 2012
+      }
+    },
+    {
+      "product_id": "LX-0030",
+      "name": "Marée Chronograph",
+      "category": "WATCH",
+      "collection": "Maison Nord",
+      "material": "폴리시드 스틸 / 사파이어 크리스탈",
+      "color": "Bleu Orage",
+      "price_krw": 5400000,
+      "size_system": "Case 38mm / 41mm",
+      "available_sizes": [
+        "38mm",
+        "41mm"
+      ],
+      "care_notes": "2년마다 오버홀, 브레이슬릿 유격은 1년 단위 점검",
+      "rewriter": "template",
+      "image_path": "images/LX-0030.jpg",
+      "source": {
+        "dataset": "fashion-product-images-small",
+        "image_px": [
+          60,
+          80
+        ],
+        "raw_id": "51555",
+        "raw_article_type": "Watches",
+        "raw_base_colour": "Blue",
+        "raw_display_name": "Fastrack Men Blue Dial Watch",
+        "raw_year": 2016
+      }
+    },
+    {
+      "product_id": "LX-0031",
+      "name": "Petra Reserve",
+      "category": "WATCH",
+      "collection": "Rive Atelier",
+      "material": "브러시드 티타늄 / 인하우스 오토매틱",
+      "color": "Étain",
+      "price_krw": 10400000,
+      "size_system": "Case 38mm / 41mm",
+      "available_sizes": [
+        "38mm",
+        "41mm"
+      ],
+      "care_notes": "2년마다 오버홀, 브레이슬릿 유격은 1년 단위 점검",
+      "rewriter": "template",
+      "image_path": "images/LX-0031.jpg",
+      "source": {
+        "dataset": "fashion-product-images-small",
+        "image_px": [
+          60,
+          80
+        ],
+        "raw_id": "36758",
+        "raw_article_type": "Watches",
+        "raw_base_colour": "Grey",
+        "raw_display_name": "Maxima Women Grey Dial Watch",
+        "raw_year": 2016
+      }
+    },
+    {
+      "product_id": "LX-0032",
+      "name": "Colline Tote",
+      "category": "BAG",
+      "collection": "Rive Atelier",
+      "material": "베지터블 탠드 새들 레더",
+      "color": "Bleu Orage",
+      "price_krw": 6800000,
+      "size_system": "Size 25 / 30 / 35 cm",
+      "available_sizes": [
+        "25",
+        "30"
+      ],
+      "care_notes": "월 1회 무색 크림으로 보습, 핸들은 6개월마다 상태 점검 권장",
+      "rewriter": "template",
+      "image_path": "images/LX-0032.jpg",
+      "source": {
+        "dataset": "fashion-product-images-small",
+        "image_px": [
+          60,
+          80
+        ],
+        "raw_id": "31918",
+        "raw_article_type": "Clutches",
+        "raw_base_colour": "Blue",
+        "raw_display_name": "Fabindia Women Blue Silk Clutch",
+        "raw_year": 2012
+      }
+    },
+    {
+      "product_id": "LX-0033",
+      "name": "Alcove Automatic",
+      "category": "WATCH",
+      "collection": "Maison Nord",
+      "material": "브러시드 티타늄 / 인하우스 오토매틱",
+      "color": "Bleu Orage",
+      "price_krw": 9400000,
+      "size_system": "Case 38mm / 41mm",
+      "available_sizes": [
+        "38mm",
+        "41mm"
+      ],
+      "care_notes": "2년마다 오버홀, 브레이슬릿 유격은 1년 단위 점검",
+      "rewriter": "template",
+      "image_path": "images/LX-0033.jpg",
+      "source": {
+        "dataset": "fashion-product-images-small",
+        "image_px": [
+          60,
+          80
+        ],
+        "raw_id": "18527",
+        "raw_article_type": "Watches",
+        "raw_base_colour": "Blue",
+        "raw_display_name": "Chhota Bheem Analog Kids-Boys Blue Watch",
+        "raw_year": 2016
+      }
+    },
+    {
+      "product_id": "LX-0034",
+      "name": "Marée Reserve",
+      "category": "WATCH",
+      "collection": "Rive Atelier",
+      "material": "브러시드 티타늄 / 인하우스 오토매틱",
+      "color": "Acier",
+      "price_krw": 9000000,
+      "size_system": "Case 38mm / 41mm",
+      "available_sizes": [
+        "38mm",
+        "41mm"
+      ],
+      "care_notes": "2년마다 오버홀, 브레이슬릿 유격은 1년 단위 점검",
+      "rewriter": "template",
+      "image_path": "images/LX-0034.jpg",
+      "source": {
+        "dataset": "fashion-product-images-small",
+        "image_px": [
+          60,
+          80
+        ],
+        "raw_id": "45011",
+        "raw_article_type": "Watches",
+        "raw_base_colour": "Steel",
+        "raw_display_name": "Maxima Men Digital Multifunction Watch",
+        "raw_year": 2016
+      }
+    },
+    {
+      "product_id": "LX-0035",
+      "name": "Étoile Zip Wallet",
+      "category": "WALLET",
+      "collection": "Héritage 1948",
+      "material": "그레인 토고 카프스킨",
+      "color": "Noir",
+      "price_krw": 2100000,
+      "size_system": "One size",
+      "available_sizes": [
+        "One size"
+      ],
+      "care_notes": "카드 과다 수납 지양, 엣지 코트 벗겨짐은 초기 보수 권장",
+      "rewriter": "template",
+      "image_path": "images/LX-0035.jpg",
+      "source": {
+        "dataset": "fashion-product-images-small",
+        "image_px": [
+          60,
+          80
+        ],
+        "raw_id": "38317",
+        "raw_article_type": "Wallets",
+        "raw_base_colour": "Black",
+        "raw_display_name": "Puma Men Black Big Cat Wallet",
+        "raw_year": 2012
+      }
+    },
+    {
+      "product_id": "LX-0036",
+      "name": "Petra Loafer",
+      "category": "SHOES",
+      "collection": "Rive Atelier",
+      "material": "박스카프 카프스킨 / 굿이어 웰트",
+      "color": "Craie",
+      "price_krw": 3100000,
+      "size_system": "EU 35-42 (하프 사이즈 제작 가능) / Last: Petra",
+      "available_sizes": [
+        "36",
+        "39"
+      ],
+      "care_notes": "착화 후 슈트리 필수, 3개월마다 크림 보습 및 앞창 마모 점검",
+      "rewriter": "template",
+      "image_path": "images/LX-0036.jpg",
+      "source": {
+        "dataset": "fashion-product-images-small",
+        "image_px": [
+          60,
+          80
+        ],
+        "raw_id": "57306",
+        "raw_article_type": "Heels",
+        "raw_base_colour": "White",
+        "raw_display_name": "Rocia Women White Heels",
+        "raw_year": 2012
+      }
+    },
+    {
+      "product_id": "LX-0037",
+      "name": "Nocturne Oxford",
+      "category": "SHOES",
+      "collection": "Signature Noir",
+      "material": "패티나 카프 / 블레이크 스티치",
+      "color": "Noir",
+      "price_krw": 2900000,
+      "size_system": "EU 35-42 (하프 사이즈 제작 가능) / Last: Nocturne",
+      "available_sizes": [
+        "36",
+        "39"
+      ],
+      "care_notes": "착화 후 슈트리 필수, 3개월마다 크림 보습 및 앞창 마모 점검",
+      "rewriter": "template",
+      "image_path": "images/LX-0037.jpg",
+      "source": {
+        "dataset": "fashion-product-images-small",
+        "image_px": [
+          60,
+          80
+        ],
+        "raw_id": "39213",
+        "raw_article_type": "Formal Shoes",
+        "raw_base_colour": "Black",
+        "raw_display_name": "Franco Leone Men Black Formal Shoes",
+        "raw_year": 2013
+      }
+    },
+    {
+      "product_id": "LX-0038",
+      "name": "Meridian Zip Wallet",
+      "category": "WALLET",
+      "collection": "Héritage 1948",
+      "material": "그레인 토고 카프스킨",
+      "color": "Cognac",
+      "price_krw": 1600000,
+      "size_system": "One size",
+      "available_sizes": [
+        "One size"
+      ],
+      "care_notes": "카드 과다 수납 지양, 엣지 코트 벗겨짐은 초기 보수 권장",
+      "rewriter": "template",
+      "image_path": "images/LX-0038.jpg",
+      "source": {
+        "dataset": "fashion-product-images-small",
+        "image_px": [
+          60,
+          80
+        ],
+        "raw_id": "25305",
+        "raw_article_type": "Wallets",
+        "raw_base_colour": "Brown",
+        "raw_display_name": "Lino Perros Women Leather Brown Wallet",
+        "raw_year": 2015
+      }
+    },
+    {
+      "product_id": "LX-0039",
+      "name": "Serein Automatic",
+      "category": "WATCH",
+      "collection": "Atelier Lumière",
+      "material": "18K 옐로우 골드 / 매뉴얼 와인딩",
+      "color": "Craie",
+      "price_krw": 10400000,
+      "size_system": "Case 38mm / 41mm",
+      "available_sizes": [
+        "38mm",
+        "41mm"
+      ],
+      "care_notes": "2년마다 오버홀, 브레이슬릿 유격은 1년 단위 점검",
+      "rewriter": "template",
+      "image_path": "images/LX-0039.jpg",
+      "source": {
+        "dataset": "fashion-product-images-small",
+        "image_px": [
+          60,
+          80
+        ],
+        "raw_id": "19282",
+        "raw_article_type": "Watches",
+        "raw_base_colour": "White",
+        "raw_display_name": "Guess Men Activator White Watch",
+        "raw_year": 2016
+      }
+    },
+    {
+      "product_id": "LX-0040",
+      "name": "Vesper Derby",
+      "category": "SHOES",
+      "collection": "Signature Noir",
+      "material": "스웨이드 카프 / 레더 솔",
+      "color": "Noir",
+      "price_krw": 3000000,
+      "size_system": "EU 35-42 (하프 사이즈 제작 가능) / Last: Vesper",
+      "available_sizes": [
+        "36",
+        "39"
+      ],
+      "care_notes": "착화 후 슈트리 필수, 3개월마다 크림 보습 및 앞창 마모 점검",
+      "rewriter": "template",
+      "image_path": "images/LX-0040.jpg",
+      "source": {
+        "dataset": "fashion-product-images-small",
+        "image_px": [
+          60,
+          80
+        ],
+        "raw_id": "42723",
+        "raw_article_type": "Flats",
+        "raw_base_colour": "Black",
+        "raw_display_name": "Rocia Women Black & Brown Sandals",
+        "raw_year": 2012
+      }
+    }
+  ]
+}

@@ -1,0 +1,3234 @@
+{
+  "generated_with": {
+    "source": "synth",
+    "reference_now": "2026-08-14T12:00:00+09:00",
+    "seed": 42,
+    "tier_plan": {
+      "VIP": 10,
+      "ESTABLISHED": 14,
+      "NEW": 6
+    },
+    "pinned_demo_asset": {
+      "customer_id": "CU-0001",
+      "asset_id": "AS-000001",
+      "product_name": "Nocturne Shoulder",
+      "condition_score": "71",
+      "next_service_months": "1",
+      "headline": "핸들 마모 진행, 재코팅 권장 시점 근접"
+    }
+  },
+  "customers": [
+    {
+      "customer_id": "CU-0001",
+      "display_name": "장예린",
+      "tier": "VIP",
+      "planned_tier": "VIP",
+      "purchase_count": 16,
+      "asset_count": 13,
+      "first_purchase_at": "2023-08-24T00:33:56.842105+09:00",
+      "last_purchase_at": "2026-02-17T04:29:12.631579+09:00",
+      "source": {
+        "dataset": "synth",
+        "raw_customer_id_sha": 278090725676088
+      },
+      "assets": [
+        {
+          "asset_id": "AS-000001",
+          "customer_id": "CU-0001",
+          "product_id": "LX-0029",
+          "product_name": "Nocturne Shoulder",
+          "category": "BAG",
+          "purchased_at": "2022-01-25T23:17:38.823529+09:00",
+          "condition_score": 71,
+          "findings": [
+            {
+              "part": "handle",
+              "severity": "MEDIUM",
+              "note": "핸들 마모 진행, 재코팅 권장 시점 근접"
+            },
+            {
+              "part": "corner",
+              "severity": "MEDIUM",
+              "note": "코너 4곳 마찰, 각 세우기 필요"
+            }
+          ],
+          "next_service_months": 1,
+          "last_scanned_at": "2026-07-03T12:00:00+09:00"
+        },
+        {
+          "asset_id": "AS-000002",
+          "customer_id": "CU-0001",
+          "product_id": "LX-0033",
+          "product_name": "Alcove Automatic",
+          "category": "WATCH",
+          "purchased_at": "2023-09-15T12:57:37.894737+09:00",
+          "condition_score": 88,
+          "findings": [
+            {
+              "part": "bracelet",
+              "severity": "LOW",
+              "note": "브레이슬릿 유격 없음"
+            }
+          ],
+          "next_service_months": 54,
+          "last_scanned_at": "2026-02-23T12:00:00+09:00"
+        },
+        {
+          "asset_id": "AS-000003",
+          "customer_id": "CU-0001",
+          "product_id": "LX-0021",
+          "product_name": "Solène Clutch",
+          "category": "BAG",
+          "purchased_at": "2024-06-19T23:50:31.578947+09:00",
+          "condition_score": 84,
+          "findings": [
+            {
+              "part": "handle",
+              "severity": "MEDIUM",
+              "note": "핸들 마모 진행, 재코팅 권장 시점 근접"
+            },
+            {
+              "part": "corner",
+              "severity": "LOW",
+              "note": "코너 마찰 흔적 경미"
+            }
+          ],
+          "next_service_months": 22,
+          "last_scanned_at": null
+        },
+        {
+          "asset_id": "AS-000004",
+          "customer_id": "CU-0001",
+          "product_id": "LX-0009",
+          "product_name": "Rivage Clutch",
+          "category": "BAG",
+          "purchased_at": "2024-06-23T17:54:28.421053+09:00",
+          "condition_score": 86,
+          "findings": [
+            {
+              "part": "handle",
+              "severity": "LOW",
+              "note": "핸들 표면 광택 변화 경미"
+            }
+          ],
+          "next_service_months": 30,
+          "last_scanned_at": "2026-08-01T12:00:00+09:00"
+        },
+        {
+          "asset_id": "AS-000005",
+          "customer_id": "CU-0001",
+          "product_id": "LX-0032",
+          "product_name": "Colline Tote",
+          "category": "BAG",
+          "purchased_at": "2024-07-23T00:25:15.789474+09:00",
+          "condition_score": 82,
+          "findings": [
+            {
+              "part": "handle",
+              "severity": "MEDIUM",
+              "note": "핸들 마모 진행, 재코팅 권장 시점 근접"
+            },
+            {
+              "part": "corner",
+              "severity": "LOW",
+              "note": "코너 마찰 흔적 경미"
+            }
+          ],
+          "next_service_months": 16,
+          "last_scanned_at": "2026-07-23T12:00:00+09:00"
+        },
+        {
+          "asset_id": "AS-000006",
+          "customer_id": "CU-0001",
+          "product_id": "LX-0007",
+          "product_name": "Vesper Pump",
+          "category": "SHOES",
+          "purchased_at": "2024-07-27T12:30:00+09:00",
+          "condition_score": 71,
+          "findings": [
+            {
+              "part": "sole",
+              "severity": "MEDIUM",
+              "note": "앞창 마모 진행, 재밑창 시점 근접"
+            },
+            {
+              "part": "upper",
+              "severity": "MEDIUM",
+              "note": "갑피 주름 심화, 보습 필요"
+            }
+          ],
+          "next_service_months": 1,
+          "last_scanned_at": "2026-04-16T12:00:00+09:00"
+        },
+        {
+          "asset_id": "AS-000007",
+          "customer_id": "CU-0001",
+          "product_id": "LX-0037",
+          "product_name": "Nocturne Oxford",
+          "category": "SHOES",
+          "purchased_at": "2024-09-06T19:13:25.263158+09:00",
+          "condition_score": 73,
+          "findings": [
+            {
+              "part": "sole",
+              "severity": "MEDIUM",
+              "note": "앞창 마모 진행, 재밑창 시점 근접"
+            },
+            {
+              "part": "upper",
+              "severity": "MEDIUM",
+              "note": "갑피 주름 심화, 보습 필요"
+            }
+          ],
+          "next_service_months": 2,
+          "last_scanned_at": "2026-01-16T12:00:00+09:00"
+        },
+        {
+          "asset_id": "AS-000008",
+          "customer_id": "CU-0001",
+          "product_id": "LX-0002",
+          "product_name": "Alcove Zip Wallet",
+          "category": "WALLET",
+          "purchased_at": "2025-03-17T04:34:44.210526+09:00",
+          "condition_score": 85,
+          "findings": [
+            {
+              "part": "edge_coat",
+              "severity": "LOW",
+              "note": "엣지 코트 상태 양호"
+            }
+          ],
+          "next_service_months": 17,
+          "last_scanned_at": "2026-05-26T12:00:00+09:00"
+        },
+        {
+          "asset_id": "AS-000009",
+          "customer_id": "CU-0001",
+          "product_id": "LX-0020",
+          "product_name": "Tessera Automatic",
+          "category": "WATCH",
+          "purchased_at": "2025-05-29T17:52:06.315789+09:00",
+          "condition_score": 94,
+          "findings": [],
+          "next_service_months": 62,
+          "last_scanned_at": null
+        },
+        {
+          "asset_id": "AS-000010",
+          "customer_id": "CU-0001",
+          "product_id": "LX-0034",
+          "product_name": "Marée Reserve",
+          "category": "WATCH",
+          "purchased_at": "2025-11-05T14:40:15.789474+09:00",
+          "condition_score": 97,
+          "findings": [],
+          "next_service_months": 95,
+          "last_scanned_at": "2026-05-01T12:00:00+09:00"
+        },
+        {
+          "asset_id": "AS-000011",
+          "customer_id": "CU-0001",
+          "product_id": "LX-0014",
+          "product_name": "Vesper Hobo",
+          "category": "BAG",
+          "purchased_at": "2025-12-11T15:18:09.473684+09:00",
+          "condition_score": 95,
+          "findings": [],
+          "next_service_months": 40,
+          "last_scanned_at": "2026-03-11T12:00:00+09:00"
+        },
+        {
+          "asset_id": "AS-000012",
+          "customer_id": "CU-0001",
+          "product_id": "LX-0035",
+          "product_name": "Étoile Zip Wallet",
+          "category": "WALLET",
+          "purchased_at": "2026-02-01T10:12:37.894737+09:00",
+          "condition_score": 95,
+          "findings": [],
+          "next_service_months": 33,
+          "last_scanned_at": "2026-02-08T10:12:37.894737+09:00"
+        },
+        {
+          "asset_id": "AS-000013",
+          "customer_id": "CU-0001",
+          "product_id": "LX-0040",
+          "product_name": "Vesper Derby",
+          "category": "SHOES",
+          "purchased_at": "2026-02-17T04:29:12.631579+09:00",
+          "condition_score": 94,
+          "findings": [],
+          "next_service_months": 24,
+          "last_scanned_at": "2026-02-24T04:29:12.631579+09:00"
+        }
+      ]
+    },
+    {
+      "customer_id": "CU-0002",
+      "display_name": "한민재",
+      "tier": "VIP",
+      "planned_tier": "VIP",
+      "purchase_count": 16,
+      "asset_count": 12,
+      "first_purchase_at": "2023-09-09T12:51:18.947368+09:00",
+      "last_purchase_at": "2026-05-13T17:59:12.631579+09:00",
+      "source": {
+        "dataset": "synth",
+        "raw_customer_id_sha": 263742818748217
+      },
+      "assets": [
+        {
+          "asset_id": "AS-000014",
+          "customer_id": "CU-0002",
+          "product_id": "LX-0004",
+          "product_name": "Meridian Hobo",
+          "category": "BAG",
+          "purchased_at": "2023-09-09T12:51:18.947368+09:00",
+          "condition_score": 78,
+          "findings": [
+            {
+              "part": "handle",
+              "severity": "MEDIUM",
+              "note": "핸들 마모 진행, 재코팅 권장 시점 근접"
+            },
+            {
+              "part": "corner",
+              "severity": "LOW",
+              "note": "코너 마찰 흔적 경미"
+            }
+          ],
+          "next_service_months": 12,
+          "last_scanned_at": null
+        },
+        {
+          "asset_id": "AS-000015",
+          "customer_id": "CU-0002",
+          "product_id": "LX-0003",
+          "product_name": "Serein Chronograph",
+          "category": "WATCH",
+          "purchased_at": "2023-12-10T02:27:37.894737+09:00",
+          "condition_score": 91,
+          "findings": [
+            {
+              "part": "bracelet",
+              "severity": "LOW",
+              "note": "브레이슬릿 유격 없음"
+            }
+          ],
+          "next_service_months": 74,
+          "last_scanned_at": null
+        },
+        {
+          "asset_id": "AS-000016",
+          "customer_id": "CU-0002",
+          "product_id": "LX-0029",
+          "product_name": "Nocturne Shoulder",
+          "category": "BAG",
+          "purchased_at": "2024-01-02T08:52:06.315789+09:00",
+          "condition_score": 77,
+          "findings": [
+            {
+              "part": "handle",
+              "severity": "MEDIUM",
+              "note": "핸들 마모 진행, 재코팅 권장 시점 근접"
+            },
+            {
+              "part": "corner",
+              "severity": "LOW",
+              "note": "코너 마찰 흔적 경미"
+            }
+          ],
+          "next_service_months": 9,
+          "last_scanned_at": "2026-02-10T12:00:00+09:00"
+        },
+        {
+          "asset_id": "AS-000017",
+          "customer_id": "CU-0002",
+          "product_id": "LX-0006",
+          "product_name": "Étoile Derby",
+          "category": "SHOES",
+          "purchased_at": "2024-05-02T04:59:12.631579+09:00",
+          "condition_score": 68,
+          "findings": [
+            {
+              "part": "sole",
+              "severity": "HIGH",
+              "note": "앞창 관통 마모, 재밑창 필요"
+            },
+            {
+              "part": "upper",
+              "severity": "MEDIUM",
+              "note": "갑피 주름 심화, 보습 필요"
+            }
+          ],
+          "next_service_months": 0,
+          "last_scanned_at": "2026-04-25T12:00:00+09:00"
+        },
+        {
+          "asset_id": "AS-000018",
+          "customer_id": "CU-0002",
+          "product_id": "LX-0018",
+          "product_name": "Ombré Reversible Belt",
+          "category": "BELT",
+          "purchased_at": "2024-05-10T11:07:53.684211+09:00",
+          "condition_score": 82,
+          "findings": [
+            {
+              "part": "edge_coat",
+              "severity": "MEDIUM",
+              "note": "엣지 코트 벗겨짐 구간 확인"
+            },
+            {
+              "part": "hardware",
+              "severity": "LOW",
+              "note": "금속 광택 양호, 미세 스크래치"
+            }
+          ],
+          "next_service_months": 18,
+          "last_scanned_at": null
+        },
+        {
+          "asset_id": "AS-000019",
+          "customer_id": "CU-0002",
+          "product_id": "LX-0040",
+          "product_name": "Vesper Derby",
+          "category": "SHOES",
+          "purchased_at": "2024-10-09T01:47:22.105263+09:00",
+          "condition_score": 70,
+          "findings": [
+            {
+              "part": "sole",
+              "severity": "MEDIUM",
+              "note": "앞창 마모 진행, 재밑창 시점 근접"
+            },
+            {
+              "part": "upper",
+              "severity": "MEDIUM",
+              "note": "갑피 주름 심화, 보습 필요"
+            }
+          ],
+          "next_service_months": 0,
+          "last_scanned_at": "2026-02-11T12:00:00+09:00"
+        },
+        {
+          "asset_id": "AS-000020",
+          "customer_id": "CU-0002",
+          "product_id": "LX-0037",
+          "product_name": "Nocturne Oxford",
+          "category": "SHOES",
+          "purchased_at": "2024-12-22T09:05:31.578947+09:00",
+          "condition_score": 77,
+          "findings": [
+            {
+              "part": "sole",
+              "severity": "MEDIUM",
+              "note": "앞창 마모 진행, 재밑창 시점 근접"
+            },
+            {
+              "part": "upper",
+              "severity": "LOW",
+              "note": "볼 부분 주름 자연 발생"
+            }
+          ],
+          "next_service_months": 6,
+          "last_scanned_at": "2026-04-26T12:00:00+09:00"
+        },
+        {
+          "asset_id": "AS-000021",
+          "customer_id": "CU-0002",
+          "product_id": "LX-0038",
+          "product_name": "Meridian Zip Wallet",
+          "category": "WALLET",
+          "purchased_at": "2025-05-24T11:46:34.736842+09:00",
+          "condition_score": 89,
+          "findings": [
+            {
+              "part": "edge_coat",
+              "severity": "LOW",
+              "note": "엣지 코트 상태 양호"
+            }
+          ],
+          "next_service_months": 25,
+          "last_scanned_at": null
+        },
+        {
+          "asset_id": "AS-000022",
+          "customer_id": "CU-0002",
+          "product_id": "LX-0013",
+          "product_name": "Vesper Tote",
+          "category": "BAG",
+          "purchased_at": "2025-05-28T23:51:18.947368+09:00",
+          "condition_score": 92,
+          "findings": [],
+          "next_service_months": 41,
+          "last_scanned_at": "2025-12-21T12:00:00+09:00"
+        },
+        {
+          "asset_id": "AS-000023",
+          "customer_id": "CU-0002",
+          "product_id": "LX-0027",
+          "product_name": "Vesper Oxford",
+          "category": "SHOES",
+          "purchased_at": "2025-07-26T12:52:53.684211+09:00",
+          "condition_score": 85,
+          "findings": [
+            {
+              "part": "sole",
+              "severity": "LOW",
+              "note": "아웃솔 트레드 양호"
+            }
+          ],
+          "next_service_months": 12,
+          "last_scanned_at": "2026-01-17T12:00:00+09:00"
+        },
+        {
+          "asset_id": "AS-000024",
+          "customer_id": "CU-0002",
+          "product_id": "LX-0010",
+          "product_name": "Tessera Corset Belt",
+          "category": "BELT",
+          "purchased_at": "2025-12-27T09:34:44.210526+09:00",
+          "condition_score": 96,
+          "findings": [],
+          "next_service_months": 45,
+          "last_scanned_at": null
+        },
+        {
+          "asset_id": "AS-000025",
+          "customer_id": "CU-0002",
+          "product_id": "LX-0005",
+          "product_name": "Solène Oxford",
+          "category": "SHOES",
+          "purchased_at": "2026-05-13T17:59:12.631579+09:00",
+          "condition_score": 96,
+          "findings": [],
+          "next_service_months": 19,
+          "last_scanned_at": "2026-06-22T12:00:00+09:00"
+        }
+      ]
+    },
+    {
+      "customer_id": "CU-0003",
+      "display_name": "김지훈",
+      "tier": "VIP",
+      "planned_tier": "VIP",
+      "purchase_count": 16,
+      "asset_count": 11,
+      "first_purchase_at": "2023-11-17T14:03:56.842105+09:00",
+      "last_purchase_at": "2026-03-03T10:44:12.631579+09:00",
+      "source": {
+        "dataset": "synth",
+        "raw_customer_id_sha": 130923438718932
+      },
+      "assets": [
+        {
+          "asset_id": "AS-000026",
+          "customer_id": "CU-0003",
+          "product_id": "LX-0023",
+          "product_name": "Marée Shoulder",
+          "category": "BAG",
+          "purchased_at": "2023-11-17T14:03:56.842105+09:00",
+          "condition_score": 79,
+          "findings": [
+            {
+              "part": "handle",
+              "severity": "MEDIUM",
+              "note": "핸들 마모 진행, 재코팅 권장 시점 근접"
+            },
+            {
+              "part": "corner",
+              "severity": "LOW",
+              "note": "코너 마찰 흔적 경미"
+            }
+          ],
+          "next_service_months": 14,
+          "last_scanned_at": "2026-06-29T12:00:00+09:00"
+        },
+        {
+          "asset_id": "AS-000027",
+          "customer_id": "CU-0003",
+          "product_id": "LX-0027",
+          "product_name": "Vesper Oxford",
+          "category": "SHOES",
+          "purchased_at": "2024-01-27T21:18:56.842105+09:00",
+          "condition_score": 64,
+          "findings": [
+            {
+              "part": "sole",
+              "severity": "HIGH",
+              "note": "앞창 관통 마모, 재밑창 필요"
+            },
+            {
+              "part": "upper",
+              "severity": "MEDIUM",
+              "note": "갑피 주름 심화, 보습 필요"
+            }
+          ],
+          "next_service_months": 0,
+          "last_scanned_at": "2026-04-12T12:00:00+09:00"
+        },
+        {
+          "asset_id": "AS-000028",
+          "customer_id": "CU-0003",
+          "product_id": "LX-0031",
+          "product_name": "Petra Reserve",
+          "category": "WATCH",
+          "purchased_at": "2024-02-25T09:48:56.842105+09:00",
+          "condition_score": 92,
+          "findings": [],
+          "next_service_months": 77,
+          "last_scanned_at": "2026-05-25T12:00:00+09:00"
+        },
+        {
+          "asset_id": "AS-000029",
+          "customer_id": "CU-0003",
+          "product_id": "LX-0015",
+          "product_name": "Lisière Corset Belt",
+          "category": "BELT",
+          "purchased_at": "2024-10-24T20:03:56.842105+09:00",
+          "condition_score": 83,
+          "findings": [
+            {
+              "part": "edge_coat",
+              "severity": "MEDIUM",
+              "note": "엣지 코트 벗겨짐 구간 확인"
+            },
+            {
+              "part": "hardware",
+              "severity": "LOW",
+              "note": "금속 광택 양호, 미세 스크래치"
+            }
+          ],
+          "next_service_months": 16,
+          "last_scanned_at": null
+        },
+        {
+          "asset_id": "AS-000030",
+          "customer_id": "CU-0003",
+          "product_id": "LX-0029",
+          "product_name": "Nocturne Shoulder",
+          "category": "BAG",
+          "purchased_at": "2024-12-09T14:52:06.315789+09:00",
+          "condition_score": 89,
+          "findings": [
+            {
+              "part": "handle",
+              "severity": "LOW",
+              "note": "핸들 표면 광택 변화 경미"
+            }
+          ],
+          "next_service_months": 35,
+          "last_scanned_at": "2026-05-08T12:00:00+09:00"
+        },
+        {
+          "asset_id": "AS-000031",
+          "customer_id": "CU-0003",
+          "product_id": "LX-0009",
+          "product_name": "Rivage Clutch",
+          "category": "BAG",
+          "purchased_at": "2025-03-04T10:21:18.947368+09:00",
+          "condition_score": 91,
+          "findings": [
+            {
+              "part": "handle",
+              "severity": "LOW",
+              "note": "핸들 표면 광택 변화 경미"
+            }
+          ],
+          "next_service_months": 39,
+          "last_scanned_at": "2025-12-25T12:00:00+09:00"
+        },
+        {
+          "asset_id": "AS-000032",
+          "customer_id": "CU-0003",
+          "product_id": "LX-0022",
+          "product_name": "Ombré Ultra Thin",
+          "category": "WATCH",
+          "purchased_at": "2025-03-04T10:21:18.947368+09:00",
+          "condition_score": 94,
+          "findings": [],
+          "next_service_months": 72,
+          "last_scanned_at": "2026-05-11T12:00:00+09:00"
+        },
+        {
+          "asset_id": "AS-000033",
+          "customer_id": "CU-0003",
+          "product_id": "LX-0033",
+          "product_name": "Alcove Automatic",
+          "category": "WATCH",
+          "purchased_at": "2025-05-28T05:50:31.578947+09:00",
+          "condition_score": 95,
+          "findings": [],
+          "next_service_months": 75,
+          "last_scanned_at": null
+        },
+        {
+          "asset_id": "AS-000034",
+          "customer_id": "CU-0003",
+          "product_id": "LX-0030",
+          "product_name": "Marée Chronograph",
+          "category": "WATCH",
+          "purchased_at": "2025-12-17T15:24:28.421053+09:00",
+          "condition_score": 97,
+          "findings": [],
+          "next_service_months": 70,
+          "last_scanned_at": "2026-02-27T12:00:00+09:00"
+        },
+        {
+          "asset_id": "AS-000035",
+          "customer_id": "CU-0003",
+          "product_id": "LX-0034",
+          "product_name": "Marée Reserve",
+          "category": "WATCH",
+          "purchased_at": "2026-01-11T09:50:31.578947+09:00",
+          "condition_score": 98,
+          "findings": [],
+          "next_service_months": 84,
+          "last_scanned_at": "2026-01-30T12:00:00+09:00"
+        },
+        {
+          "asset_id": "AS-000036",
+          "customer_id": "CU-0003",
+          "product_id": "LX-0003",
+          "product_name": "Serein Chronograph",
+          "category": "WATCH",
+          "purchased_at": "2026-03-03T10:44:12.631579+09:00",
+          "condition_score": 98,
+          "findings": [],
+          "next_service_months": 98,
+          "last_scanned_at": "2026-03-10T10:44:12.631579+09:00"
+        }
+      ]
+    },
+    {
+      "customer_id": "CU-0004",
+      "display_name": "오민재",
+      "tier": "VIP",
+      "planned_tier": "VIP",
+      "purchase_count": 16,
+      "asset_count": 10,
+      "first_purchase_at": "2024-01-16T15:07:06.315789+09:00",
+      "last_purchase_at": "2025-11-09T08:44:12.631579+09:00",
+      "source": {
+        "dataset": "synth",
+        "raw_customer_id_sha": 270407202696094
+      },
+      "assets": [
+        {
+          "asset_id": "AS-000037",
+          "customer_id": "CU-0004",
+          "product_id": "LX-0001",
+          "product_name": "Rivage Tote",
+          "category": "BAG",
+          "purchased_at": "2024-01-16T15:07:06.315789+09:00",
+          "condition_score": 81,
+          "findings": [
+            {
+              "part": "handle",
+              "severity": "MEDIUM",
+              "note": "핸들 마모 진행, 재코팅 권장 시점 근접"
+            },
+            {
+              "part": "corner",
+              "severity": "LOW",
+              "note": "코너 마찰 흔적 경미"
+            }
+          ],
+          "next_service_months": 17,
+          "last_scanned_at": "2026-04-09T12:00:00+09:00"
+        },
+        {
+          "asset_id": "AS-000038",
+          "customer_id": "CU-0004",
+          "product_id": "LX-0002",
+          "product_name": "Alcove Zip Wallet",
+          "category": "WALLET",
+          "purchased_at": "2024-02-26T21:50:31.578947+09:00",
+          "condition_score": 81,
+          "findings": [
+            {
+              "part": "edge_coat",
+              "severity": "MEDIUM",
+              "note": "엣지 코트 벗겨짐 구간 확인"
+            },
+            {
+              "part": "stitching",
+              "severity": "LOW",
+              "note": "스티치 텐션 양호"
+            }
+          ],
+          "next_service_months": 17,
+          "last_scanned_at": "2025-12-28T12:00:00+09:00"
+        },
+        {
+          "asset_id": "AS-000039",
+          "customer_id": "CU-0004",
+          "product_id": "LX-0007",
+          "product_name": "Vesper Pump",
+          "category": "SHOES",
+          "purchased_at": "2024-03-01T15:54:28.421053+09:00",
+          "condition_score": 61,
+          "findings": [
+            {
+              "part": "sole",
+              "severity": "HIGH",
+              "note": "앞창 관통 마모, 재밑창 필요"
+            },
+            {
+              "part": "upper",
+              "severity": "MEDIUM",
+              "note": "갑피 주름 심화, 보습 필요"
+            }
+          ],
+          "next_service_months": 0,
+          "last_scanned_at": "2026-08-09T12:00:00+09:00"
+        },
+        {
+          "asset_id": "AS-000040",
+          "customer_id": "CU-0004",
+          "product_id": "LX-0004",
+          "product_name": "Meridian Hobo",
+          "category": "BAG",
+          "purchased_at": "2024-05-31T11:30:00+09:00",
+          "condition_score": 83,
+          "findings": [
+            {
+              "part": "handle",
+              "severity": "MEDIUM",
+              "note": "핸들 마모 진행, 재코팅 권장 시점 근접"
+            },
+            {
+              "part": "corner",
+              "severity": "LOW",
+              "note": "코너 마찰 흔적 경미"
+            }
+          ],
+          "next_service_months": 20,
+          "last_scanned_at": "2026-04-08T12:00:00+09:00"
+        },
+        {
+          "asset_id": "AS-000041",
+          "customer_id": "CU-0004",
+          "product_id": "LX-0012",
+          "product_name": "Aurelia Corset Belt",
+          "category": "BELT",
+          "purchased_at": "2024-07-12T12:14:12.631579+09:00",
+          "condition_score": 83,
+          "findings": [
+            {
+              "part": "edge_coat",
+              "severity": "MEDIUM",
+              "note": "엣지 코트 벗겨짐 구간 확인"
+            },
+            {
+              "part": "hardware",
+              "severity": "LOW",
+              "note": "금속 광택 양호, 미세 스크래치"
+            }
+          ],
+          "next_service_months": 19,
+          "last_scanned_at": "2026-03-12T12:00:00+09:00"
+        },
+        {
+          "asset_id": "AS-000042",
+          "customer_id": "CU-0004",
+          "product_id": "LX-0031",
+          "product_name": "Petra Reserve",
+          "category": "WATCH",
+          "purchased_at": "2024-12-11T02:53:41.052632+09:00",
+          "condition_score": 92,
+          "findings": [],
+          "next_service_months": 57,
+          "last_scanned_at": "2026-02-18T12:00:00+09:00"
+        },
+        {
+          "asset_id": "AS-000043",
+          "customer_id": "CU-0004",
+          "product_id": "LX-0005",
+          "product_name": "Solène Oxford",
+          "category": "SHOES",
+          "purchased_at": "2025-01-07T21:22:53.684211+09:00",
+          "condition_score": 81,
+          "findings": [
+            {
+              "part": "sole",
+              "severity": "MEDIUM",
+              "note": "앞창 마모 진행, 재밑창 시점 근접"
+            },
+            {
+              "part": "upper",
+              "severity": "LOW",
+              "note": "볼 부분 주름 자연 발생"
+            }
+          ],
+          "next_service_months": 11,
+          "last_scanned_at": "2026-01-07T12:00:00+09:00"
+        },
+        {
+          "asset_id": "AS-000044",
+          "customer_id": "CU-0004",
+          "product_id": "LX-0006",
+          "product_name": "Étoile Derby",
+          "category": "SHOES",
+          "purchased_at": "2025-04-22T05:12:37.894737+09:00",
+          "condition_score": 79,
+          "findings": [
+            {
+              "part": "sole",
+              "severity": "MEDIUM",
+              "note": "앞창 마모 진행, 재밑창 시점 근접"
+            },
+            {
+              "part": "upper",
+              "severity": "LOW",
+              "note": "볼 부분 주름 자연 발생"
+            }
+          ],
+          "next_service_months": 6,
+          "last_scanned_at": "2026-07-16T12:00:00+09:00"
+        },
+        {
+          "asset_id": "AS-000045",
+          "customer_id": "CU-0004",
+          "product_id": "LX-0008",
+          "product_name": "Serein Ankle Boot",
+          "category": "SHOES",
+          "purchased_at": "2025-05-27T11:49:44.210526+09:00",
+          "condition_score": 80,
+          "findings": [
+            {
+              "part": "sole",
+              "severity": "MEDIUM",
+              "note": "앞창 마모 진행, 재밑창 시점 근접"
+            },
+            {
+              "part": "upper",
+              "severity": "LOW",
+              "note": "볼 부분 주름 자연 발생"
+            }
+          ],
+          "next_service_months": 7,
+          "last_scanned_at": "2026-03-19T12:00:00+09:00"
+        },
+        {
+          "asset_id": "AS-000046",
+          "customer_id": "CU-0004",
+          "product_id": "LX-0037",
+          "product_name": "Nocturne Oxford",
+          "category": "SHOES",
+          "purchased_at": "2025-11-09T08:44:12.631579+09:00",
+          "condition_score": 88,
+          "findings": [
+            {
+              "part": "sole",
+              "severity": "LOW",
+              "note": "아웃솔 트레드 양호"
+            }
+          ],
+          "next_service_months": 13,
+          "last_scanned_at": "2026-05-04T12:00:00+09:00"
+        }
+      ]
+    },
+    {
+      "customer_id": "CU-0005",
+      "display_name": "임지훈",
+      "tier": "VIP",
+      "planned_tier": "VIP",
+      "purchase_count": 16,
+      "asset_count": 9,
+      "first_purchase_at": "2024-06-30T12:01:34.736842+09:00",
+      "last_purchase_at": "2026-01-08T09:47:22.105263+09:00",
+      "source": {
+        "dataset": "synth",
+        "raw_customer_id_sha": 85023336043230
+      },
+      "assets": [
+        {
+          "asset_id": "AS-000047",
+          "customer_id": "CU-0005",
+          "product_id": "LX-0025",
+          "product_name": "Aubade Top Handle",
+          "category": "BAG",
+          "purchased_at": "2024-06-30T12:01:34.736842+09:00",
+          "condition_score": 84,
+          "findings": [
+            {
+              "part": "handle",
+              "severity": "MEDIUM",
+              "note": "핸들 마모 진행, 재코팅 권장 시점 근접"
+            },
+            {
+              "part": "corner",
+              "severity": "LOW",
+              "note": "코너 마찰 흔적 경미"
+            }
+          ],
+          "next_service_months": 22,
+          "last_scanned_at": "2026-06-09T12:00:00+09:00"
+        },
+        {
+          "asset_id": "AS-000048",
+          "customer_id": "CU-0005",
+          "product_id": "LX-0004",
+          "product_name": "Meridian Hobo",
+          "category": "BAG",
+          "purchased_at": "2024-08-24T06:59:12.631579+09:00",
+          "condition_score": 83,
+          "findings": [
+            {
+              "part": "handle",
+              "severity": "MEDIUM",
+              "note": "핸들 마모 진행, 재코팅 권장 시점 근접"
+            },
+            {
+              "part": "corner",
+              "severity": "LOW",
+              "note": "코너 마찰 흔적 경미"
+            }
+          ],
+          "next_service_months": 18,
+          "last_scanned_at": "2026-08-14T12:00:00+09:00"
+        },
+        {
+          "asset_id": "AS-000049",
+          "customer_id": "CU-0005",
+          "product_id": "LX-0012",
+          "product_name": "Aurelia Corset Belt",
+          "category": "BELT",
+          "purchased_at": "2025-05-27T11:49:44.210526+09:00",
+          "condition_score": 92,
+          "findings": [],
+          "next_service_months": 38,
+          "last_scanned_at": "2026-04-18T12:00:00+09:00"
+        },
+        {
+          "asset_id": "AS-000050",
+          "customer_id": "CU-0005",
+          "product_id": "LX-0016",
+          "product_name": "Meridian Oxford",
+          "category": "SHOES",
+          "purchased_at": "2025-06-12T06:06:18.947368+09:00",
+          "condition_score": 84,
+          "findings": [
+            {
+              "part": "sole",
+              "severity": "MEDIUM",
+              "note": "앞창 마모 진행, 재밑창 시점 근접"
+            },
+            {
+              "part": "upper",
+              "severity": "LOW",
+              "note": "볼 부분 주름 자연 발생"
+            }
+          ],
+          "next_service_months": 12,
+          "last_scanned_at": null
+        },
+        {
+          "asset_id": "AS-000051",
+          "customer_id": "CU-0005",
+          "product_id": "LX-0017",
+          "product_name": "Halcyon Zip Wallet",
+          "category": "WALLET",
+          "purchased_at": "2025-08-05T07:03:09.473684+09:00",
+          "condition_score": 89,
+          "findings": [
+            {
+              "part": "edge_coat",
+              "severity": "LOW",
+              "note": "엣지 코트 상태 양호"
+            }
+          ],
+          "next_service_months": 22,
+          "last_scanned_at": null
+        },
+        {
+          "asset_id": "AS-000052",
+          "customer_id": "CU-0005",
+          "product_id": "LX-0036",
+          "product_name": "Petra Loafer",
+          "category": "SHOES",
+          "purchased_at": "2025-08-10T13:08:41.052632+09:00",
+          "condition_score": 88,
+          "findings": [
+            {
+              "part": "sole",
+              "severity": "LOW",
+              "note": "아웃솔 트레드 양호"
+            }
+          ],
+          "next_service_months": 18,
+          "last_scanned_at": null
+        },
+        {
+          "asset_id": "AS-000053",
+          "customer_id": "CU-0005",
+          "product_id": "LX-0001",
+          "product_name": "Rivage Tote",
+          "category": "BAG",
+          "purchased_at": "2025-10-20T20:23:41.052632+09:00",
+          "condition_score": 94,
+          "findings": [],
+          "next_service_months": 38,
+          "last_scanned_at": "2026-06-10T12:00:00+09:00"
+        },
+        {
+          "asset_id": "AS-000054",
+          "customer_id": "CU-0005",
+          "product_id": "LX-0002",
+          "product_name": "Alcove Zip Wallet",
+          "category": "WALLET",
+          "purchased_at": "2025-10-21T14:24:28.421053+09:00",
+          "condition_score": 93,
+          "findings": [],
+          "next_service_months": 30,
+          "last_scanned_at": "2026-06-01T12:00:00+09:00"
+        },
+        {
+          "asset_id": "AS-000055",
+          "customer_id": "CU-0005",
+          "product_id": "LX-0033",
+          "product_name": "Alcove Automatic",
+          "category": "WATCH",
+          "purchased_at": "2026-01-08T09:47:22.105263+09:00",
+          "condition_score": 97,
+          "findings": [],
+          "next_service_months": 70,
+          "last_scanned_at": null
+        }
+      ]
+    },
+    {
+      "customer_id": "CU-0006",
+      "display_name": "조태민",
+      "tier": "VIP",
+      "planned_tier": "VIP",
+      "purchase_count": 16,
+      "asset_count": 9,
+      "first_purchase_at": "2024-01-13T15:03:56.842105+09:00",
+      "last_purchase_at": "2025-12-26T15:33:56.842105+09:00",
+      "source": {
+        "dataset": "synth",
+        "raw_customer_id_sha": 124422311715903
+      },
+      "assets": [
+        {
+          "asset_id": "AS-000056",
+          "customer_id": "CU-0006",
+          "product_id": "LX-0006",
+          "product_name": "Étoile Derby",
+          "category": "SHOES",
+          "purchased_at": "2024-01-13T15:03:56.842105+09:00",
+          "condition_score": 64,
+          "findings": [
+            {
+              "part": "sole",
+              "severity": "HIGH",
+              "note": "앞창 관통 마모, 재밑창 필요"
+            },
+            {
+              "part": "upper",
+              "severity": "MEDIUM",
+              "note": "갑피 주름 심화, 보습 필요"
+            }
+          ],
+          "next_service_months": 0,
+          "last_scanned_at": "2026-07-14T12:00:00+09:00"
+        },
+        {
+          "asset_id": "AS-000057",
+          "customer_id": "CU-0006",
+          "product_id": "LX-0019",
+          "product_name": "Rivage Shoulder",
+          "category": "BAG",
+          "purchased_at": "2024-04-20T04:46:34.736842+09:00",
+          "condition_score": 80,
+          "findings": [
+            {
+              "part": "handle",
+              "severity": "MEDIUM",
+              "note": "핸들 마모 진행, 재코팅 권장 시점 근접"
+            },
+            {
+              "part": "corner",
+              "severity": "LOW",
+              "note": "코너 마찰 흔적 경미"
+            }
+          ],
+          "next_service_months": 13,
+          "last_scanned_at": null
+        },
+        {
+          "asset_id": "AS-000058",
+          "customer_id": "CU-0006",
+          "product_id": "LX-0025",
+          "product_name": "Aubade Top Handle",
+          "category": "BAG",
+          "purchased_at": "2024-04-28T10:55:15.789474+09:00",
+          "condition_score": 83,
+          "findings": [
+            {
+              "part": "handle",
+              "severity": "MEDIUM",
+              "note": "핸들 마모 진행, 재코팅 권장 시점 근접"
+            },
+            {
+              "part": "corner",
+              "severity": "LOW",
+              "note": "코너 마찰 흔적 경미"
+            }
+          ],
+          "next_service_months": 20,
+          "last_scanned_at": null
+        },
+        {
+          "asset_id": "AS-000059",
+          "customer_id": "CU-0006",
+          "product_id": "LX-0010",
+          "product_name": "Tessera Corset Belt",
+          "category": "BELT",
+          "purchased_at": "2024-05-17T05:15:00+09:00",
+          "condition_score": 85,
+          "findings": [
+            {
+              "part": "edge_coat",
+              "severity": "LOW",
+              "note": "엣지 코트 상태 양호"
+            }
+          ],
+          "next_service_months": 26,
+          "last_scanned_at": null
+        },
+        {
+          "asset_id": "AS-000060",
+          "customer_id": "CU-0006",
+          "product_id": "LX-0027",
+          "product_name": "Vesper Oxford",
+          "category": "SHOES",
+          "purchased_at": "2025-02-03T03:50:31.578947+09:00",
+          "condition_score": 82,
+          "findings": [
+            {
+              "part": "sole",
+              "severity": "MEDIUM",
+              "note": "앞창 마모 진행, 재밑창 시점 근접"
+            },
+            {
+              "part": "upper",
+              "severity": "LOW",
+              "note": "볼 부분 주름 자연 발생"
+            }
+          ],
+          "next_service_months": 12,
+          "last_scanned_at": "2026-03-26T12:00:00+09:00"
+        },
+        {
+          "asset_id": "AS-000061",
+          "customer_id": "CU-0006",
+          "product_id": "LX-0020",
+          "product_name": "Tessera Automatic",
+          "category": "WATCH",
+          "purchased_at": "2025-05-03T11:24:28.421053+09:00",
+          "condition_score": 96,
+          "findings": [],
+          "next_service_months": 91,
+          "last_scanned_at": "2026-07-31T12:00:00+09:00"
+        },
+        {
+          "asset_id": "AS-000062",
+          "customer_id": "CU-0006",
+          "product_id": "LX-0022",
+          "product_name": "Ombré Ultra Thin",
+          "category": "WATCH",
+          "purchased_at": "2025-09-05T01:35:31.578947+09:00",
+          "condition_score": 97,
+          "findings": [],
+          "next_service_months": 95,
+          "last_scanned_at": "2026-04-29T12:00:00+09:00"
+        },
+        {
+          "asset_id": "AS-000063",
+          "customer_id": "CU-0006",
+          "product_id": "LX-0036",
+          "product_name": "Petra Loafer",
+          "category": "SHOES",
+          "purchased_at": "2025-12-06T09:12:37.894737+09:00",
+          "condition_score": 92,
+          "findings": [],
+          "next_service_months": 22,
+          "last_scanned_at": "2026-02-08T12:00:00+09:00"
+        },
+        {
+          "asset_id": "AS-000064",
+          "customer_id": "CU-0006",
+          "product_id": "LX-0013",
+          "product_name": "Vesper Tote",
+          "category": "BAG",
+          "purchased_at": "2025-12-26T15:33:56.842105+09:00",
+          "condition_score": 96,
+          "findings": [],
+          "next_service_months": 48,
+          "last_scanned_at": "2026-07-01T12:00:00+09:00"
+        }
+      ]
+    },
+    {
+      "customer_id": "CU-0007",
+      "display_name": "조가온",
+      "tier": "VIP",
+      "planned_tier": "VIP",
+      "purchase_count": 16,
+      "asset_count": 8,
+      "first_purchase_at": "2024-04-24T16:51:18.947368+09:00",
+      "last_purchase_at": "2026-05-05T11:50:31.578947+09:00",
+      "source": {
+        "dataset": "synth",
+        "raw_customer_id_sha": 162887226645791
+      },
+      "assets": [
+        {
+          "asset_id": "AS-000065",
+          "customer_id": "CU-0007",
+          "product_id": "LX-0038",
+          "product_name": "Meridian Zip Wallet",
+          "category": "WALLET",
+          "purchased_at": "2024-04-24T16:51:18.947368+09:00",
+          "condition_score": 79,
+          "findings": [
+            {
+              "part": "edge_coat",
+              "severity": "MEDIUM",
+              "note": "엣지 코트 벗겨짐 구간 확인"
+            },
+            {
+              "part": "stitching",
+              "severity": "LOW",
+              "note": "스티치 텐션 양호"
+            }
+          ],
+          "next_service_months": 12,
+          "last_scanned_at": "2026-01-14T12:00:00+09:00"
+        },
+        {
+          "asset_id": "AS-000066",
+          "customer_id": "CU-0007",
+          "product_id": "LX-0033",
+          "product_name": "Alcove Automatic",
+          "category": "WATCH",
+          "purchased_at": "2025-01-16T03:31:34.736842+09:00",
+          "condition_score": 95,
+          "findings": [],
+          "next_service_months": 88,
+          "last_scanned_at": "2026-02-14T12:00:00+09:00"
+        },
+        {
+          "asset_id": "AS-000067",
+          "customer_id": "CU-0007",
+          "product_id": "LX-0029",
+          "product_name": "Nocturne Shoulder",
+          "category": "BAG",
+          "purchased_at": "2025-06-02T11:56:03.157895+09:00",
+          "condition_score": 92,
+          "findings": [],
+          "next_service_months": 41,
+          "last_scanned_at": "2026-07-19T12:00:00+09:00"
+        },
+        {
+          "asset_id": "AS-000068",
+          "customer_id": "CU-0007",
+          "product_id": "LX-0008",
+          "product_name": "Serein Ankle Boot",
+          "category": "SHOES",
+          "purchased_at": "2025-08-03T01:00:47.368421+09:00",
+          "condition_score": 88,
+          "findings": [
+            {
+              "part": "sole",
+              "severity": "LOW",
+              "note": "아웃솔 트레드 양호"
+            }
+          ],
+          "next_service_months": 18,
+          "last_scanned_at": null
+        },
+        {
+          "asset_id": "AS-000069",
+          "customer_id": "CU-0007",
+          "product_id": "LX-0016",
+          "product_name": "Meridian Oxford",
+          "category": "SHOES",
+          "purchased_at": "2025-09-18T13:49:44.210526+09:00",
+          "condition_score": 87,
+          "findings": [
+            {
+              "part": "sole",
+              "severity": "LOW",
+              "note": "아웃솔 트레드 양호"
+            }
+          ],
+          "next_service_months": 14,
+          "last_scanned_at": null
+        },
+        {
+          "asset_id": "AS-000070",
+          "customer_id": "CU-0007",
+          "product_id": "LX-0001",
+          "product_name": "Rivage Tote",
+          "category": "BAG",
+          "purchased_at": "2025-10-06T14:08:41.052632+09:00",
+          "condition_score": 95,
+          "findings": [],
+          "next_service_months": 47,
+          "last_scanned_at": "2026-03-27T12:00:00+09:00"
+        },
+        {
+          "asset_id": "AS-000071",
+          "customer_id": "CU-0007",
+          "product_id": "LX-0039",
+          "product_name": "Serein Automatic",
+          "category": "WATCH",
+          "purchased_at": "2026-04-11T11:25:15.789474+09:00",
+          "condition_score": 99,
+          "findings": [],
+          "next_service_months": 87,
+          "last_scanned_at": "2026-05-05T12:00:00+09:00"
+        },
+        {
+          "asset_id": "AS-000072",
+          "customer_id": "CU-0007",
+          "product_id": "LX-0030",
+          "product_name": "Marée Chronograph",
+          "category": "WATCH",
+          "purchased_at": "2026-05-05T11:50:31.578947+09:00",
+          "condition_score": 99,
+          "findings": [],
+          "next_service_months": 102,
+          "last_scanned_at": "2026-05-12T11:50:31.578947+09:00"
+        }
+      ]
+    },
+    {
+      "customer_id": "CU-0008",
+      "display_name": "이예린",
+      "tier": "VIP",
+      "planned_tier": "VIP",
+      "purchase_count": 16,
+      "asset_count": 8,
+      "first_purchase_at": "2024-11-02T20:13:25.263158+09:00",
+      "last_purchase_at": "2026-04-03T05:16:34.736842+09:00",
+      "source": {
+        "dataset": "synth",
+        "raw_customer_id_sha": 62691049471059
+      },
+      "assets": [
+        {
+          "asset_id": "AS-000073",
+          "customer_id": "CU-0008",
+          "product_id": "LX-0035",
+          "product_name": "Étoile Zip Wallet",
+          "category": "WALLET",
+          "purchased_at": "2024-11-02T20:13:25.263158+09:00",
+          "condition_score": 86,
+          "findings": [
+            {
+              "part": "edge_coat",
+              "severity": "LOW",
+              "note": "엣지 코트 상태 양호"
+            }
+          ],
+          "next_service_months": 25,
+          "last_scanned_at": null
+        },
+        {
+          "asset_id": "AS-000074",
+          "customer_id": "CU-0008",
+          "product_id": "LX-0010",
+          "product_name": "Tessera Corset Belt",
+          "category": "BELT",
+          "purchased_at": "2025-01-19T21:35:31.578947+09:00",
+          "condition_score": 86,
+          "findings": [
+            {
+              "part": "edge_coat",
+              "severity": "LOW",
+              "note": "엣지 코트 상태 양호"
+            }
+          ],
+          "next_service_months": 20,
+          "last_scanned_at": "2026-07-06T12:00:00+09:00"
+        },
+        {
+          "asset_id": "AS-000075",
+          "customer_id": "CU-0008",
+          "product_id": "LX-0040",
+          "product_name": "Vesper Derby",
+          "category": "SHOES",
+          "purchased_at": "2025-02-05T09:52:53.684211+09:00",
+          "condition_score": 79,
+          "findings": [
+            {
+              "part": "sole",
+              "severity": "MEDIUM",
+              "note": "앞창 마모 진행, 재밑창 시점 근접"
+            },
+            {
+              "part": "upper",
+              "severity": "LOW",
+              "note": "볼 부분 주름 자연 발생"
+            }
+          ],
+          "next_service_months": 7,
+          "last_scanned_at": "2026-04-20T12:00:00+09:00"
+        },
+        {
+          "asset_id": "AS-000076",
+          "customer_id": "CU-0008",
+          "product_id": "LX-0019",
+          "product_name": "Rivage Shoulder",
+          "category": "BAG",
+          "purchased_at": "2025-06-03T23:57:37.894737+09:00",
+          "condition_score": 90,
+          "findings": [
+            {
+              "part": "handle",
+              "severity": "LOW",
+              "note": "핸들 표면 광택 변화 경미"
+            }
+          ],
+          "next_service_months": 27,
+          "last_scanned_at": "2026-01-26T12:00:00+09:00"
+        },
+        {
+          "asset_id": "AS-000077",
+          "customer_id": "CU-0008",
+          "product_id": "LX-0038",
+          "product_name": "Meridian Zip Wallet",
+          "category": "WALLET",
+          "purchased_at": "2025-06-26T12:21:18.947368+09:00",
+          "condition_score": 91,
+          "findings": [
+            {
+              "part": "edge_coat",
+              "severity": "LOW",
+              "note": "엣지 코트 상태 양호"
+            }
+          ],
+          "next_service_months": 32,
+          "last_scanned_at": "2026-06-19T12:00:00+09:00"
+        },
+        {
+          "asset_id": "AS-000078",
+          "customer_id": "CU-0008",
+          "product_id": "LX-0036",
+          "product_name": "Petra Loafer",
+          "category": "SHOES",
+          "purchased_at": "2025-11-11T14:46:34.736842+09:00",
+          "condition_score": 91,
+          "findings": [
+            {
+              "part": "sole",
+              "severity": "LOW",
+              "note": "아웃솔 트레드 양호"
+            }
+          ],
+          "next_service_months": 21,
+          "last_scanned_at": "2026-01-22T12:00:00+09:00"
+        },
+        {
+          "asset_id": "AS-000079",
+          "customer_id": "CU-0008",
+          "product_id": "LX-0032",
+          "product_name": "Colline Tote",
+          "category": "BAG",
+          "purchased_at": "2026-01-16T15:56:03.157895+09:00",
+          "condition_score": 96,
+          "findings": [],
+          "next_service_months": 41,
+          "last_scanned_at": null
+        },
+        {
+          "asset_id": "AS-000080",
+          "customer_id": "CU-0008",
+          "product_id": "LX-0021",
+          "product_name": "Solène Clutch",
+          "category": "BAG",
+          "purchased_at": "2026-04-03T05:16:34.736842+09:00",
+          "condition_score": 97,
+          "findings": [],
+          "next_service_months": 43,
+          "last_scanned_at": "2026-04-10T05:16:34.736842+09:00"
+        }
+      ]
+    },
+    {
+      "customer_id": "CU-0009",
+      "display_name": "강하윤",
+      "tier": "VIP",
+      "planned_tier": "VIP",
+      "purchase_count": 16,
+      "asset_count": 8,
+      "first_purchase_at": "2024-11-12T14:23:41.052632+09:00",
+      "last_purchase_at": "2026-04-04T17:18:09.473684+09:00",
+      "source": {
+        "dataset": "synth",
+        "raw_customer_id_sha": 107206431406705
+      },
+      "assets": [
+        {
+          "asset_id": "AS-000081",
+          "customer_id": "CU-0009",
+          "product_id": "LX-0003",
+          "product_name": "Serein Chronograph",
+          "category": "WATCH",
+          "purchased_at": "2024-11-12T14:23:41.052632+09:00",
+          "condition_score": 94,
+          "findings": [],
+          "next_service_months": 84,
+          "last_scanned_at": "2025-12-26T12:00:00+09:00"
+        },
+        {
+          "asset_id": "AS-000082",
+          "customer_id": "CU-0009",
+          "product_id": "LX-0027",
+          "product_name": "Vesper Oxford",
+          "category": "SHOES",
+          "purchased_at": "2025-03-24T16:42:37.894737+09:00",
+          "condition_score": 83,
+          "findings": [
+            {
+              "part": "sole",
+              "severity": "MEDIUM",
+              "note": "앞창 마모 진행, 재밑창 시점 근접"
+            },
+            {
+              "part": "upper",
+              "severity": "LOW",
+              "note": "볼 부분 주름 자연 발생"
+            }
+          ],
+          "next_service_months": 13,
+          "last_scanned_at": "2026-08-04T12:00:00+09:00"
+        },
+        {
+          "asset_id": "AS-000083",
+          "customer_id": "CU-0009",
+          "product_id": "LX-0015",
+          "product_name": "Lisière Corset Belt",
+          "category": "BELT",
+          "purchased_at": "2025-03-26T04:44:12.631579+09:00",
+          "condition_score": 87,
+          "findings": [
+            {
+              "part": "edge_coat",
+              "severity": "LOW",
+              "note": "엣지 코트 상태 양호"
+            }
+          ],
+          "next_service_months": 22,
+          "last_scanned_at": "2026-03-18T12:00:00+09:00"
+        },
+        {
+          "asset_id": "AS-000084",
+          "customer_id": "CU-0009",
+          "product_id": "LX-0006",
+          "product_name": "Étoile Derby",
+          "category": "SHOES",
+          "purchased_at": "2025-11-18T08:53:41.052632+09:00",
+          "condition_score": 88,
+          "findings": [
+            {
+              "part": "sole",
+              "severity": "LOW",
+              "note": "아웃솔 트레드 양호"
+            }
+          ],
+          "next_service_months": 13,
+          "last_scanned_at": null
+        },
+        {
+          "asset_id": "AS-000085",
+          "customer_id": "CU-0009",
+          "product_id": "LX-0037",
+          "product_name": "Nocturne Oxford",
+          "category": "SHOES",
+          "purchased_at": "2026-02-26T22:39:28.421053+09:00",
+          "condition_score": 95,
+          "findings": [],
+          "next_service_months": 25,
+          "last_scanned_at": "2026-03-05T22:39:28.421053+09:00"
+        },
+        {
+          "asset_id": "AS-000086",
+          "customer_id": "CU-0009",
+          "product_id": "LX-0005",
+          "product_name": "Solène Oxford",
+          "category": "SHOES",
+          "purchased_at": "2026-03-03T10:44:12.631579+09:00",
+          "condition_score": 94,
+          "findings": [],
+          "next_service_months": 20,
+          "last_scanned_at": "2026-03-10T10:44:12.631579+09:00"
+        },
+        {
+          "asset_id": "AS-000087",
+          "customer_id": "CU-0009",
+          "product_id": "LX-0038",
+          "product_name": "Meridian Zip Wallet",
+          "category": "WALLET",
+          "purchased_at": "2026-03-16T04:57:37.894737+09:00",
+          "condition_score": 96,
+          "findings": [],
+          "next_service_months": 30,
+          "last_scanned_at": null
+        },
+        {
+          "asset_id": "AS-000088",
+          "customer_id": "CU-0009",
+          "product_id": "LX-0013",
+          "product_name": "Vesper Tote",
+          "category": "BAG",
+          "purchased_at": "2026-04-04T17:18:09.473684+09:00",
+          "condition_score": 97,
+          "findings": [],
+          "next_service_months": 37,
+          "last_scanned_at": "2026-08-10T12:00:00+09:00"
+        }
+      ]
+    },
+    {
+      "customer_id": "CU-0010",
+      "display_name": "정민재",
+      "tier": "VIP",
+      "planned_tier": "VIP",
+      "purchase_count": 16,
+      "asset_count": 8,
+      "first_purchase_at": "2025-05-18T11:40:15.789474+09:00",
+      "last_purchase_at": "2026-05-12T23:58:25.263158+09:00",
+      "source": {
+        "dataset": "synth",
+        "raw_customer_id_sha": 89656823410977
+      },
+      "assets": [
+        {
+          "asset_id": "AS-000089",
+          "customer_id": "CU-0010",
+          "product_id": "LX-0016",
+          "product_name": "Meridian Oxford",
+          "category": "SHOES",
+          "purchased_at": "2025-05-18T11:40:15.789474+09:00",
+          "condition_score": 83,
+          "findings": [
+            {
+              "part": "sole",
+              "severity": "MEDIUM",
+              "note": "앞창 마모 진행, 재밑창 시점 근접"
+            },
+            {
+              "part": "upper",
+              "severity": "LOW",
+              "note": "볼 부분 주름 자연 발생"
+            }
+          ],
+          "next_service_months": 11,
+          "last_scanned_at": "2026-08-11T12:00:00+09:00"
+        },
+        {
+          "asset_id": "AS-000090",
+          "customer_id": "CU-0010",
+          "product_id": "LX-0008",
+          "product_name": "Serein Ankle Boot",
+          "category": "SHOES",
+          "purchased_at": "2025-06-10T18:04:44.210526+09:00",
+          "condition_score": 84,
+          "findings": [
+            {
+              "part": "sole",
+              "severity": "MEDIUM",
+              "note": "앞창 마모 진행, 재밑창 시점 근접"
+            },
+            {
+              "part": "upper",
+              "severity": "LOW",
+              "note": "볼 부분 주름 자연 발생"
+            }
+          ],
+          "next_service_months": 12,
+          "last_scanned_at": "2026-01-17T12:00:00+09:00"
+        },
+        {
+          "asset_id": "AS-000091",
+          "customer_id": "CU-0010",
+          "product_id": "LX-0028",
+          "product_name": "Halcyon Pump",
+          "category": "SHOES",
+          "purchased_at": "2025-07-09T06:34:44.210526+09:00",
+          "condition_score": 82,
+          "findings": [
+            {
+              "part": "sole",
+              "severity": "MEDIUM",
+              "note": "앞창 마모 진행, 재밑창 시점 근접"
+            },
+            {
+              "part": "upper",
+              "severity": "LOW",
+              "note": "볼 부분 주름 자연 발생"
+            }
+          ],
+          "next_service_months": 8,
+          "last_scanned_at": "2026-03-09T12:00:00+09:00"
+        },
+        {
+          "asset_id": "AS-000092",
+          "customer_id": "CU-0010",
+          "product_id": "LX-0019",
+          "product_name": "Rivage Shoulder",
+          "category": "BAG",
+          "purchased_at": "2025-08-23T07:22:06.315789+09:00",
+          "condition_score": 94,
+          "findings": [],
+          "next_service_months": 45,
+          "last_scanned_at": "2026-06-16T12:00:00+09:00"
+        },
+        {
+          "asset_id": "AS-000093",
+          "customer_id": "CU-0010",
+          "product_id": "LX-0023",
+          "product_name": "Marée Shoulder",
+          "category": "BAG",
+          "purchased_at": "2025-11-02T14:37:06.315789+09:00",
+          "condition_score": 93,
+          "findings": [],
+          "next_service_months": 32,
+          "last_scanned_at": null
+        },
+        {
+          "asset_id": "AS-000094",
+          "customer_id": "CU-0010",
+          "product_id": "LX-0032",
+          "product_name": "Colline Tote",
+          "category": "BAG",
+          "purchased_at": "2026-01-09T21:48:56.842105+09:00",
+          "condition_score": 96,
+          "findings": [],
+          "next_service_months": 48,
+          "last_scanned_at": null
+        },
+        {
+          "asset_id": "AS-000095",
+          "customer_id": "CU-0010",
+          "product_id": "LX-0025",
+          "product_name": "Aubade Top Handle",
+          "category": "BAG",
+          "purchased_at": "2026-01-27T22:07:53.684211+09:00",
+          "condition_score": 95,
+          "findings": [],
+          "next_service_months": 34,
+          "last_scanned_at": "2026-08-07T12:00:00+09:00"
+        },
+        {
+          "asset_id": "AS-000096",
+          "customer_id": "CU-0010",
+          "product_id": "LX-0007",
+          "product_name": "Vesper Pump",
+          "category": "SHOES",
+          "purchased_at": "2026-05-12T23:58:25.263158+09:00",
+          "condition_score": 96,
+          "findings": [],
+          "next_service_months": 19,
+          "last_scanned_at": "2026-07-11T12:00:00+09:00"
+        }
+      ]
+    },
+    {
+      "customer_id": "CU-0011",
+      "display_name": "신채원",
+      "tier": "ESTABLISHED",
+      "planned_tier": "ESTABLISHED",
+      "purchase_count": 16,
+      "asset_count": 7,
+      "first_purchase_at": "2025-06-12T06:06:18.947368+09:00",
+      "last_purchase_at": "2026-03-24T11:06:18.947368+09:00",
+      "source": {
+        "dataset": "synth",
+        "raw_customer_id_sha": 177724354466344
+      },
+      "assets": [
+        {
+          "asset_id": "AS-000097",
+          "customer_id": "CU-0011",
+          "product_id": "LX-0035",
+          "product_name": "Étoile Zip Wallet",
+          "category": "WALLET",
+          "purchased_at": "2025-06-12T06:06:18.947368+09:00",
+          "condition_score": 91,
+          "findings": [
+            {
+              "part": "edge_coat",
+              "severity": "LOW",
+              "note": "엣지 코트 상태 양호"
+            }
+          ],
+          "next_service_months": 32,
+          "last_scanned_at": "2026-06-07T12:00:00+09:00"
+        },
+        {
+          "asset_id": "AS-000098",
+          "customer_id": "CU-0011",
+          "product_id": "LX-0030",
+          "product_name": "Marée Chronograph",
+          "category": "WATCH",
+          "purchased_at": "2025-07-04T18:30:00+09:00",
+          "condition_score": 95,
+          "findings": [],
+          "next_service_months": 65,
+          "last_scanned_at": null
+        },
+        {
+          "asset_id": "AS-000099",
+          "customer_id": "CU-0011",
+          "product_id": "LX-0014",
+          "product_name": "Vesper Hobo",
+          "category": "BAG",
+          "purchased_at": "2025-07-19T18:45:47.368421+09:00",
+          "condition_score": 93,
+          "findings": [],
+          "next_service_months": 43,
+          "last_scanned_at": "2026-06-14T12:00:00+09:00"
+        },
+        {
+          "asset_id": "AS-000100",
+          "customer_id": "CU-0011",
+          "product_id": "LX-0040",
+          "product_name": "Vesper Derby",
+          "category": "SHOES",
+          "purchased_at": "2025-08-09T19:07:53.684211+09:00",
+          "condition_score": 88,
+          "findings": [
+            {
+              "part": "sole",
+              "severity": "LOW",
+              "note": "아웃솔 트레드 양호"
+            }
+          ],
+          "next_service_months": 18,
+          "last_scanned_at": null
+        },
+        {
+          "asset_id": "AS-000101",
+          "customer_id": "CU-0011",
+          "product_id": "LX-0015",
+          "product_name": "Lisière Corset Belt",
+          "category": "BELT",
+          "purchased_at": "2025-11-09T08:44:12.631579+09:00",
+          "condition_score": 94,
+          "findings": [],
+          "next_service_months": 36,
+          "last_scanned_at": "2026-07-23T12:00:00+09:00"
+        },
+        {
+          "asset_id": "AS-000102",
+          "customer_id": "CU-0011",
+          "product_id": "LX-0011",
+          "product_name": "Aurelia Ankle Boot",
+          "category": "SHOES",
+          "purchased_at": "2025-11-10T02:45:00+09:00",
+          "condition_score": 89,
+          "findings": [
+            {
+              "part": "sole",
+              "severity": "LOW",
+              "note": "아웃솔 트레드 양호"
+            }
+          ],
+          "next_service_months": 16,
+          "last_scanned_at": "2026-07-04T12:00:00+09:00"
+        },
+        {
+          "asset_id": "AS-000103",
+          "customer_id": "CU-0011",
+          "product_id": "LX-0028",
+          "product_name": "Halcyon Pump",
+          "category": "SHOES",
+          "purchased_at": "2026-03-24T11:06:18.947368+09:00",
+          "condition_score": 95,
+          "findings": [],
+          "next_service_months": 21,
+          "last_scanned_at": "2026-07-07T12:00:00+09:00"
+        }
+      ]
+    },
+    {
+      "customer_id": "CU-0012",
+      "display_name": "이다경",
+      "tier": "ESTABLISHED",
+      "planned_tier": "ESTABLISHED",
+      "purchase_count": 16,
+      "asset_count": 7,
+      "first_purchase_at": "2024-12-21T15:04:44.210526+09:00",
+      "last_purchase_at": "2026-02-28T10:41:03.157895+09:00",
+      "source": {
+        "dataset": "synth",
+        "raw_customer_id_sha": 90631901944886
+      },
+      "assets": [
+        {
+          "asset_id": "AS-000104",
+          "customer_id": "CU-0012",
+          "product_id": "LX-0028",
+          "product_name": "Halcyon Pump",
+          "category": "SHOES",
+          "purchased_at": "2024-12-21T15:04:44.210526+09:00",
+          "condition_score": 80,
+          "findings": [
+            {
+              "part": "sole",
+              "severity": "MEDIUM",
+              "note": "앞창 마모 진행, 재밑창 시점 근접"
+            },
+            {
+              "part": "upper",
+              "severity": "LOW",
+              "note": "볼 부분 주름 자연 발생"
+            }
+          ],
+          "next_service_months": 10,
+          "last_scanned_at": null
+        },
+        {
+          "asset_id": "AS-000105",
+          "customer_id": "CU-0012",
+          "product_id": "LX-0031",
+          "product_name": "Petra Reserve",
+          "category": "WATCH",
+          "purchased_at": "2025-01-03T09:18:09.473684+09:00",
+          "condition_score": 94,
+          "findings": [],
+          "next_service_months": 72,
+          "last_scanned_at": "2026-06-19T12:00:00+09:00"
+        },
+        {
+          "asset_id": "AS-000106",
+          "customer_id": "CU-0012",
+          "product_id": "LX-0009",
+          "product_name": "Rivage Clutch",
+          "category": "BAG",
+          "purchased_at": "2025-06-28T18:23:41.052632+09:00",
+          "condition_score": 92,
+          "findings": [],
+          "next_service_months": 35,
+          "last_scanned_at": null
+        },
+        {
+          "asset_id": "AS-000107",
+          "customer_id": "CU-0012",
+          "product_id": "LX-0026",
+          "product_name": "Solène Tote",
+          "category": "BAG",
+          "purchased_at": "2025-12-15T09:22:06.315789+09:00",
+          "condition_score": 96,
+          "findings": [],
+          "next_service_months": 48,
+          "last_scanned_at": "2026-07-09T12:00:00+09:00"
+        },
+        {
+          "asset_id": "AS-000108",
+          "customer_id": "CU-0012",
+          "product_id": "LX-0034",
+          "product_name": "Marée Reserve",
+          "category": "WATCH",
+          "purchased_at": "2026-02-06T16:18:09.473684+09:00",
+          "condition_score": 98,
+          "findings": [],
+          "next_service_months": 73,
+          "last_scanned_at": "2026-02-13T16:18:09.473684+09:00"
+        },
+        {
+          "asset_id": "AS-000109",
+          "customer_id": "CU-0012",
+          "product_id": "LX-0007",
+          "product_name": "Vesper Pump",
+          "category": "SHOES",
+          "purchased_at": "2026-02-10T10:22:06.315789+09:00",
+          "condition_score": 92,
+          "findings": [],
+          "next_service_months": 16,
+          "last_scanned_at": "2026-04-15T12:00:00+09:00"
+        },
+        {
+          "asset_id": "AS-000110",
+          "customer_id": "CU-0012",
+          "product_id": "LX-0010",
+          "product_name": "Tessera Corset Belt",
+          "category": "BELT",
+          "purchased_at": "2026-02-28T10:41:03.157895+09:00",
+          "condition_score": 96,
+          "findings": [],
+          "next_service_months": 33,
+          "last_scanned_at": "2026-07-20T12:00:00+09:00"
+        }
+      ]
+    },
+    {
+      "customer_id": "CU-0013",
+      "display_name": "조수아",
+      "tier": "ESTABLISHED",
+      "planned_tier": "ESTABLISHED",
+      "purchase_count": 16,
+      "asset_count": 6,
+      "first_purchase_at": "2025-05-07T23:29:12.631579+09:00",
+      "last_purchase_at": "2026-02-22T10:34:44.210526+09:00",
+      "source": {
+        "dataset": "synth",
+        "raw_customer_id_sha": 81985049445737
+      },
+      "assets": [
+        {
+          "asset_id": "AS-000111",
+          "customer_id": "CU-0013",
+          "product_id": "LX-0018",
+          "product_name": "Ombré Reversible Belt",
+          "category": "BELT",
+          "purchased_at": "2025-05-07T23:29:12.631579+09:00",
+          "condition_score": 90,
+          "findings": [
+            {
+              "part": "edge_coat",
+              "severity": "LOW",
+              "note": "엣지 코트 상태 양호"
+            }
+          ],
+          "next_service_months": 30,
+          "last_scanned_at": "2026-07-07T12:00:00+09:00"
+        },
+        {
+          "asset_id": "AS-000112",
+          "customer_id": "CU-0013",
+          "product_id": "LX-0027",
+          "product_name": "Vesper Oxford",
+          "category": "SHOES",
+          "purchased_at": "2025-07-31T00:57:37.894737+09:00",
+          "condition_score": 88,
+          "findings": [
+            {
+              "part": "sole",
+              "severity": "LOW",
+              "note": "아웃솔 트레드 양호"
+            }
+          ],
+          "next_service_months": 18,
+          "last_scanned_at": null
+        },
+        {
+          "asset_id": "AS-000113",
+          "customer_id": "CU-0013",
+          "product_id": "LX-0034",
+          "product_name": "Marée Reserve",
+          "category": "WATCH",
+          "purchased_at": "2025-11-06T08:41:03.157895+09:00",
+          "condition_score": 97,
+          "findings": [],
+          "next_service_months": 95,
+          "last_scanned_at": null
+        },
+        {
+          "asset_id": "AS-000114",
+          "customer_id": "CU-0013",
+          "product_id": "LX-0039",
+          "product_name": "Serein Automatic",
+          "category": "WATCH",
+          "purchased_at": "2025-11-11T14:46:34.736842+09:00",
+          "condition_score": 97,
+          "findings": [],
+          "next_service_months": 70,
+          "last_scanned_at": "2026-01-22T12:00:00+09:00"
+        },
+        {
+          "asset_id": "AS-000115",
+          "customer_id": "CU-0013",
+          "product_id": "LX-0013",
+          "product_name": "Vesper Tote",
+          "category": "BAG",
+          "purchased_at": "2026-01-08T09:47:22.105263+09:00",
+          "condition_score": 96,
+          "findings": [],
+          "next_service_months": 41,
+          "last_scanned_at": "2026-02-06T12:00:00+09:00"
+        },
+        {
+          "asset_id": "AS-000116",
+          "customer_id": "CU-0013",
+          "product_id": "LX-0036",
+          "product_name": "Petra Loafer",
+          "category": "SHOES",
+          "purchased_at": "2026-02-22T10:34:44.210526+09:00",
+          "condition_score": 94,
+          "findings": [],
+          "next_service_months": 24,
+          "last_scanned_at": "2026-04-05T12:00:00+09:00"
+        }
+      ]
+    },
+    {
+      "customer_id": "CU-0014",
+      "display_name": "조도현",
+      "tier": "ESTABLISHED",
+      "planned_tier": "ESTABLISHED",
+      "purchase_count": 16,
+      "asset_count": 6,
+      "first_purchase_at": "2025-03-20T22:38:41.052632+09:00",
+      "last_purchase_at": "2026-03-31T23:14:12.631579+09:00",
+      "source": {
+        "dataset": "synth",
+        "raw_customer_id_sha": 1595075218990
+      },
+      "assets": [
+        {
+          "asset_id": "AS-000117",
+          "customer_id": "CU-0014",
+          "product_id": "LX-0025",
+          "product_name": "Aubade Top Handle",
+          "category": "BAG",
+          "purchased_at": "2025-03-20T22:38:41.052632+09:00",
+          "condition_score": 90,
+          "findings": [
+            {
+              "part": "handle",
+              "severity": "LOW",
+              "note": "핸들 표면 광택 변화 경미"
+            }
+          ],
+          "next_service_months": 32,
+          "last_scanned_at": "2026-06-22T12:00:00+09:00"
+        },
+        {
+          "asset_id": "AS-000118",
+          "customer_id": "CU-0014",
+          "product_id": "LX-0009",
+          "product_name": "Rivage Clutch",
+          "category": "BAG",
+          "purchased_at": "2025-03-25T10:43:25.263158+09:00",
+          "condition_score": 88,
+          "findings": [
+            {
+              "part": "handle",
+              "severity": "LOW",
+              "note": "핸들 표면 광택 변화 경미"
+            }
+          ],
+          "next_service_months": 25,
+          "last_scanned_at": null
+        },
+        {
+          "asset_id": "AS-000119",
+          "customer_id": "CU-0014",
+          "product_id": "LX-0032",
+          "product_name": "Colline Tote",
+          "category": "BAG",
+          "purchased_at": "2025-06-25T00:19:44.210526+09:00",
+          "condition_score": 91,
+          "findings": [
+            {
+              "part": "handle",
+              "severity": "LOW",
+              "note": "핸들 표면 광택 변화 경미"
+            }
+          ],
+          "next_service_months": 33,
+          "last_scanned_at": "2026-05-02T12:00:00+09:00"
+        },
+        {
+          "asset_id": "AS-000120",
+          "customer_id": "CU-0014",
+          "product_id": "LX-0036",
+          "product_name": "Petra Loafer",
+          "category": "SHOES",
+          "purchased_at": "2025-08-13T13:11:50.526316+09:00",
+          "condition_score": 86,
+          "findings": [
+            {
+              "part": "sole",
+              "severity": "LOW",
+              "note": "아웃솔 트레드 양호"
+            }
+          ],
+          "next_service_months": 13,
+          "last_scanned_at": "2026-08-03T12:00:00+09:00"
+        },
+        {
+          "asset_id": "AS-000121",
+          "customer_id": "CU-0014",
+          "product_id": "LX-0029",
+          "product_name": "Nocturne Shoulder",
+          "category": "BAG",
+          "purchased_at": "2026-03-26T17:08:41.052632+09:00",
+          "condition_score": 97,
+          "findings": [],
+          "next_service_months": 43,
+          "last_scanned_at": null
+        },
+        {
+          "asset_id": "AS-000122",
+          "customer_id": "CU-0014",
+          "product_id": "LX-0006",
+          "product_name": "Étoile Derby",
+          "category": "SHOES",
+          "purchased_at": "2026-03-31T23:14:12.631579+09:00",
+          "condition_score": 95,
+          "findings": [],
+          "next_service_months": 21,
+          "last_scanned_at": "2026-04-07T23:14:12.631579+09:00"
+        }
+      ]
+    },
+    {
+      "customer_id": "CU-0015",
+      "display_name": "윤태민",
+      "tier": "ESTABLISHED",
+      "planned_tier": "ESTABLISHED",
+      "purchase_count": 16,
+      "asset_count": 5,
+      "first_purchase_at": "2025-09-22T07:53:41.052632+09:00",
+      "last_purchase_at": "2026-04-27T05:41:50.526316+09:00",
+      "source": {
+        "dataset": "synth",
+        "raw_customer_id_sha": 242537277219652
+      },
+      "assets": [
+        {
+          "asset_id": "AS-000123",
+          "customer_id": "CU-0015",
+          "product_id": "LX-0004",
+          "product_name": "Meridian Hobo",
+          "category": "BAG",
+          "purchased_at": "2025-09-22T07:53:41.052632+09:00",
+          "condition_score": 93,
+          "findings": [],
+          "next_service_months": 36,
+          "last_scanned_at": "2025-12-23T12:00:00+09:00"
+        },
+        {
+          "asset_id": "AS-000124",
+          "customer_id": "CU-0015",
+          "product_id": "LX-0005",
+          "product_name": "Solène Oxford",
+          "category": "SHOES",
+          "purchased_at": "2025-12-09T09:15:47.368421+09:00",
+          "condition_score": 92,
+          "findings": [],
+          "next_service_months": 22,
+          "last_scanned_at": "2026-02-09T12:00:00+09:00"
+        },
+        {
+          "asset_id": "AS-000125",
+          "customer_id": "CU-0015",
+          "product_id": "LX-0015",
+          "product_name": "Lisière Corset Belt",
+          "category": "BELT",
+          "purchased_at": "2026-01-09T03:48:09.473684+09:00",
+          "condition_score": 96,
+          "findings": [],
+          "next_service_months": 45,
+          "last_scanned_at": "2026-07-15T12:00:00+09:00"
+        },
+        {
+          "asset_id": "AS-000126",
+          "customer_id": "CU-0015",
+          "product_id": "LX-0007",
+          "product_name": "Vesper Pump",
+          "category": "SHOES",
+          "purchased_at": "2026-02-06T16:18:09.473684+09:00",
+          "condition_score": 92,
+          "findings": [],
+          "next_service_months": 16,
+          "last_scanned_at": "2026-02-13T16:18:09.473684+09:00"
+        },
+        {
+          "asset_id": "AS-000127",
+          "customer_id": "CU-0015",
+          "product_id": "LX-0026",
+          "product_name": "Solène Tote",
+          "category": "BAG",
+          "purchased_at": "2026-04-27T05:41:50.526316+09:00",
+          "condition_score": 98,
+          "findings": [],
+          "next_service_months": 52,
+          "last_scanned_at": "2026-05-01T12:00:00+09:00"
+        }
+      ]
+    },
+    {
+      "customer_id": "CU-0016",
+      "display_name": "최준우",
+      "tier": "ESTABLISHED",
+      "planned_tier": "ESTABLISHED",
+      "purchase_count": 16,
+      "asset_count": 5,
+      "first_purchase_at": "2025-02-13T16:01:34.736842+09:00",
+      "last_purchase_at": "2026-03-13T04:54:28.421053+09:00",
+      "source": {
+        "dataset": "synth",
+        "raw_customer_id_sha": 170624054874725
+      },
+      "assets": [
+        {
+          "asset_id": "AS-000128",
+          "customer_id": "CU-0016",
+          "product_id": "LX-0036",
+          "product_name": "Petra Loafer",
+          "category": "SHOES",
+          "purchased_at": "2025-02-13T16:01:34.736842+09:00",
+          "condition_score": 76,
+          "findings": [
+            {
+              "part": "sole",
+              "severity": "MEDIUM",
+              "note": "앞창 마모 진행, 재밑창 시점 근접"
+            },
+            {
+              "part": "upper",
+              "severity": "LOW",
+              "note": "볼 부분 주름 자연 발생"
+            }
+          ],
+          "next_service_months": 4,
+          "last_scanned_at": "2026-04-06T12:00:00+09:00"
+        },
+        {
+          "asset_id": "AS-000129",
+          "customer_id": "CU-0016",
+          "product_id": "LX-0009",
+          "product_name": "Rivage Clutch",
+          "category": "BAG",
+          "purchased_at": "2025-04-04T22:54:28.421053+09:00",
+          "condition_score": 91,
+          "findings": [
+            {
+              "part": "handle",
+              "severity": "LOW",
+              "note": "핸들 표면 광택 변화 경미"
+            }
+          ],
+          "next_service_months": 39,
+          "last_scanned_at": "2026-01-26T12:00:00+09:00"
+        },
+        {
+          "asset_id": "AS-000130",
+          "customer_id": "CU-0016",
+          "product_id": "LX-0021",
+          "product_name": "Solène Clutch",
+          "category": "BAG",
+          "purchased_at": "2025-04-13T23:03:56.842105+09:00",
+          "condition_score": 88,
+          "findings": [
+            {
+              "part": "handle",
+              "severity": "LOW",
+              "note": "핸들 표면 광택 변화 경미"
+            }
+          ],
+          "next_service_months": 25,
+          "last_scanned_at": null
+        },
+        {
+          "asset_id": "AS-000131",
+          "customer_id": "CU-0016",
+          "product_id": "LX-0024",
+          "product_name": "Aubade Derby",
+          "category": "SHOES",
+          "purchased_at": "2025-12-31T21:39:28.421053+09:00",
+          "condition_score": 90,
+          "findings": [
+            {
+              "part": "sole",
+              "severity": "LOW",
+              "note": "아웃솔 트레드 양호"
+            }
+          ],
+          "next_service_months": 14,
+          "last_scanned_at": "2026-06-22T12:00:00+09:00"
+        },
+        {
+          "asset_id": "AS-000132",
+          "customer_id": "CU-0016",
+          "product_id": "LX-0015",
+          "product_name": "Lisière Corset Belt",
+          "category": "BELT",
+          "purchased_at": "2026-03-13T04:54:28.421053+09:00",
+          "condition_score": 97,
+          "findings": [],
+          "next_service_months": 40,
+          "last_scanned_at": "2026-05-17T12:00:00+09:00"
+        }
+      ]
+    },
+    {
+      "customer_id": "CU-0017",
+      "display_name": "강준우",
+      "tier": "ESTABLISHED",
+      "planned_tier": "ESTABLISHED",
+      "purchase_count": 16,
+      "asset_count": 5,
+      "first_purchase_at": "2025-05-22T05:44:12.631579+09:00",
+      "last_purchase_at": "2026-04-18T05:32:22.105263+09:00",
+      "source": {
+        "dataset": "synth",
+        "raw_customer_id_sha": 251315237357095
+      },
+      "assets": [
+        {
+          "asset_id": "AS-000133",
+          "customer_id": "CU-0017",
+          "product_id": "LX-0018",
+          "product_name": "Ombré Reversible Belt",
+          "category": "BELT",
+          "purchased_at": "2025-05-22T05:44:12.631579+09:00",
+          "condition_score": 92,
+          "findings": [],
+          "next_service_months": 38,
+          "last_scanned_at": "2026-04-11T12:00:00+09:00"
+        },
+        {
+          "asset_id": "AS-000134",
+          "customer_id": "CU-0017",
+          "product_id": "LX-0027",
+          "product_name": "Vesper Oxford",
+          "category": "SHOES",
+          "purchased_at": "2025-06-25T00:19:44.210526+09:00",
+          "condition_score": 82,
+          "findings": [
+            {
+              "part": "sole",
+              "severity": "MEDIUM",
+              "note": "앞창 마모 진행, 재밑창 시점 근접"
+            },
+            {
+              "part": "upper",
+              "severity": "LOW",
+              "note": "볼 부분 주름 자연 발생"
+            }
+          ],
+          "next_service_months": 8,
+          "last_scanned_at": "2026-01-13T12:00:00+09:00"
+        },
+        {
+          "asset_id": "AS-000135",
+          "customer_id": "CU-0017",
+          "product_id": "LX-0019",
+          "product_name": "Rivage Shoulder",
+          "category": "BAG",
+          "purchased_at": "2025-07-11T12:37:06.315789+09:00",
+          "condition_score": 91,
+          "findings": [
+            {
+              "part": "handle",
+              "severity": "LOW",
+              "note": "핸들 표면 광택 변화 경미"
+            }
+          ],
+          "next_service_months": 29,
+          "last_scanned_at": "2026-07-26T12:00:00+09:00"
+        },
+        {
+          "asset_id": "AS-000136",
+          "customer_id": "CU-0017",
+          "product_id": "LX-0033",
+          "product_name": "Alcove Automatic",
+          "category": "WATCH",
+          "purchased_at": "2026-03-25T05:07:06.315789+09:00",
+          "condition_score": 99,
+          "findings": [],
+          "next_service_months": 102,
+          "last_scanned_at": null
+        },
+        {
+          "asset_id": "AS-000137",
+          "customer_id": "CU-0017",
+          "product_id": "LX-0002",
+          "product_name": "Alcove Zip Wallet",
+          "category": "WALLET",
+          "purchased_at": "2026-04-18T05:32:22.105263+09:00",
+          "condition_score": 98,
+          "findings": [],
+          "next_service_months": 43,
+          "last_scanned_at": "2026-06-06T12:00:00+09:00"
+        }
+      ]
+    },
+    {
+      "customer_id": "CU-0018",
+      "display_name": "김가온",
+      "tier": "ESTABLISHED",
+      "planned_tier": "ESTABLISHED",
+      "purchase_count": 16,
+      "asset_count": 4,
+      "first_purchase_at": "2025-05-16T23:38:41.052632+09:00",
+      "last_purchase_at": "2025-12-09T09:15:47.368421+09:00",
+      "source": {
+        "dataset": "synth",
+        "raw_customer_id_sha": 268108543448223
+      },
+      "assets": [
+        {
+          "asset_id": "AS-000138",
+          "customer_id": "CU-0018",
+          "product_id": "LX-0036",
+          "product_name": "Petra Loafer",
+          "category": "SHOES",
+          "purchased_at": "2025-05-16T23:38:41.052632+09:00",
+          "condition_score": 80,
+          "findings": [
+            {
+              "part": "sole",
+              "severity": "MEDIUM",
+              "note": "앞창 마모 진행, 재밑창 시점 근접"
+            },
+            {
+              "part": "upper",
+              "severity": "LOW",
+              "note": "볼 부분 주름 자연 발생"
+            }
+          ],
+          "next_service_months": 7,
+          "last_scanned_at": "2026-06-17T12:00:00+09:00"
+        },
+        {
+          "asset_id": "AS-000139",
+          "customer_id": "CU-0018",
+          "product_id": "LX-0031",
+          "product_name": "Petra Reserve",
+          "category": "WATCH",
+          "purchased_at": "2025-10-01T08:03:09.473684+09:00",
+          "condition_score": 96,
+          "findings": [],
+          "next_service_months": 67,
+          "last_scanned_at": "2026-01-12T12:00:00+09:00"
+        },
+        {
+          "asset_id": "AS-000140",
+          "customer_id": "CU-0018",
+          "product_id": "LX-0004",
+          "product_name": "Meridian Hobo",
+          "category": "BAG",
+          "purchased_at": "2025-10-13T08:15:47.368421+09:00",
+          "condition_score": 94,
+          "findings": [],
+          "next_service_months": 38,
+          "last_scanned_at": "2026-02-13T12:00:00+09:00"
+        },
+        {
+          "asset_id": "AS-000141",
+          "customer_id": "CU-0018",
+          "product_id": "LX-0032",
+          "product_name": "Colline Tote",
+          "category": "BAG",
+          "purchased_at": "2025-12-09T09:15:47.368421+09:00",
+          "condition_score": 94,
+          "findings": [],
+          "next_service_months": 33,
+          "last_scanned_at": "2026-05-12T12:00:00+09:00"
+        }
+      ]
+    },
+    {
+      "customer_id": "CU-0019",
+      "display_name": "박가온",
+      "tier": "ESTABLISHED",
+      "planned_tier": "ESTABLISHED",
+      "purchase_count": 16,
+      "asset_count": 4,
+      "first_purchase_at": "2025-04-28T05:18:56.842105+09:00",
+      "last_purchase_at": "2026-01-12T03:51:18.947368+09:00",
+      "source": {
+        "dataset": "synth",
+        "raw_customer_id_sha": 276840081036598
+      },
+      "assets": [
+        {
+          "asset_id": "AS-000142",
+          "customer_id": "CU-0019",
+          "product_id": "LX-0011",
+          "product_name": "Aurelia Ankle Boot",
+          "category": "SHOES",
+          "purchased_at": "2025-04-28T05:18:56.842105+09:00",
+          "condition_score": 79,
+          "findings": [
+            {
+              "part": "sole",
+              "severity": "MEDIUM",
+              "note": "앞창 마모 진행, 재밑창 시점 근접"
+            },
+            {
+              "part": "upper",
+              "severity": "LOW",
+              "note": "볼 부분 주름 자연 발생"
+            }
+          ],
+          "next_service_months": 6,
+          "last_scanned_at": "2026-03-12T12:00:00+09:00"
+        },
+        {
+          "asset_id": "AS-000143",
+          "customer_id": "CU-0019",
+          "product_id": "LX-0020",
+          "product_name": "Tessera Automatic",
+          "category": "WATCH",
+          "purchased_at": "2025-10-29T02:32:22.105263+09:00",
+          "condition_score": 96,
+          "findings": [],
+          "next_service_months": 67,
+          "last_scanned_at": "2026-06-11T12:00:00+09:00"
+        },
+        {
+          "asset_id": "AS-000144",
+          "customer_id": "CU-0019",
+          "product_id": "LX-0008",
+          "product_name": "Serein Ankle Boot",
+          "category": "SHOES",
+          "purchased_at": "2026-01-04T15:43:25.263158+09:00",
+          "condition_score": 93,
+          "findings": [],
+          "next_service_months": 23,
+          "last_scanned_at": "2026-05-08T12:00:00+09:00"
+        },
+        {
+          "asset_id": "AS-000145",
+          "customer_id": "CU-0019",
+          "product_id": "LX-0031",
+          "product_name": "Petra Reserve",
+          "category": "WATCH",
+          "purchased_at": "2026-01-12T03:51:18.947368+09:00",
+          "condition_score": 97,
+          "findings": [],
+          "next_service_months": 70,
+          "last_scanned_at": "2026-01-19T03:51:18.947368+09:00"
+        }
+      ]
+    },
+    {
+      "customer_id": "CU-0020",
+      "display_name": "서서연",
+      "tier": "ESTABLISHED",
+      "planned_tier": "ESTABLISHED",
+      "purchase_count": 16,
+      "asset_count": 4,
+      "first_purchase_at": "2025-04-07T04:56:50.526316+09:00",
+      "last_purchase_at": "2025-12-17T15:24:28.421053+09:00",
+      "source": {
+        "dataset": "synth",
+        "raw_customer_id_sha": 96259995060606
+      },
+      "assets": [
+        {
+          "asset_id": "AS-000146",
+          "customer_id": "CU-0020",
+          "product_id": "LX-0021",
+          "product_name": "Solène Clutch",
+          "category": "BAG",
+          "purchased_at": "2025-04-07T04:56:50.526316+09:00",
+          "condition_score": 88,
+          "findings": [
+            {
+              "part": "handle",
+              "severity": "LOW",
+              "note": "핸들 표면 광택 변화 경미"
+            }
+          ],
+          "next_service_months": 25,
+          "last_scanned_at": "2026-05-05T12:00:00+09:00"
+        },
+        {
+          "asset_id": "AS-000147",
+          "customer_id": "CU-0020",
+          "product_id": "LX-0026",
+          "product_name": "Solène Tote",
+          "category": "BAG",
+          "purchased_at": "2025-06-26T12:21:18.947368+09:00",
+          "condition_score": 93,
+          "findings": [],
+          "next_service_months": 43,
+          "last_scanned_at": "2026-06-25T12:00:00+09:00"
+        },
+        {
+          "asset_id": "AS-000148",
+          "customer_id": "CU-0020",
+          "product_id": "LX-0018",
+          "product_name": "Ombré Reversible Belt",
+          "category": "BELT",
+          "purchased_at": "2025-10-05T20:07:53.684211+09:00",
+          "condition_score": 93,
+          "findings": [],
+          "next_service_months": 34,
+          "last_scanned_at": "2026-02-23T12:00:00+09:00"
+        },
+        {
+          "asset_id": "AS-000149",
+          "customer_id": "CU-0020",
+          "product_id": "LX-0037",
+          "product_name": "Nocturne Oxford",
+          "category": "SHOES",
+          "purchased_at": "2025-12-17T15:24:28.421053+09:00",
+          "condition_score": 89,
+          "findings": [
+            {
+              "part": "sole",
+              "severity": "LOW",
+              "note": "아웃솔 트레드 양호"
+            }
+          ],
+          "next_service_months": 14,
+          "last_scanned_at": "2026-06-13T12:00:00+09:00"
+        }
+      ]
+    },
+    {
+      "customer_id": "CU-0021",
+      "display_name": "김채원",
+      "tier": "ESTABLISHED",
+      "planned_tier": "ESTABLISHED",
+      "purchase_count": 16,
+      "asset_count": 3,
+      "first_purchase_at": "2026-03-01T04:41:50.526316+09:00",
+      "last_purchase_at": "2026-04-27T05:41:50.526316+09:00",
+      "source": {
+        "dataset": "synth",
+        "raw_customer_id_sha": 164414546968214
+      },
+      "assets": [
+        {
+          "asset_id": "AS-000150",
+          "customer_id": "CU-0021",
+          "product_id": "LX-0002",
+          "product_name": "Alcove Zip Wallet",
+          "category": "WALLET",
+          "purchased_at": "2026-03-01T04:41:50.526316+09:00",
+          "condition_score": 97,
+          "findings": [],
+          "next_service_months": 42,
+          "last_scanned_at": "2026-03-08T04:41:50.526316+09:00"
+        },
+        {
+          "asset_id": "AS-000151",
+          "customer_id": "CU-0021",
+          "product_id": "LX-0008",
+          "product_name": "Serein Ankle Boot",
+          "category": "SHOES",
+          "purchased_at": "2026-04-13T17:27:37.894737+09:00",
+          "condition_score": 96,
+          "findings": [],
+          "next_service_months": 26,
+          "last_scanned_at": "2026-04-20T17:27:37.894737+09:00"
+        },
+        {
+          "asset_id": "AS-000152",
+          "customer_id": "CU-0021",
+          "product_id": "LX-0017",
+          "product_name": "Halcyon Zip Wallet",
+          "category": "WALLET",
+          "purchased_at": "2026-04-27T05:41:50.526316+09:00",
+          "condition_score": 97,
+          "findings": [],
+          "next_service_months": 36,
+          "last_scanned_at": null
+        }
+      ]
+    },
+    {
+      "customer_id": "CU-0022",
+      "display_name": "신민재",
+      "tier": "ESTABLISHED",
+      "planned_tier": "ESTABLISHED",
+      "purchase_count": 16,
+      "asset_count": 3,
+      "first_purchase_at": "2025-05-16T05:37:53.684211+09:00",
+      "last_purchase_at": "2026-04-15T23:30:00+09:00",
+      "source": {
+        "dataset": "synth",
+        "raw_customer_id_sha": 132664524777514
+      },
+      "assets": [
+        {
+          "asset_id": "AS-000153",
+          "customer_id": "CU-0022",
+          "product_id": "LX-0032",
+          "product_name": "Colline Tote",
+          "category": "BAG",
+          "purchased_at": "2025-05-16T05:37:53.684211+09:00",
+          "condition_score": 89,
+          "findings": [
+            {
+              "part": "handle",
+              "severity": "LOW",
+              "note": "핸들 표면 광택 변화 경미"
+            }
+          ],
+          "next_service_months": 26,
+          "last_scanned_at": null
+        },
+        {
+          "asset_id": "AS-000154",
+          "customer_id": "CU-0022",
+          "product_id": "LX-0033",
+          "product_name": "Alcove Automatic",
+          "category": "WATCH",
+          "purchased_at": "2025-07-25T00:51:18.947368+09:00",
+          "condition_score": 96,
+          "findings": [],
+          "next_service_months": 91,
+          "last_scanned_at": "2026-03-19T12:00:00+09:00"
+        },
+        {
+          "asset_id": "AS-000155",
+          "customer_id": "CU-0022",
+          "product_id": "LX-0040",
+          "product_name": "Vesper Derby",
+          "category": "SHOES",
+          "purchased_at": "2026-04-15T23:30:00+09:00",
+          "condition_score": 95,
+          "findings": [],
+          "next_service_months": 18,
+          "last_scanned_at": null
+        }
+      ]
+    },
+    {
+      "customer_id": "CU-0023",
+      "display_name": "오채원",
+      "tier": "ESTABLISHED",
+      "planned_tier": "ESTABLISHED",
+      "purchase_count": 16,
+      "asset_count": 3,
+      "first_purchase_at": "2025-04-11T17:01:34.736842+09:00",
+      "last_purchase_at": "2025-09-30T14:02:22.105263+09:00",
+      "source": {
+        "dataset": "synth",
+        "raw_customer_id_sha": 184882160655009
+      },
+      "assets": [
+        {
+          "asset_id": "AS-000156",
+          "customer_id": "CU-0023",
+          "product_id": "LX-0015",
+          "product_name": "Lisière Corset Belt",
+          "category": "BELT",
+          "purchased_at": "2025-04-11T17:01:34.736842+09:00",
+          "condition_score": 91,
+          "findings": [
+            {
+              "part": "edge_coat",
+              "severity": "LOW",
+              "note": "엣지 코트 상태 양호"
+            }
+          ],
+          "next_service_months": 37,
+          "last_scanned_at": "2026-06-14T12:00:00+09:00"
+        },
+        {
+          "asset_id": "AS-000157",
+          "customer_id": "CU-0023",
+          "product_id": "LX-0018",
+          "product_name": "Ombré Reversible Belt",
+          "category": "BELT",
+          "purchased_at": "2025-09-14T19:45:47.368421+09:00",
+          "condition_score": 94,
+          "findings": [],
+          "next_service_months": 42,
+          "last_scanned_at": "2026-06-14T12:00:00+09:00"
+        },
+        {
+          "asset_id": "AS-000158",
+          "customer_id": "CU-0023",
+          "product_id": "LX-0017",
+          "product_name": "Halcyon Zip Wallet",
+          "category": "WALLET",
+          "purchased_at": "2025-09-30T14:02:22.105263+09:00",
+          "condition_score": 91,
+          "findings": [
+            {
+              "part": "edge_coat",
+              "severity": "LOW",
+              "note": "엣지 코트 상태 양호"
+            }
+          ],
+          "next_service_months": 24,
+          "last_scanned_at": "2026-04-02T12:00:00+09:00"
+        }
+      ]
+    },
+    {
+      "customer_id": "CU-0024",
+      "display_name": "최다경",
+      "tier": "ESTABLISHED",
+      "planned_tier": "ESTABLISHED",
+      "purchase_count": 16,
+      "asset_count": 3,
+      "first_purchase_at": "2025-02-06T03:53:41.052632+09:00",
+      "last_purchase_at": "2025-10-28T08:31:34.736842+09:00",
+      "source": {
+        "dataset": "synth",
+        "raw_customer_id_sha": 97253835776270
+      },
+      "assets": [
+        {
+          "asset_id": "AS-000159",
+          "customer_id": "CU-0024",
+          "product_id": "LX-0018",
+          "product_name": "Ombré Reversible Belt",
+          "category": "BELT",
+          "purchased_at": "2025-02-06T03:53:41.052632+09:00",
+          "condition_score": 90,
+          "findings": [
+            {
+              "part": "edge_coat",
+              "severity": "LOW",
+              "note": "엣지 코트 상태 양호"
+            }
+          ],
+          "next_service_months": 35,
+          "last_scanned_at": "2026-06-02T12:00:00+09:00"
+        },
+        {
+          "asset_id": "AS-000160",
+          "customer_id": "CU-0024",
+          "product_id": "LX-0019",
+          "product_name": "Rivage Shoulder",
+          "category": "BAG",
+          "purchased_at": "2025-02-26T10:15:00+09:00",
+          "condition_score": 89,
+          "findings": [
+            {
+              "part": "handle",
+              "severity": "LOW",
+              "note": "핸들 표면 광택 변화 경미"
+            }
+          ],
+          "next_service_months": 30,
+          "last_scanned_at": "2026-07-14T12:00:00+09:00"
+        },
+        {
+          "asset_id": "AS-000161",
+          "customer_id": "CU-0024",
+          "product_id": "LX-0020",
+          "product_name": "Tessera Automatic",
+          "category": "WATCH",
+          "purchased_at": "2025-10-28T08:31:34.736842+09:00",
+          "condition_score": 97,
+          "findings": [],
+          "next_service_months": 95,
+          "last_scanned_at": "2026-04-23T12:00:00+09:00"
+        }
+      ]
+    },
+    {
+      "customer_id": "CU-0025",
+      "display_name": "김은우",
+      "tier": "NEW",
+      "planned_tier": "NEW",
+      "purchase_count": 16,
+      "asset_count": 2,
+      "first_purchase_at": "2026-04-12T05:26:03.157895+09:00",
+      "last_purchase_at": "2026-05-14T12:00:00+09:00",
+      "source": {
+        "dataset": "synth",
+        "raw_customer_id_sha": 156328658472670
+      },
+      "assets": [
+        {
+          "asset_id": "AS-000162",
+          "customer_id": "CU-0025",
+          "product_id": "LX-0011",
+          "product_name": "Aurelia Ankle Boot",
+          "category": "SHOES",
+          "purchased_at": "2026-04-12T05:26:03.157895+09:00",
+          "condition_score": 95,
+          "findings": [],
+          "next_service_months": 21,
+          "last_scanned_at": "2026-04-19T05:26:03.157895+09:00"
+        },
+        {
+          "asset_id": "AS-000163",
+          "customer_id": "CU-0025",
+          "product_id": "LX-0016",
+          "product_name": "Meridian Oxford",
+          "category": "SHOES",
+          "purchased_at": "2026-05-14T12:00:00+09:00",
+          "condition_score": 96,
+          "findings": [],
+          "next_service_months": 19,
+          "last_scanned_at": "2026-05-21T12:00:00+09:00"
+        }
+      ]
+    },
+    {
+      "customer_id": "CU-0026",
+      "display_name": "서하윤",
+      "tier": "NEW",
+      "planned_tier": "NEW",
+      "purchase_count": 16,
+      "asset_count": 2,
+      "first_purchase_at": "2025-08-21T01:19:44.210526+09:00",
+      "last_purchase_at": "2025-08-23T07:22:06.315789+09:00",
+      "source": {
+        "dataset": "synth",
+        "raw_customer_id_sha": 133246888385238
+      },
+      "assets": [
+        {
+          "asset_id": "AS-000164",
+          "customer_id": "CU-0026",
+          "product_id": "LX-0011",
+          "product_name": "Aurelia Ankle Boot",
+          "category": "SHOES",
+          "purchased_at": "2025-08-21T01:19:44.210526+09:00",
+          "condition_score": 88,
+          "findings": [
+            {
+              "part": "sole",
+              "severity": "LOW",
+              "note": "아웃솔 트레드 양호"
+            }
+          ],
+          "next_service_months": 18,
+          "last_scanned_at": "2025-12-27T12:00:00+09:00"
+        },
+        {
+          "asset_id": "AS-000165",
+          "customer_id": "CU-0026",
+          "product_id": "LX-0012",
+          "product_name": "Aurelia Corset Belt",
+          "category": "BELT",
+          "purchased_at": "2025-08-23T07:22:06.315789+09:00",
+          "condition_score": 92,
+          "findings": [],
+          "next_service_months": 33,
+          "last_scanned_at": null
+        }
+      ]
+    },
+    {
+      "customer_id": "CU-0027",
+      "display_name": "신가온",
+      "tier": "NEW",
+      "planned_tier": "NEW",
+      "purchase_count": 16,
+      "asset_count": 2,
+      "first_purchase_at": "2026-02-08T22:20:31.578947+09:00",
+      "last_purchase_at": "2026-03-19T05:00:47.368421+09:00",
+      "source": {
+        "dataset": "synth",
+        "raw_customer_id_sha": 184223264066435
+      },
+      "assets": [
+        {
+          "asset_id": "AS-000166",
+          "customer_id": "CU-0027",
+          "product_id": "LX-0040",
+          "product_name": "Vesper Derby",
+          "category": "SHOES",
+          "purchased_at": "2026-02-08T22:20:31.578947+09:00",
+          "condition_score": 92,
+          "findings": [],
+          "next_service_months": 16,
+          "last_scanned_at": "2026-02-15T22:20:31.578947+09:00"
+        },
+        {
+          "asset_id": "AS-000167",
+          "customer_id": "CU-0027",
+          "product_id": "LX-0006",
+          "product_name": "Étoile Derby",
+          "category": "SHOES",
+          "purchased_at": "2026-03-19T05:00:47.368421+09:00",
+          "condition_score": 95,
+          "findings": [],
+          "next_service_months": 25,
+          "last_scanned_at": null
+        }
+      ]
+    },
+    {
+      "customer_id": "CU-0028",
+      "display_name": "김서연",
+      "tier": "NEW",
+      "planned_tier": "NEW",
+      "purchase_count": 12,
+      "asset_count": 1,
+      "first_purchase_at": "2026-04-16T17:30:47.368421+09:00",
+      "last_purchase_at": "2026-04-16T17:30:47.368421+09:00",
+      "source": {
+        "dataset": "synth",
+        "raw_customer_id_sha": 136230683389960
+      },
+      "assets": [
+        {
+          "asset_id": "AS-000168",
+          "customer_id": "CU-0028",
+          "product_id": "LX-0017",
+          "product_name": "Halcyon Zip Wallet",
+          "category": "WALLET",
+          "purchased_at": "2026-04-16T17:30:47.368421+09:00",
+          "condition_score": 97,
+          "findings": [],
+          "next_service_months": 36,
+          "last_scanned_at": "2026-04-23T17:30:47.368421+09:00"
+        }
+      ]
+    },
+    {
+      "customer_id": "CU-0029",
+      "display_name": "서하윤",
+      "tier": "NEW",
+      "planned_tier": "NEW",
+      "purchase_count": 12,
+      "asset_count": 1,
+      "first_purchase_at": "2026-02-22T10:34:44.210526+09:00",
+      "last_purchase_at": "2026-02-22T10:34:44.210526+09:00",
+      "source": {
+        "dataset": "synth",
+        "raw_customer_id_sha": 111291960285263
+      },
+      "assets": [
+        {
+          "asset_id": "AS-000169",
+          "customer_id": "CU-0029",
+          "product_id": "LX-0006",
+          "product_name": "Étoile Derby",
+          "category": "SHOES",
+          "purchased_at": "2026-02-22T10:34:44.210526+09:00",
+          "condition_score": 94,
+          "findings": [],
+          "next_service_months": 24,
+          "last_scanned_at": "2026-06-02T12:00:00+09:00"
+        }
+      ]
+    },
+    {
+      "customer_id": "CU-0030",
+      "display_name": "한하윤",
+      "tier": "NEW",
+      "planned_tier": "NEW",
+      "purchase_count": 12,
+      "asset_count": 1,
+      "first_purchase_at": "2026-05-03T23:48:56.842105+09:00",
+      "last_purchase_at": "2026-05-03T23:48:56.842105+09:00",
+      "source": {
+        "dataset": "synth",
+        "raw_customer_id_sha": 91220382981977
+      },
+      "assets": [
+        {
+          "asset_id": "AS-000170",
+          "customer_id": "CU-0030",
+          "product_id": "LX-0025",
+          "product_name": "Aubade Top Handle",
+          "category": "BAG",
+          "purchased_at": "2026-05-03T23:48:56.842105+09:00",
+          "condition_score": 98,
+          "findings": [],
+          "next_service_months": 38,
+          "last_scanned_at": "2026-05-10T23:48:56.842105+09:00"
+        }
+      ]
+    }
+  ]
+}

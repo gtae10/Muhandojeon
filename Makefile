@@ -3,7 +3,7 @@ UVICORN := .venv/bin/uvicorn
 PORT ?= 8000
 
 .DEFAULT_GOAL := help
-.PHONY: help setup contracts data data-synth seed dev demo lab check test fmt clean-db clean-cache
+.PHONY: help setup contracts docs data data-synth seed dev demo lab check test fmt clean-db clean-cache
 
 help:  ## 사용 가능한 타깃 목록
 	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | awk 'BEGIN {FS = ":.*?## "}; {printf "  \033[36m%-12s\033[0m %s\n", $$1, $$2}'
@@ -17,12 +17,17 @@ setup:  ## uv venv(3.11) + 의존성 설치
 contracts:  ## 계약 문서/예시 재생성 (docs/CONTRACTS.md, contracts/examples/*.json)
 	$(PY) -m scripts.gen_contracts_doc
 
+docs:  ## 생성 문서 전체 재생성 (계약 + 데이터 출처)
+	$(PY) -m scripts.gen_contracts_doc
+	$(PY) -m scripts.gen_provenance_doc
+
 data:  ## 데이터 획득 → 정규화 → export (외부 데이터 없으면 자동 synth 폴백)
 	-$(PY) -m scripts.fetch_data
 	$(PY) -m scripts.build_catalog
 	$(PY) -m scripts.build_customers
 	$(PY) -m scripts.build_sessions
 	$(PY) -m scripts.export_for_team
+	$(PY) -m scripts.gen_provenance_doc
 	$(PY) -m scripts.seed_db
 
 data-synth:  ## 외부 데이터 무시하고 합성만으로 파이프라인 완주

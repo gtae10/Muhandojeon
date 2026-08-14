@@ -9,7 +9,7 @@ dependencies = [
     "pydantic>=2.7",
     "pydantic-settings>=2.3",
     "sqlalchemy>=2.0",
-    "polars>=1.0",
+    "polars>=1.30",
     "pyarrow>=16.0",
     "httpx>=0.27",
     "tenacity>=8.4",
@@ -44,6 +44,9 @@ ignore = ["ANN401", "B008"]
 
 [tool.ruff.lint.per-file-ignores]
 "tests/*" = ["ANN"]
+# 문서 생성기는 마크다운 표를 문자열로 품고 있어 줄바꿈하면 출력이 깨진다.
+"scripts/gen_provenance_doc.py" = ["E501"]
+"scripts/export_for_team.py" = ["E501"]
 
 [tool.mypy]
 python_version = "3.11"
