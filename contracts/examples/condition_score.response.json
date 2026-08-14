@@ -1,0 +1,18 @@
+{
+  "asset_id": "AS-000031",
+  "score": 71,
+  "findings": [
+    {
+      "part": "sole",
+      "severity": "MEDIUM",
+      "note": "앞창 마모 진행, 재밑창 시점 근접"
+    },
+    {
+      "part": "upper",
+      "severity": "LOW",
+      "note": "볼 부분 주름 자연 발생"
+    }
+  ],
+  "next_service_months": 2,
+  "confidence": 0.8
+}

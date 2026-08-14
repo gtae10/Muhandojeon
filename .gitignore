@@ -1,0 +1,21 @@
+# data
+data/raw/
+data/processed/images/
+data/fingerprints/
+*.db
+*.sqlite3
+
+# caches
+.cache/
+__pycache__/
+*.py[cod]
+.mypy_cache/
+.ruff_cache/
+.pytest_cache/
+
+# env / venv
+.venv/
+.env
+
+# os
+.DS_Store

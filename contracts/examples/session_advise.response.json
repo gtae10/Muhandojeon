@@ -1,0 +1,47 @@
+{
+  "request_id": "adv-CU-0007-LX-0012-S2",
+  "customer_id": "CU-0007",
+  "tier": "ESTABLISHED",
+  "hesitation_type": "SIZE_UNCERTAIN",
+  "confidence": 0.82,
+  "signals": [
+    {
+      "name": "size_guide_repeat",
+      "weight": 0.62,
+      "evidence": "size_guide 2회 조회 (38, 38.5)"
+    }
+  ],
+  "message": "2023년에 함께하신 Aurelia Oxford와 같은 Aurelia 라스트입니다. 현재 컨디션 71점(앞창 마모 진행)이라 재밑창과 함께 피팅을 잡아드릴까요?",
+  "cta": "BOOK_FITTING",
+  "cited_asset_ids": [
+    "AS-000031"
+  ],
+  "citations": [
+    {
+      "asset_id": "AS-000031",
+      "product_name": "Aurelia Oxford",
+      "condition_score": 71,
+      "next_service_months": 2,
+      "headline_finding": "앞창 마모 진행, 재밑창 시점 근접"
+    }
+  ],
+  "owned_assets_used": true,
+  "no_assets": false,
+  "ranked_asset_ids": [
+    "AS-000031",
+    "AS-000018"
+  ],
+  "strategy_id": "S2",
+  "degraded": false,
+  "reasoning": "동일 라스트 보유 → 사이즈 불확실 해소.",
+  "trace": [
+    {
+      "step": "intent",
+      "adapter": "MockIntentAdapter",
+      "mode": "mock",
+      "elapsed_ms": 1.2,
+      "degraded": false,
+      "detail": "SIZE_UNCERTAIN (0.82)"
+    }
+  ]
+}

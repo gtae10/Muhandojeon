@@ -1,0 +1,16 @@
+{
+  "hesitation_type": "SIZE_UNCERTAIN",
+  "confidence": 0.82,
+  "signals": [
+    {
+      "name": "size_guide_repeat",
+      "weight": 0.62,
+      "evidence": "size_guide 2회 조회 (38, 38.5)"
+    },
+    {
+      "name": "cart_without_checkout",
+      "weight": 0.2,
+      "evidence": "장바구니 담기 후 결제 진입 없음"
+    }
+  ]
+}
