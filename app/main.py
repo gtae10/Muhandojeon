@@ -23,7 +23,7 @@ from fastapi.staticfiles import StaticFiles
 
 from app.config import PROCESSED_DIR, get_settings
 from app.db import init_db
-from app.routers import catalog, health, modules, session
+from app.routers import catalog, health, lab, modules, session
 from app.store import get_store
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)-7s %(name)s | %(message)s")
@@ -73,7 +73,7 @@ app.include_router(health.router)
 app.include_router(session.router)
 app.include_router(modules.router)
 app.include_router(catalog.router)
-# Phase 4 에서 Persona Bot Lab 라우터를 여기에 추가한다.
+app.include_router(lab.router)
 
 if PROCESSED_DIR.exists():
     app.mount("/static", StaticFiles(directory=PROCESSED_DIR), name="static")
