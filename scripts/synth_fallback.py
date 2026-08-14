@@ -13,6 +13,12 @@
 
 이벤트 어휘는 **실제 클릭스트림 데이터셋과 동일한 7종으로 제한**한다. 합성 데이터가 더
 풍부해지면 external 경로에서만 필요한 규칙 합성이 검증되지 않기 때문이다.
+
+알려진 편향: synth 모드의 망설임 라벨 분포는 STOCK_CONCERN 쪽으로 기운다
+(external: stock 17 / size 15 / price 14 / style 9 / none 5,
+ synth: stock 32 / style 14 / price 6 / none 5 / size 3).
+프로파일 가중치는 원본 데이터 기준으로 보정했기 때문이다. 폴백 경로는 "데모가 끊기지 않는 것"이
+목적이고 AI1 학습셋 균형이 필요하면 external 경로를 쓰는 편이 낫다.
 """
 
 from __future__ import annotations
@@ -135,21 +141,28 @@ def synth_clickstream(n_sessions: int = 400, seed: int = 42) -> list[dict[str, A
     base = datetime(2026, 3, 1)
     rows: list[dict[str, Any]] = []
     for sidx in range(n_sessions):
-        user_id = 1000 + sidx % 250
+        # (UserID, SessionID) 가 세션 키다. 겹치면 두 세션이 하나로 병합되어 이벤트 수가
+        # 부풀고 라벨이 쏠린다 → 유일하게 만든다(사용자당 버킷 10개).
+        user_id = 1000 + sidx // 10
         session_bucket = sidx % 10
         n_events = rng.randint(5, 14)
         abandons = rng.random() < 0.62
         ts = base + timedelta(days=rng.randint(0, 150), minutes=rng.randint(0, 600))
-        events: list[str] = ["login", "page_view"]
-        for _ in range(n_events):
-            events.append(rng.choices(RAW_EVENT_TYPES[:4], weights=[3, 5, 3, 2], k=1)[0])
-        events.append("add_to_cart")
+        # 원본 특성을 모사한다: 세션당 참조 상품이 1~6개이고 같은 상품 반복 조회는 거의 없다.
+        # (상품을 매 이벤트마다 새로 뽑으면 상품 다양성이 과대해져 라벨이 STYLE_DOUBT 로 쏠린다)
+        pool = [f"prod_{rng.randint(1000, 9999)}" for _ in range(rng.randint(1, 6))]
+        core = [
+            rng.choices(RAW_EVENT_TYPES[:4], weights=[3, 5, 3, 2], k=1)[0] for _ in range(n_events)
+        ]
+        # 장바구니는 세션 후반부에 놓는다. 원본의 '장바구니 이후 탐색 0~6회' 분포를 맞추기
+        # 위한 것으로, 너무 앞에 넣으면 이후 탐색이 과대해져 라벨이 STOCK_CONCERN 으로 쏠린다.
+        core.insert(rng.randint(3 * len(core) // 4, len(core)), "add_to_cart")
         if not abandons:
-            events.append("purchase")
-        events.append("logout")
+            core.append("purchase")
+        events: list[str] = ["login", "page_view", *core, "logout"]
         for ev in events:
             ts = ts + timedelta(seconds=rng.randint(5, 240))
-            product = f"prod_{rng.randint(1000, 9999)}" if ev not in {"login", "logout"} else ""
+            product = rng.choice(pool) if ev not in {"login", "logout"} else ""
             amount = round(rng.uniform(40, 900), 2) if ev == "purchase" else ""
             rows.append(
                 {

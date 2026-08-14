@@ -37,6 +37,9 @@ packages = ["app", "contracts"]
 [tool.ruff]
 line-length = 100
 target-version = "py311"
+# 생성 산출물은 포맷 대상이 아니다. (exports/README.md 의 코드 블록을 ruff format 이 손대면
+# 다음 `make data` 에서 되돌아가 `make check` 가 영구 실패한다)
+extend-exclude = ["exports", "data"]
 
 [tool.ruff.lint]
 select = ["E", "F", "I", "UP", "B", "SIM", "ANN"]
