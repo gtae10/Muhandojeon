@@ -1,206 +1,177 @@
 # Luxe Clienteling — 통합/데모 레이어
 
 럭셔리 브랜드용 AI 클라이언텔링 서비스의 **통합/데모 담당** 코드베이스.
-"고객을 아는 AI" 가 아니라 **"고객의 물건을 아는 AI"** 라는 것이 이 제품의 차별점이고,
+"고객을 아는 AI"가 아니라 **"고객의 물건을 아는 AI"**라는 것이 이 제품의 차별점이고,
 그 차별점이 실제로 작동하는지를 이 레이어가 측정한다(상담이 소유 자산을 인용하지 않으면
 `owned_assets_used=false` 로 드러난다).
 
-- 계약(팀 인터페이스): [`docs/CONTRACTS.md`](docs/CONTRACTS.md)
-- 데이터 출처·한계: [`docs/DATA_PROVENANCE.md`](docs/DATA_PROVENANCE.md)
-- 라이선스: [`docs/DATA_LICENSES.md`](docs/DATA_LICENSES.md)
-- 기존 백엔드 연동: [`docs/BACKEND_INTEGRATION.md`](docs/BACKEND_INTEGRATION.md)
-- 개체 지문 촬영: [`docs/FINGERPRINT_CAPTURE.md`](docs/FINGERPRINT_CAPTURE.md)
-- 데모 당일 체크리스트: [`docs/DEMO_RUNBOOK.md`](docs/DEMO_RUNBOOK.md)
+## 지금의 두 가지 제약 (확정)
+
+| 제약 | 대응 |
+|---|---|
+| **대회 API 에 비전(이미지 입력) 모델이 없다. 텍스트 전용.** | `config/llm_capabilities.json` 에 `vision: false` 를 못박고 런타임 탐지를 하지 않는다. 이미지를 프롬프트에 넣는 경로는 존재하지 않으며 테스트로 고정했다. 컨디션 진단은 목이 이미지를 보지 않고 픽스처 값을 반환하며, 이미지 기반 실시간 채점은 **백엔드 담당이 고전 CV 로 구현**한다(계약 불변). |
+| **크레딧 총액 100달러, 초과 시 복구 수단 없음.** | 3단 예산 가드(총 100 / 경고 60 / **하드 85**), 호출 전 비용 추정 후 거부, 용도별 모델 티어 분리, 캐시 기본 ON, 드라이런(`make estimate`), `/ops` 대시보드. |
+
+**외부 데이터셋은 미확정**이다. 시드 데이터는 손으로 쓴 `fixtures/*.json` 이고, 접근은
+`app/data/provider.py` 의 `SeedDataProvider` 한 곳만 지난다. 데이터셋이 정해지면
+`DatasetProvider` 를 채우고 `SEED_SOURCE=dataset` 으로 바꾸면 된다.
+데이터셋 관련 코드는 지우지 않고 `scripts/_deferred/` 에 보관돼 있다.
+
+관련 문서: [`docs/CONTRACTS.md`](docs/CONTRACTS.md) (팀 인터페이스) ·
+[`docs/BACKEND_INTEGRATION.md`](docs/BACKEND_INTEGRATION.md) ·
+[`docs/DEMO_RUNBOOK.md`](docs/DEMO_RUNBOOK.md) ·
+[`scripts/_deferred/README.md`](scripts/_deferred/README.md) (보류 코드 복원 절차)
 
 ## 1. 실행 방법
 
 ```bash
-make setup          # uv venv(3.11) + 의존성 + .env 생성
-make data           # 데이터 획득 → 정규화 → export → SQLite (없으면 synth 폴백)
-make dev            # 목 모드 서버 :8000
+make setup      # uv venv(3.11) + 의존성 + .env 생성
+make check      # ruff + mypy + 픽스처 검증  ← 여기서 통과해야 나머지가 의미 있다
+make dev        # 목 모드 서버 :8000
 ```
 
 확인:
 
 ```bash
-curl -s localhost:8000/health/detail | jq          # 발표 직전 5초 점검
-open http://localhost:8000/docs                    # OpenAPI
-open http://localhost:8000/lab                     # Persona Bot Lab 대시보드
+curl -s localhost:8000/health/detail | jq   # 시드 소스·어댑터·능력 플래그·예산 한눈에
+open http://localhost:8000/lab             # Persona Bot Lab (실행 전 비용 확인 필수)
+open http://localhost:8000/ops             # 예산 게이지·세션 원가
+open http://localhost:8000/docs            # OpenAPI
 ```
 
-전체 타깃:
+데모 당일:
+
+```bash
+make estimate   # 드라이런 비용 추정 (실제 호출 없음) — Lab 돌리기 전에 항상
+make demo       # 캐시 워밍업 + 데모 모드 기동
+make demo-check # 시나리오 3종 기대값 검증 (문구 전문 출력)
+```
 
 | 명령 | 설명 |
 |---|---|
-| `make setup` | venv + 의존성 설치 |
-| `make data` | 데이터 파이프라인 전체 (fetch → build → export → provenance → seed) |
-| `make data-synth` | 외부 데이터 무시하고 합성만으로 완주 |
-| `make dev` | 목 모드 개발 서버 (reload) |
-| `make demo` | 데모 모드 (LLM 디스크 캐시 + 캐시 워밍업 후 기동) |
-| `make lab` | Persona Bot Lab 45세션 CLI 실행 |
-| `make check` | ruff + mypy + 헬스체크 + 데모 시나리오 검증 |
-| `make demo-check` | 데모 시나리오 3종만 검증(문구 전문 출력) |
-| `make test` | pytest |
-| `make contracts` / `make docs` | 계약·출처 문서 재생성 |
+| `make setup` | venv + 의존성 + `.env` |
+| `make check` | ruff + mypy + 픽스처 검증 |
+| `make verify` | check + pytest + 헬스체크 + 시나리오 검증 (커밋 전) |
+| `make dev` / `make demo` | 개발 서버 / 데모 모드 서버 |
+| `make lab` | Persona Bot Lab (예상 비용 확인 후 실행, `--yes` 로 생략) |
+| `make estimate` | 드라이런 비용 추정 |
+| `make cache-stats` | 캐시 히트율·절감액 |
+| `make fixtures` | 픽스처만 검증 |
 | `make clean-db` / `make clean-cache` | SQLite / LLM 캐시 삭제 |
 
-스크립트는 프로젝트 루트에서 `python -m scripts.<name>` 으로 실행한다
-(편집 설치 `.pth` 가 환경에 따라 `sys.path` 에 안 잡히는 문제를 우회한다).
+스크립트는 루트에서 `python -m scripts.<name>` 으로 실행한다.
 
-## 2. 데이터셋 준비
+## 2. 시드 데이터 (픽스처)
 
-### Kaggle 인증
+```
+fixtures/products.json        상품 12개  (BAG 4 / SHOES 3 / WATCH 2 / WALLET 2 / BELT 1)
+fixtures/customers.json       고객 6명   (VIP 2 / ESTABLISHED 3 / NEW 1, 5명은 페르소나 바인딩)
+fixtures/assets.json          개체 18개  (컨디션 54~97)
+fixtures/session_events.json  시나리오 3종 (사이즈 / 가격 / 재고, 9~11 이벤트)
+```
+
+데모가 성립하려면 아래 세 개가 반드시 있어야 하고, `make fixtures` 가 검사한다.
+
+- **AS-0001 컨디션 71점 + 핸들 마모 임계 근접** — 발표 대본의 핵심 대사
+- **AS-0016 컨디션 97점** — 대비용 신품급
+- **AS-0007 컨디션 54점** — 리세일/케어 시나리오용
+
+그 밖에 검사하는 것: 계약 스키마, 참조 정합성, 가격 대역(150만~1,200만), 재고 음수 금지,
+**시나리오 이벤트에서 규칙이 도출한 라벨이 `label_hint` 와 일치하는지**, 페르소나 바인딩,
+이벤트 타임스탬프가 고정값인지(현재 시각이 섞이면 LLM 캐시가 매 실행 무효화된다).
+
+`image_path` 는 플레이스홀더다. 프론트 담당이 더미 이미지를 채우고 실물은 데이터셋 확정 후 붙인다.
+
+## 3. 예산 통제 (100달러)
 
 ```bash
-pip install kaggle
-# https://www.kaggle.com/settings → API → Create New Token → kaggle.json 다운로드
-mkdir -p ~/.kaggle && mv ~/Downloads/kaggle.json ~/.kaggle/ && chmod 600 ~/.kaggle/kaggle.json
-python -m scripts.fetch_data
+make estimate                    # 드라이런: 시나리오 3종 + Lab 1회 비용 추정
+make cache-stats --by-run        # 히트율. 재실행 90% 미만이면 프롬프트에 비결정적 값이 있다
+curl -s localhost:8000/ops/summary | jq '.budget, .per_session'
 ```
 
-### H&M 은 대회 규칙 수락이 필요하다 (현재 미수락 → 합성 폴백 중)
+- **호출 전 게이트**: 입력 토큰을 추정해 하드 리밋(85달러)을 넘길 호출은 **실행하지 않는다**.
+  사후 집계로는 늦다. 거부되면 캐시 또는 결정적 템플릿으로 응답한다.
+- **용도별 티어** (`config/model_routing.yaml`): 상담·심판 = 상위 / 페르소나·분류·컨디션 소견 = 저가.
+- **캐시 기본 ON**: 키에 프롬프트·모델·temperature·seed 를 넣어 모델을 바꾸면 자동 무효화된다.
+- **Lab 실행 전 확인**: `/lab/run` 은 `confirm=true` 없이 409(예상 비용 동봉). 대시보드는
+  비용 다이얼로그를 띄우고, CLI 는 `--yes` 를 요구한다.
 
-`transactions_train.csv` 는 competition 데이터라 **웹에서 규칙에 동의하지 않으면 API 다운로드가
-403** 이다(파일 목록 조회는 되지만 다운로드가 막힌다).
+드라이런 실측 (high=`gpt-4o` / low=`gpt-4o-mini` 가정, 캐시 미스 상한):
 
-```
-https://www.kaggle.com/competitions/h-and-m-personalized-fashion-recommendations/rules
-→ "I Understand and Accept" → make data 재실행
-```
-
-동의 전에도 파이프라인은 완주한다. 고객·거래 슬라이스만 합성으로 채워지고, 그 사실이
-`data/processed/provenance.json` 과 `docs/DATA_PROVENANCE.md` 에 기록된다.
-
-### 수동 다운로드 / 다른 경로에 둔 파일
-
-```bash
-# 원본을 다른 디스크에 뒀다면 env 로 가리킨다
-HM_TRANSACTIONS_PATH=/mnt/data/transactions_train.csv make data
-STYLES_CSV_PATH=... FASHION_IMAGES_PATH=... CLICKSTREAM_CSV_PATH=... make data
-```
-
-MVTec AD 는 **CC BY-NC-SA 4.0(상업적 사용 금지)** 이라 자동 다운로드하지 않는다.
-`data/raw/mvtec/` 에 직접 놓으면 인식하고, 없으면 조용히 건너뛴다.
-
-### 합성 폴백만으로 돌리기
-
-```bash
-make data-synth                      # 상품 40 / 고객 30 / 세션 60 전부 합성
-python -m scripts.synth_fallback --dry-run
-```
-
-## 3. 팀원별 전달 사항
-
-전부 `exports/` 에 있고 스키마는 [`exports/README.md`](exports/README.md) 에 있다.
-필드명은 `contracts/` 의 Pydantic 모델과 맞춰져 있으니 파이썬이면 그대로 import 해서 검증하는 편이 안전하다.
-
-### AI1 — 인텐트/망설임 분류
-
-- **파일**: `exports/intent_trainset.parquet` (60행, `split` 컬럼으로 train/val 8:2 계층 분할)
-- **할 일**: `POST /intent/classify` 구현. 입출력은 `docs/CONTRACTS.md` 그대로.
-- **입력 그대로 쓰기**: `events_json` 컬럼이 계약의 `SessionEvent[]` 다. 그대로 모델 입력으로 쓸 수 있다.
-- **반드시 읽을 것**: 라벨은 사람이 아니라 규칙(`app/intent_rules.py`)이 만들었다. 규칙을 외우면
-  val 정확도가 1.0 에 가까워지는데 그건 성능이 아니라 누수다. 규칙이 쓰지 않는 신호(체류 분포,
-  순서 패턴)로 일반화하는지 함께 보고해 달라. 60행은 적으니 `build_sessions.py --force` 로
-  세션 수를 늘려 증강하는 편이 스키마 안전하다.
-- **비교 기준선**: 지금 목 어댑터가 그 규칙 엔진이다. 즉 "규칙 대비 개선" 을 같은 기준으로 잴 수 있다.
-
-### AI2 — 클라이언텔링 상담
-
-- **파일**: `exports/catalog_rag.jsonl` (상품 40개 문서, `{id, text, metadata}` — 벡터 스토어에 바로 투입),
-  `exports/customer_context.json` (고객 30명 × 소유 자산 + 컨디션 + `priority_asset_ids`)
-- **할 일**: `POST /clienteling/reply` 구현.
-- **하드 요구사항**: `owned_assets` 가 비어 있지 않으면 **`cited_asset_ids` 를 반드시 채운다.**
-  비면 오케스트레이터가 `owned_assets_used=false` 로 표시하고 경고 로그를 남긴다(제품 실패 신호).
-  Persona Bot Lab 의 전략 S2 는 인용 여부로 평가되므로, 이 필드가 없으면 S2 효과가 0으로 측정된다.
-- **인용 순서**: `priority_asset_ids` 가 인용 우선순위다(컨디션 낮음/케어 임박/동일 카테고리 순).
-- **문장 예시**: 지금 목 응답이 기준선이다. `python -m scripts.check_demo --verbose` 로 3종 시나리오 문구를 볼 수 있다.
-
-### 백엔드 — 개체 지문 / 컨디션 / 자산
-
-- **할 일**: `POST /fingerprint/match`, `POST /condition/score`, `GET /assets/{customer_id}`
-- **이미 만든 API 와의 차이**: [`docs/BACKEND_INTEGRATION.md`](docs/BACKEND_INTEGRATION.md) 에 필드
-  대응표가 있다. 통합 레이어가 레거시 스키마(`user_id`/`purchase_date`/`wear_details`/`reply`)를
-  자동 매핑하므로 **백엔드를 고치지 않아도 붙는다.** 단 `cited_asset_ids` 는 예외(위 참고).
-- **지문 임베딩 대상 목록**: `sqlite3 data/app.db "select asset_id, angle, path from fingerprints where passed=1"`
-  — 품질 검증(해상도/블러/밝기/과노출)은 `scripts/register_fingerprint.py` 가 이미 끝냈다.
-- **촬영 규약**: `docs/FINGERPRINT_CAPTURE.md`
-
-### 프론트
-
-- **단일 진입점**: `POST /session/advise` → `docs/CONTRACTS.md` 의 `AdviseResponse` 하나만 렌더하면 된다.
-- 화면 채우기용 읽기 전용: `GET /catalog`, `GET /catalog/{id}`, `GET /customers`, `GET /sessions`,
-  `GET /sessions/{id}`, 이미지는 `/static/images/{product_id}.jpg` (원본 60x80 — 작게 렌더할 것)
-- 응답 헤더 `X-Degraded`, `X-Owned-Assets-Used` 를 보면 폴백 여부와 차별점 작동 여부를 알 수 있다.
-- CORS 는 전면 허용(`*`)이다.
-
-## 4. 목 → 실제 전환
-
-모듈별로 하나씩 켠다. 전역 `ADAPTER_MODE=http` 는 전부 켜므로 마지막에 쓴다.
-
-```bash
-# 인텐트만 실제 AI1 서버로
-INTENT_ADAPTER=http INTENT_BASE_URL=http://localhost:8101 make dev
-
-# 자산 + 상담을 팀 백엔드로 (같은 서버여도 무관)
-ASSET_ADAPTER=http CLIENTELING_ADAPTER=http \
-  ASSET_BASE_URL=http://localhost:8000 CLIENTELING_BASE_URL=http://localhost:8000 make dev
-
-# 전부 실제
-ADAPTER_MODE=http make dev
-```
-
-| env | 값 | 기본 |
+| 항목 | 호출 | 비용 |
 |---|---|---|
-| `ADAPTER_MODE` | `mock` / `http` | `mock` |
-| `INTENT_ADAPTER` / `CLIENTELING_ADAPTER` / `ASSET_ADAPTER` / `FINGERPRINT_ADAPTER` / `CONDITION_ADAPTER` | `mock` / `http` (전역보다 우선) | 미설정 |
-| `*_BASE_URL` | 각 모듈 업스트림 | `localhost:8101~8105` |
-| `UPSTREAM_TIMEOUT_SECONDS` / `UPSTREAM_RETRIES` | 타임아웃/재시도 | `5.0` / `1` |
+| Lab 1회 (45세션) | 292건 (상담 146 / 페르소나 101 / 심판 45) | **$1.13 ≈ 1,563원** |
+| 상담 세션 1건 | ~6.5건 | **$0.0252 ≈ 35원** |
+| 데모 시나리오 3종 재생 | 3건 | $0.0165 ≈ 23원 |
+| 전부 상위 티어로 돌렸다면 | 292건 | $1.47 (티어 분리로 **23% 절감**) |
 
-전환 확인:
+단가는 `config/model_pricing.yaml` 이고 **대회 API 실단가가 확정되면 이 파일을 먼저 고친다**.
+미등록 모델은 보수적 기본값(입력 $1/1M, 출력 $3/1M)으로 계산한다.
+
+## 4. 팀원별 전달 사항
+
+- **전원**: 대회 API 는 **텍스트 전용**이다. 이미지 입력을 전제한 설계를 하지 말고, 필요하면
+  로컬 모델이나 고전 CV 로 간다. `config/llm_capabilities.json` 이 단일 출처다.
+- **전원**: LLM 호출은 **용도 태그와 함께 게이트웨이를 지나야** 예산이 통제된다.
+  `get_llm().complete(messages, purpose="clienteling", ...)` 형태로 쓰고 새 용도는
+  `config/model_routing.yaml` 에 티어를 지정한다. 태그 없이 호출하면 저가 티어(`other`)로 떨어진다.
+- **AI1 (인텐트)**: `POST /intent/classify` 구현. 지금 목은 `app/intent_rules.py` 규칙 엔진이라
+  "규칙 대비 개선"을 같은 기준으로 비교할 수 있다. 학습·평가 데이터는 데이터셋 확정 후 제공한다
+  (기존 산출물은 `data/_deferred/exports/` 에 참고용으로 남겨 뒀다).
+- **AI2 (상담)**: `POST /clienteling/reply` 구현. **`owned_assets` 가 있으면 `cited_asset_ids` 를
+  반드시 채운다** — 비면 오케스트레이터가 `owned_assets_used=false` 로 표시하고 Lab 의 S2 효과가
+  0으로 측정된다. 프롬프트 예시는 `app/adapters/clienteling.py` 의 `build_prompt`.
+- **백엔드**: `POST /condition/score` 를 고전 CV 로 구현한다. **계약은 그대로 유지**되므로 목을
+  `CONDITION_ADAPTER=http` 로 바꾸는 것만으로 교체된다. 기존 API 와의 필드 차이는
+  `docs/BACKEND_INTEGRATION.md` 에 매핑표가 있다(자동 흡수되지만 `cited_asset_ids` 는 예외).
+- **프론트**: `POST /session/advise` 하나만 렌더하면 된다. 부가 조회는 `/catalog`, `/customers`,
+  `/sessions`. 응답 헤더 `X-Degraded`, `X-Owned-Assets-Used` 로 폴백·차별점 작동을 알 수 있다.
+  상품 이미지는 플레이스홀더 경로이므로 더미 이미지를 채워 달라.
+
+## 5. 목 → 실제 전환
 
 ```bash
-curl -s localhost:8000/health/detail | jq '.adapters'
-# mode 가 http 이고 last_status 가 ok 또는 ok(legacy-mapped) 인지 본다.
+INTENT_ADAPTER=http INTENT_BASE_URL=http://localhost:8101 make dev   # 모듈별 부분 전환
+CONDITION_ADAPTER=http make dev                                      # 백엔드 CV 채점 붙일 때
+ADAPTER_MODE=http make dev                                           # 전역(마지막에)
 ```
 
-업스트림이 죽어도 `/session/advise` 는 **200 + `X-Degraded: true`** 로 응답하고 규칙/템플릿
-폴백 문구를 돌려준다(발표 중 에러 화면 금지). 어느 단계가 폴백됐는지는 응답 `trace` 에 있다.
+업스트림이 죽어도 `/session/advise` 는 200 + `X-Degraded: true` 로 응답하고 규칙·템플릿 폴백
+문구를 유지한다. 어느 단계가 폴백됐는지는 응답 `trace` 에 있다.
 
-## 5. LLM 연결
+## 6. 데이터셋 확정 시 교체 지점
 
-OpenAI 호환 엔드포인트만 쓴다(로컬 vLLM / 상용 API 모두 동일).
+1. `app/data/provider.py` 의 `DatasetProvider` 구현 (5개 메서드) → `SEED_SOURCE=dataset`
+2. `scripts/_deferred/` 의 빌더 복원 (`README.md` 의 절차, ruff/mypy 제외 목록에서 제거)
+3. `data/personas.yaml` / `data/demo_scenarios.yaml` 의 고객·상품·세션 id 갱신
+4. `fixtures/` 는 회귀 테스트용으로 유지(테스트가 픽스처 규모를 검증한다)
+5. `python -m scripts.validate_fixtures --provider dataset` 로 같은 검증 통과 확인
 
-```bash
-LLM_BASE_URL=http://localhost:8000/v1 LLM_MODEL=qwen2.5-7b-instruct LLM_API_KEY=dummy make dev
-LLM_BASE_URL=https://api.openai.com/v1 LLM_MODEL=gpt-4o-mini LLM_API_KEY=sk-... make demo
-```
+**오케스트레이터·어댑터·Lab·데모 코드는 손대지 않는다.** 그게 provider 를 둔 이유다.
 
-- 키가 없으면 **결정적 템플릿 폴백**으로 동작한다(크래시하지 않는다). 상담 문구·페르소나 봇·심판
-  모두 규칙 모델로 돌아가며, 그 사실이 `/lab` 대시보드와 `/health/detail` 에 표시된다.
-- `DEMO_MODE=true` 면 모든 LLM 응답이 `.cache/llm/` 에 캐시되고 동일 입력은 캐시에서 반환된다
-  (네트워크가 끊겨도 워밍업된 시나리오는 그대로 돌아간다).
-
-## 6. 구조
+## 7. 구조
 
 ```
-contracts/        팀 전체 인터페이스(Pydantic v2) — 단일 출처. docs/CONTRACTS.md 는 여기서 생성
+contracts/       팀 전체 인터페이스(Pydantic v2). docs/CONTRACTS.md 는 여기서 생성
+fixtures/        손으로 쓴 시드 데이터 (지금 유일한 시드 소스)
+config/          llm_capabilities.json / model_routing.yaml / model_pricing.yaml
 app/
-  adapters/       모듈별 Mock/Http 어댑터 + 레지스트리(전환 지점)
-  services/       오케스트레이터(5단계 플로우 + 인용 검증)
-  lab/            Persona Bot Lab (고객 봇 / 심판 / 러너 / 대시보드)
-  intent_rules.py 망설임 분류 규칙 — 학습셋 라벨과 목 응답이 공유
-  clienteling_rules.py  상담 문구 조립 규칙(LLM 폴백 겸 기준선)
-  domain.py       컨디션 계산·소견·럭셔리 어휘(모두 결정적)
-scripts/          데이터 파이프라인 + 문서 생성기 + Lab/데모 CLI
-data/processed/   정규화 산출물(사실의 원본). SQLite 는 조회용 사본
-exports/          팀원 배포용 (AI1 학습셋 / AI2 RAG·컨텍스트)
+  data/          SeedDataProvider — 데이터셋 교체의 유일한 경계
+  llm/           게이트웨이(client) + 예산(budget) + 라우팅(routing) + 단가(pricing)
+  adapters/      모듈별 Mock/Http 어댑터 + 레지스트리(전환 지점)
+  services/      오케스트레이터(5단계 + 인용 검증)
+  lab/           Persona Bot Lab (고객 봇 / 심판 / 러너 / 비용추정 / 대시보드)
+  intent_rules.py       망설임 분류 규칙(목 응답과 라벨 도출이 공유)
+  clienteling_rules.py  상담 문구 조립(LLM 폴백 겸 기준선)
+scripts/         검증·Lab·데모·비용 CLI  (_deferred/ = 데이터셋 코드 보관)
+data/_deferred/  데이터셋 기반 산출물 보관(런타임 미사용)
 ```
 
-## 7. 재현성 규칙 (깨면 데모가 깨진다)
+## 8. 재현성 규칙
 
-- 모든 샘플링·분할은 `seed=42`. 난수 대신 `sha1` 기반 결정적 선택을 쓴다.
-- 기준시각은 `REFERENCE_NOW = 2026-08-14T12:00:00+09:00` 고정. 컨디션이 경과 연수 함수라
-  `now()` 를 쓰면 "컨디션 71점" 대사가 매일 흔들린다.
-- `data/processed/catalog_luxury.json` 은 `--force` 없이 재생성하지 않는다(상품명 = 발표 대본).
-- 데모 시나리오는 고객·상품·전략·세션을 id 로 못박는다. `make demo-check` 로 기대값을 검증한다.
+- 기준시각은 `app/config.py` 의 `REFERENCE_NOW`(2026-08-14T12:00+09:00) 고정.
+- 시나리오는 고객·상품·세션 id 를 못박고 `make demo-check` 로 기대값을 검증한다.
+- 픽스처 타임스탬프는 고정값이다. 현재 시각이 프롬프트에 들어가면 캐시가 죽고 예산이 샌다.
+- Lab 반복 회차는 초기 신뢰도 ±0.3 과 오프닝 변형만 다르다(결정적 시스템에서 같은 조건 N회는
+  의미가 없어서 그렇게 설계했다).

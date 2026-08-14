@@ -20,9 +20,10 @@ import time
 from app.config import get_settings
 from app.db import init_db
 from app.demo import build_request, check_expectations, load_scenarios
+from app.lab.cost import estimate_lab_cost
 from app.lab.runner import LabConfig, run_lab
 from app.lab.summary import summarize
-from app.llm import get_llm
+from app.llm import get_budget, get_llm
 from app.services.orchestrator import Orchestrator
 from scripts.common import banner
 
@@ -31,6 +32,7 @@ def main() -> int:
     ap = argparse.ArgumentParser(description="데모 캐시 워밍업")
     ap.add_argument("--skip-lab", action="store_true", help="Lab 45세션을 건너뛴다")
     ap.add_argument("--runs", type=int, default=None, help="Lab 반복 횟수")
+    ap.add_argument("--yes", action="store_true", help="예상 비용 확인 없이 진행")
     args = ap.parse_args()
 
     banner("데모 캐시 워밍업")
@@ -61,6 +63,26 @@ def main() -> int:
         for problem in problems:
             print(f"         ! {problem}")
 
+    if not args.skip_lab:
+        config = LabConfig.from_settings(runs_per_pair=args.runs)
+        # 실제 과금이 발생하는 상태(키 연결 + 드라이런 아님)에서만 확인을 요구한다.
+        if settings.llm_enabled and not settings.llm_dry_run:
+            estimate = estimate_lab_cost(config.total_sessions, config.max_turns)
+            budget = get_budget().state(refresh=True)
+            print(
+                f"\n  Lab 예비 실행 예상 비용: ${estimate['total_usd']:.4f} "
+                f"(≈{estimate['total_krw']:,.0f}원) / 하드 잔액 ${budget.remaining_to_hard:.4f}"
+            )
+            if estimate["total_usd"] > budget.remaining_to_hard:
+                print("  ! 하드 리밋 잔액 초과 → Lab 워밍업을 건너뛴다(시나리오 캐시는 채웠다)")
+                args.skip_lab = True
+            elif not args.yes:
+                if not sys.stdin.isatty():
+                    print("  ! 확인이 필요하다. --yes 를 붙이거나 --skip-lab 으로 실행하라")
+                    return 1
+                if input("  이 비용으로 워밍업할까? [y/N] ").strip().lower() not in {"y", "yes"}:
+                    print("  Lab 워밍업을 건너뛴다")
+                    args.skip_lab = True
     if not args.skip_lab:
         config = LabConfig.from_settings(runs_per_pair=args.runs)
         print(f"\n  Persona Bot Lab {config.total_sessions}세션 예비 실행")

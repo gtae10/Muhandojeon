@@ -37,8 +37,20 @@
 
 계약은 `price_krw`(원, 정수), 백엔드는 `price_usd`(달러, float)다. 임의 환율로 곱하면 화면
 숫자와 발표 대본이 어긋나므로 **어댑터에서 변환하지 않는다.** 카탈로그는 통합 레이어의
-`data/processed/catalog_luxury.json`(원화 고정)을 단일 출처로 쓰고, 백엔드의 상품 가격은
+`fixtures/products.json`(원화 고정, provider 경유)을 단일 출처로 쓰고, 백엔드의 상품 가격은
 쓰지 않는 것을 권한다. 굳이 백엔드 값을 쓰려면 `price_krw` 를 백엔드에 추가하는 편이 안전하다.
+
+## 컨디션 채점 — 비전 API 부재(확정)
+
+대회 제공 API 에는 **비전 모델이 없다**. 그래서 이미지 기반 컨디션 채점은 API 로 하지 않고
+**백엔드 담당이 고전 CV(OpenCV)로 구현**한다. 통합 레이어의 계약은 그대로다.
+
+- 계약: `POST /condition/score` — 입력 `{asset_id, image_paths[]}`, 출력
+  `{asset_id, score, findings[], next_service_months, confidence}` (변경 없음)
+- 현재 목: 이미지를 **보지 않고** 시드 픽스처의 점수·소견을 반환한다(`image_paths` 가 와도 무시).
+- 교체 방법: `CONDITION_ADAPTER=http CONDITION_BASE_URL=... make dev` — 코드 수정 없음.
+- `findings[].part` 는 계약 열거형(handle/corner/hardware/stitching/lining/exterior/strap/sole/
+  upper/edge_coat/dial/bracelet)을 그대로 쓴다. `wear_details` 형태로 주면 어댑터가 매핑한다.
 
 ## 반드시 채워야 하는 것 — `cited_asset_ids`
 

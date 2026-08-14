@@ -1,6 +1,6 @@
 """소유 개체 조회 어댑터 (백엔드).
 
-목 구현은 `data/processed/customers.json`(Phase 2 산출물)을 읽는다.
+목 구현은 `SeedDataProvider`(현재 `fixtures/*.json`)를 통해 시드 개체를 읽는다.
 HTTP 구현은 우리 계약 경로(`/assets/{id}`)를 먼저 시도하고, 실패하면 이미 만들어진 팀 백엔드 경로
 (`/api/users/{id}/assets`)를 시도한 뒤 필드를 매핑한다.
 """
@@ -20,10 +20,10 @@ from contracts.common import AssetPart, CustomerTier, ProductCategory, Severity
 
 
 class MockAssetAdapter(AdapterBase):
-    """Phase 2 산출물 기반 소유 개체 조회."""
+    """시드 픽스처 기반 소유 개체 조회 (provider 경유)."""
 
     def __init__(self, store: DataStore | None = None) -> None:
-        super().__init__(module="asset", mode="mock", target="data/processed/customers.json")
+        super().__init__(module="asset", mode="mock", target="SeedDataProvider (fixtures)")
         self.store = store or get_store()
 
     def assets(self, customer_id: str) -> CustomerAssetsResponse:

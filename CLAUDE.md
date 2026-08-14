@@ -21,18 +21,33 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - 비담당(다른 팀원): 인텐트 분류 모델(AI1), 상담 생성 모델(AI2), 개체 지문 임베딩/컨디션 CV(백엔드)
 - 비담당 모듈은 **목(mock)으로 두고 계약만 정확히 맞춘다.** 목을 실제 모델로 대체하는 일은 `ADAPTER_MODE`/모듈별 env 전환으로만 한다.
 
+## 확정된 두 제약 (이 레포의 모든 설계 판단의 전제)
+
+1. **대회 API 에 비전 모델이 없다(텍스트 전용).** `config/llm_capabilities.json` 의
+   `vision: false` 를 신뢰하고 런타임 탐지를 하지 않는다. **이미지를 프롬프트에 넣는 코드를
+   만들지 않는다** — 호출이 실패하면서 토큰만 태운다. 컨디션 진단의 이미지 채점은 백엔드
+   담당이 고전 CV 로 구현하며 계약(`POST /condition/score`)은 불변이다.
+2. **크레딧 총액 100달러, 초과 시 복구 불가.** 모든 LLM 호출은 `app/llm/` 게이트웨이를 지나고
+   용도 태그(purpose)를 갖는다. 하드 리밋 85달러를 넘길 호출은 **실행 전에** 거부된다.
+
+**외부 데이터셋 미확정.** 시드는 `fixtures/*.json`(손으로 작성)이고 접근은
+`app/data/provider.py` 의 `SeedDataProvider` 만 지난다. 데이터셋 관련 코드는 삭제하지 않고
+`scripts/_deferred/` 에 보관돼 있다(ruff/mypy 제외 대상). **데이터셋 코드를 새로 쓰지 않는다.**
+
 ## 자주 쓰는 명령
 
 ```bash
 make setup     # uv venv (Python 3.11) + 의존성 설치
-make data      # 데이터 획득 → 정규화 → export (외부 데이터 없으면 synth 폴백)
-make dev       # 시드 + 서버 기동 (목 모드, :8000)
-make demo      # DEMO_MODE=true 기동 + LLM 캐시 워밍업
-make check     # ruff + mypy + 헬스체크
-make lab       # Persona Bot Lab 45세션 시뮬레이션 실행(CLI)
+make check     # ruff + mypy + 픽스처 검증
+make verify    # check + pytest + 헬스체크 + 데모 시나리오
+make dev       # 서버 기동 (목 모드, :8000)
+make demo      # DEMO_MODE=true 기동 + 캐시 워밍업
+make lab       # Persona Bot Lab (예상 비용 확인 후 실행)
+make estimate  # 드라이런 비용 추정 — Lab 돌리기 전에 항상
+make cache-stats # 캐시 히트율·절감액 (재실행 90% 미만이면 프롬프트에 비결정적 값)
 make demo-check # 데모 시나리오 3종 검증 (발표 직전 필수)
-make docs      # 생성 문서 재생성 (CONTRACTS.md + DATA_PROVENANCE.md)
-make clean-db  # SQLite 삭제 (data/processed/*.json 은 보존)
+make fixtures  # 픽스처 검증만
+make clean-db  # SQLite 삭제 (시드는 fixtures/ 에 있어 영향 없음)
 ```
 
 테스트:
@@ -49,45 +64,52 @@ uv run mypy .
 1. `contracts/` — **모든 모듈의 인터페이스 단일 출처(single source of truth).** Pydantic v2 모델.
    팀 전체가 이 파일 + `docs/CONTRACTS.md`만 보고 자기 모듈을 붙인다. 계약 변경은 `docs/CONTRACTS.md`와
    `contracts/examples/*.json`을 **같은 커밋에서** 갱신한다.
-2. `app/adapters/` — 모듈별로 `Mock*Adapter` / `Http*Adapter` 두 구현이 동일 Protocol을 만족한다.
+2. `app/data/provider.py` — **데이터 접근의 유일한 경계.** `SeedDataProvider` Protocol +
+   `FixtureProvider`(사용 중) + `DatasetProvider`(스텁). `SEED_SOURCE=fixture|dataset`.
+   런타임 조회는 `app/store.py`(provider 위의 인메모리 캐시)를 경유한다.
+   **픽스처 파일을 직접 읽는 코드를 다른 곳에 만들지 않는다.**
+3. `app/llm/` — 게이트웨이. `client`(호출) / `budget`(3단 가드) / `routing`(용도→티어→모델) /
+   `pricing`(토큰·단가). 모든 호출은 `purpose=` 를 넘긴다. 새 용도는
+   `config/model_routing.yaml` 에 티어를 지정한다(태그 없으면 저가 티어로 떨어진다).
+4. `app/adapters/` — 모듈별로 `Mock*Adapter` / `Http*Adapter` 두 구현이 동일 Protocol을 만족한다.
    `app/adapters/registry.py`가 env를 읽어 실제 인스턴스를 고른다.
    - `ADAPTER_MODE=mock|http` (전역) + `INTENT_ADAPTER`, `CLIENTELING_ADAPTER`, `ASSET_ADAPTER`,
      `FINGERPRINT_ADAPTER`, `CONDITION_ADAPTER` (모듈별 오버라이드, 전역보다 우선)
-   - **목은 Phase 2 산출 실데이터(`data/processed/*.json`)를 읽어서 응답한다.** 하드코딩 더미 문자열 금지.
-3. `app/services/orchestrator.py` — `/session/advise`의 5단계 플로우(인텐트 → 자산 조회 → 컨디션
+   - **목은 provider 를 통해 픽스처 실데이터를 읽어 응답한다.** 하드코딩 더미 문자열 금지.
+   - `MockConditionAdapter` 는 **이미지를 보지 않는다**(비전 부재 확정). `image_paths` 가 와도 무시.
+5. `app/services/orchestrator.py` — `/session/advise`의 5단계 플로우(인텐트 → 자산 조회 → 컨디션
    우선 정렬 → 상담 호출 → **인용 검증**). 데모의 심장.
-4. `app/lab/` — Persona Bot Lab. 페르소나 봇(고객) ↔ 오케스트레이터(직원) ↔ 심판.
+6. `app/lab/` — Persona Bot Lab. 페르소나 봇(고객) ↔ 오케스트레이터(직원) ↔ 심판.
    5 페르소나 × 3 전략 × N회. 결과·대화 전문은 SQLite에 저장하고 `/lab` 대시보드에서 조회.
    - **판정 함수는 전략 id를 보지 않는다**(`rule_verdict`, `evaluate_turn`, `extract_features`).
      테스트가 시그니처와 소스를 검사해 이를 고정한다. 전략이 만든 *문구 차이*만이 결과를 갈라야 한다.
    - LLM 미연결이면 페르소나·심판이 규칙 모델이다. 그 경우 S2 우세는 규칙의 가정이 반영된
      순환이므로 캐비어트를 지운 채 수치를 인용하지 않는다.
-5. `app/demo.py` + `data/demo_scenarios.yaml` — 데모 시나리오 3종. 고객·상품·전략·세션을 id로
+7. `app/demo.py` + `data/demo_scenarios.yaml` — 데모 시나리오 3종. 고객·상품·전략·세션을 id로
    못박고 `expect` 블록을 `make demo-check`가 검증한다.
-6. `app/personas.py` / `app/strategies.py` — `data/personas.yaml`, `data/strategies.yaml` 로딩.
+8. `app/personas.py` / `app/strategies.py` — `data/personas.yaml`, `data/strategies.yaml` 로딩.
    페르소나는 Phase 2에서 만든 **실제 고객**에 바인딩된다(`validate_bindings()`가 검사).
-7. `scripts/` — 데이터 파이프라인 + 문서 생성기 + Lab/데모 CLI.
-   `data/raw/`(원본, gitignore) → `data/processed/`(정규화) → SQLite.
+9. `scripts/` — 픽스처 검증 + 문서 생성기 + Lab/데모/비용 CLI.
+   데이터셋 코드는 `scripts/_deferred/`(실행 경로 밖).
 
-## 데이터 파이프라인 불변식 (깨면 데모가 깨진다)
+## 시드 픽스처 불변식 (깨면 데모가 깨진다)
 
-- **모든 샘플링/분할은 seed=42 고정.** 데모가 매번 달라지면 안 된다. `random`/`polars` 시드를 반드시 명시한다.
-- **기준시각은 `app/config.py`의 `REFERENCE_NOW`(2026-08-14T12:00+09:00) 하나뿐이다.** 빌더와
-  런타임이 같은 값을 쓴다. `datetime.now()`로 컨디션을 계산하면 "71점" 대사가 매일 흔들린다.
-- **`data/processed/catalog_luxury.json`은 한 번 만들면 재생성하지 않는다.** 상품명이 바뀌면 발표 대본이 깨진다.
-  `scripts/build_catalog.py`는 `--force` 없이 기존 파일을 덮어쓰지 않는다.
-- **`transactions_train.csv`(3,000만 행 이상)를 메모리에 올리지 않는다.** polars `scan_csv` lazy만 사용.
-- 컨디션 점수·findings·티어는 모두 **결정적 계산**(경과 연수 × 카테고리 마모 계수)이다. 난수로 만들지 않는다.
-- 데모 대본 핵심 대사를 위해 **최소 1명은 "컨디션 71점, 핸들 마모 임계 근접" 자산**을 갖는다
-  (`scripts/build_customers.py`의 보정 단계). 이 보정을 제거하지 않는다.
-- `DATA_SOURCE=external|synth`. 외부 데이터가 없으면 자동으로 synth 폴백하며, **동일 스키마**를 지킨다.
-- 어떤 필드가 원본이고 어떤 필드가 합성인지 `docs/DATA_PROVENANCE.md`에 유지한다. 심사위원 Q&A 방어용이다.
+- **기준시각은 `app/config.py`의 `REFERENCE_NOW`(2026-08-14T12:00+09:00) 하나뿐이다.**
+- **픽스처 타임스탬프는 고정값이다.** 현재 시각·UUID가 프롬프트에 들어가면 LLM 캐시가 매 실행
+  무효화되고 예산이 샌다. `make cache-stats` 로 재실행 히트율(≥90%)을 확인한다.
+- 데모 전제 3종은 반드시 존재한다: **AS-0001 컨디션 71점 핸들 마모 임계 근접**, AS-0016 97점,
+  AS-0007 54점. `make fixtures` 가 검사한다.
+- 시나리오 라벨은 픽스처에 적지 않고 **이벤트 시퀀스에 `app/intent_rules.py` 규칙을 적용해 도출**한다.
+  `label_hint` 와 어긋나면 검증이 실패한다.
+- 픽스처를 고치면 `make fixtures` → `make demo-check` 를 반드시 통과시킨다.
 
-## 라이선스 주의
+## 예산 규율 (하드 룰)
 
-- **MVTec AD는 CC BY-NC-SA 4.0 — 상업적 사용 금지.** 자동 다운로드하지 않는다.
-  `data/raw/mvtec/`에 수동으로 놓였을 때만 사용하고, 없으면 조용히 건너뛴다.
-- 데이터셋 출처·라이선스·사용 범위는 `docs/DATA_LICENSES.md`에 표로 유지한다.
+- 새 LLM 호출을 추가하면 **반드시 `purpose=` 를 넘긴다.** 태그 없는 호출은 저가 티어로 떨어지고
+  용도별 비용 분해가 깨진다.
+- 캐시를 끄지 않는다(`LLM_CACHE_ENABLED=false` 금지). 프롬프트에 비결정적 값을 넣지 않는다.
+- Lab 을 돌리기 전에 `make estimate`. 실행 API/CLI 의 확인 게이트를 우회하지 않는다.
+- 하드 리밋(85달러)을 100으로 올리지 않는다. 15달러는 발표 당일 재실행 여유분이다.
 
 ## 실측 보고 원칙 (Persona Bot Lab)
 

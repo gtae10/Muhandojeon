@@ -74,7 +74,10 @@ class SourceDecision:
 
 
 def decide_source(name: str, path: Path) -> SourceDecision:
-    """`DATA_SOURCE` 설정과 파일 존재 여부로 원본/합성을 판정한다.
+    """**보류된 데이터셋 빌더 전용.** 원본/합성 판정.
+
+    현재 런타임은 이 함수를 쓰지 않는다(시드는 `app/data/provider.py` 경유).
+    `DATA_SOURCE` 설정과 파일 존재 여부로 원본/합성을 판정한다.
 
     - `DATA_SOURCE=synth` → 무조건 합성 (원본이 있어도 무시)
     - `DATA_SOURCE=external` → 파일이 있으면 원본, 없으면 자동 합성 폴백
