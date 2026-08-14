@@ -11,31 +11,12 @@ from __future__ import annotations
 import json
 import os
 from dataclasses import dataclass, field
-from datetime import datetime, timedelta, timezone
 from pathlib import Path
 from typing import Any
 
-from app.config import PROCESSED_DIR, RAW_DIR, get_settings
+from app.config import KST, PROCESSED_DIR, RAW_DIR, REFERENCE_NOW, get_settings
 
-KST = timezone(timedelta(hours=9))
-
-_DEFAULT_REFERENCE_NOW = datetime(2026, 8, 14, 12, 0, 0, tzinfo=KST)
-
-
-def reference_now() -> datetime:
-    """모든 시간 계산의 기준시각(고정). env `REFERENCE_NOW` 로만 덮을 수 있다."""
-    raw = os.environ.get("REFERENCE_NOW")
-    if not raw:
-        return _DEFAULT_REFERENCE_NOW
-    try:
-        parsed = datetime.fromisoformat(raw)
-    except ValueError:
-        print(f"! REFERENCE_NOW 파싱 실패({raw}) → 기본값 사용")
-        return _DEFAULT_REFERENCE_NOW
-    return parsed if parsed.tzinfo else parsed.replace(tzinfo=KST)
-
-
-REFERENCE_NOW = reference_now()
+__all__ = ["KST", "REFERENCE_NOW"]  # 기준시각의 정의는 app.config 에 있다(빌더와 런타임 공유)
 
 CATALOG_PATH = PROCESSED_DIR / "catalog_luxury.json"
 CUSTOMERS_PATH = PROCESSED_DIR / "customers.json"

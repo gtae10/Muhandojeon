@@ -50,7 +50,7 @@
             {
               "part": "handle",
               "severity": "MEDIUM",
-              "note": "핸들 마모 진행, 재코팅 권장 시점 근접"
+              "note": "핸들 표면 마모 진행, 케어 임계 근접"
             },
             {
               "part": "corner",
@@ -63,7 +63,7 @@
           "product_price_krw": 3900000,
           "size_system": "Size 25 / 30 / 35 cm",
           "care_notes": "월 1회 무색 크림으로 보습, 핸들은 6개월마다 상태 점검 권장",
-          "headline_finding": "핸들 마모 진행, 재코팅 권장 시점 근접"
+          "headline_finding": "핸들 표면 마모 진행, 케어 임계 근접"
         },
         {
           "asset_id": "AS-000006",
@@ -77,7 +77,7 @@
             {
               "part": "sole",
               "severity": "MEDIUM",
-              "note": "앞창 마모 진행, 재밑창 시점 근접"
+              "note": "앞창 마모 진행, 케어 임계 근접"
             },
             {
               "part": "upper",
@@ -90,7 +90,7 @@
           "product_price_krw": 2800000,
           "size_system": "EU 35-42 (하프 사이즈 제작 가능) / Last: Vesper",
           "care_notes": "착화 후 슈트리 필수, 3개월마다 크림 보습 및 앞창 마모 점검",
-          "headline_finding": "앞창 마모 진행, 재밑창 시점 근접"
+          "headline_finding": "앞창 마모 진행, 케어 임계 근접"
         },
         {
           "asset_id": "AS-000007",
@@ -104,7 +104,7 @@
             {
               "part": "sole",
               "severity": "MEDIUM",
-              "note": "앞창 마모 진행, 재밑창 시점 근접"
+              "note": "앞창 마모 진행, 케어 임계 근접"
             },
             {
               "part": "upper",
@@ -117,7 +117,7 @@
           "product_price_krw": 2900000,
           "size_system": "EU 35-42 (하프 사이즈 제작 가능) / Last: Nocturne",
           "care_notes": "착화 후 슈트리 필수, 3개월마다 크림 보습 및 앞창 마모 점검",
-          "headline_finding": "앞창 마모 진행, 재밑창 시점 근접"
+          "headline_finding": "앞창 마모 진행, 케어 임계 근접"
         },
         {
           "asset_id": "AS-000005",
@@ -131,7 +131,7 @@
             {
               "part": "handle",
               "severity": "MEDIUM",
-              "note": "핸들 마모 진행, 재코팅 권장 시점 근접"
+              "note": "핸들 표면 마모 진행"
             },
             {
               "part": "corner",
@@ -144,7 +144,7 @@
           "product_price_krw": 6800000,
           "size_system": "Size 25 / 30 / 35 cm",
           "care_notes": "월 1회 무색 크림으로 보습, 핸들은 6개월마다 상태 점검 권장",
-          "headline_finding": "핸들 마모 진행, 재코팅 권장 시점 근접"
+          "headline_finding": "핸들 표면 마모 진행"
         },
         {
           "asset_id": "AS-000008",
@@ -180,7 +180,7 @@
             {
               "part": "handle",
               "severity": "MEDIUM",
-              "note": "핸들 마모 진행, 재코팅 권장 시점 근접"
+              "note": "핸들 표면 마모 진행"
             },
             {
               "part": "corner",
@@ -193,7 +193,7 @@
           "product_price_krw": 8300000,
           "size_system": "Size 25 / 30 / 35 cm",
           "care_notes": "월 1회 무색 크림으로 보습, 핸들은 6개월마다 상태 점검 권장",
-          "headline_finding": "핸들 마모 진행, 재코팅 권장 시점 근접"
+          "headline_finding": "핸들 표면 마모 진행"
         },
         {
           "asset_id": "AS-000013",
@@ -392,7 +392,7 @@
             {
               "part": "sole",
               "severity": "MEDIUM",
-              "note": "앞창 마모 진행, 재밑창 시점 근접"
+              "note": "앞창 마모 진행"
             },
             {
               "part": "upper",
@@ -405,7 +405,7 @@
           "product_price_krw": 3000000,
           "size_system": "EU 35-42 (하프 사이즈 제작 가능) / Last: Vesper",
           "care_notes": "착화 후 슈트리 필수, 3개월마다 크림 보습 및 앞창 마모 점검",
-          "headline_finding": "앞창 마모 진행, 재밑창 시점 근접"
+          "headline_finding": "앞창 마모 진행"
         },
         {
           "asset_id": "AS-000020",
@@ -419,7 +419,7 @@
             {
               "part": "sole",
               "severity": "MEDIUM",
-              "note": "앞창 마모 진행, 재밑창 시점 근접"
+              "note": "앞창 마모 진행"
             },
             {
               "part": "upper",
@@ -432,7 +432,7 @@
           "product_price_krw": 2900000,
           "size_system": "EU 35-42 (하프 사이즈 제작 가능) / Last: Nocturne",
           "care_notes": "착화 후 슈트리 필수, 3개월마다 크림 보습 및 앞창 마모 점검",
-          "headline_finding": "앞창 마모 진행, 재밑창 시점 근접"
+          "headline_finding": "앞창 마모 진행"
         },
         {
           "asset_id": "AS-000016",
@@ -446,7 +446,7 @@
             {
               "part": "handle",
               "severity": "MEDIUM",
-              "note": "핸들 마모 진행, 재코팅 권장 시점 근접"
+              "note": "핸들 표면 마모 진행"
             },
             {
               "part": "corner",
@@ -459,7 +459,7 @@
           "product_price_krw": 3900000,
           "size_system": "Size 25 / 30 / 35 cm",
           "care_notes": "월 1회 무색 크림으로 보습, 핸들은 6개월마다 상태 점검 권장",
-          "headline_finding": "핸들 마모 진행, 재코팅 권장 시점 근접"
+          "headline_finding": "핸들 표면 마모 진행"
         },
         {
           "asset_id": "AS-000014",
@@ -473,7 +473,7 @@
             {
               "part": "handle",
               "severity": "MEDIUM",
-              "note": "핸들 마모 진행, 재코팅 권장 시점 근접"
+              "note": "핸들 표면 마모 진행"
             },
             {
               "part": "corner",
@@ -486,7 +486,7 @@
           "product_price_krw": 11200000,
           "size_system": "Size 25 / 30 / 35 cm",
           "care_notes": "월 1회 무색 크림으로 보습, 핸들은 6개월마다 상태 점검 권장",
-          "headline_finding": "핸들 마모 진행, 재코팅 권장 시점 근접"
+          "headline_finding": "핸들 표면 마모 진행"
         },
         {
           "asset_id": "AS-000023",
@@ -699,7 +699,7 @@
             {
               "part": "handle",
               "severity": "MEDIUM",
-              "note": "핸들 마모 진행, 재코팅 권장 시점 근접"
+              "note": "핸들 표면 마모 진행"
             },
             {
               "part": "corner",
@@ -712,7 +712,7 @@
           "product_price_krw": 6600000,
           "size_system": "Size 25 / 30 / 35 cm",
           "care_notes": "월 1회 무색 크림으로 보습, 핸들은 6개월마다 상태 점검 권장",
-          "headline_finding": "핸들 마모 진행, 재코팅 권장 시점 근접"
+          "headline_finding": "핸들 표면 마모 진행"
         },
         {
           "asset_id": "AS-000029",
@@ -951,7 +951,7 @@
             {
               "part": "sole",
               "severity": "MEDIUM",
-              "note": "앞창 마모 진행, 재밑창 시점 근접"
+              "note": "앞창 마모 진행"
             },
             {
               "part": "upper",
@@ -964,7 +964,7 @@
           "product_price_krw": 2000000,
           "size_system": "EU 35-42 (하프 사이즈 제작 가능) / Last: Étoile",
           "care_notes": "착화 후 슈트리 필수, 3개월마다 크림 보습 및 앞창 마모 점검",
-          "headline_finding": "앞창 마모 진행, 재밑창 시점 근접"
+          "headline_finding": "앞창 마모 진행"
         },
         {
           "asset_id": "AS-000045",
@@ -978,7 +978,7 @@
             {
               "part": "sole",
               "severity": "MEDIUM",
-              "note": "앞창 마모 진행, 재밑창 시점 근접"
+              "note": "앞창 마모 진행"
             },
             {
               "part": "upper",
@@ -991,7 +991,7 @@
           "product_price_krw": 1500000,
           "size_system": "EU 35-42 (하프 사이즈 제작 가능) / Last: Serein",
           "care_notes": "착화 후 슈트리 필수, 3개월마다 크림 보습 및 앞창 마모 점검",
-          "headline_finding": "앞창 마모 진행, 재밑창 시점 근접"
+          "headline_finding": "앞창 마모 진행"
         },
         {
           "asset_id": "AS-000043",
@@ -1005,7 +1005,7 @@
             {
               "part": "sole",
               "severity": "MEDIUM",
-              "note": "앞창 마모 진행, 재밑창 시점 근접"
+              "note": "앞창 마모 진행"
             },
             {
               "part": "upper",
@@ -1018,7 +1018,7 @@
           "product_price_krw": 3000000,
           "size_system": "EU 35-42 (하프 사이즈 제작 가능) / Last: Solène",
           "care_notes": "착화 후 슈트리 필수, 3개월마다 크림 보습 및 앞창 마모 점검",
-          "headline_finding": "앞창 마모 진행, 재밑창 시점 근접"
+          "headline_finding": "앞창 마모 진행"
         },
         {
           "asset_id": "AS-000046",
@@ -1054,7 +1054,7 @@
             {
               "part": "handle",
               "severity": "MEDIUM",
-              "note": "핸들 마모 진행, 재코팅 권장 시점 근접"
+              "note": "핸들 표면 마모 진행"
             },
             {
               "part": "corner",
@@ -1067,7 +1067,7 @@
           "product_price_krw": 11600000,
           "size_system": "Size 25 / 30 / 35 cm",
           "care_notes": "월 1회 무색 크림으로 보습, 핸들은 6개월마다 상태 점검 권장",
-          "headline_finding": "핸들 마모 진행, 재코팅 권장 시점 근접"
+          "headline_finding": "핸들 표면 마모 진행"
         },
         {
           "asset_id": "AS-000038",
@@ -1135,7 +1135,7 @@
             {
               "part": "handle",
               "severity": "MEDIUM",
-              "note": "핸들 마모 진행, 재코팅 권장 시점 근접"
+              "note": "핸들 표면 마모 진행"
             },
             {
               "part": "corner",
@@ -1148,7 +1148,7 @@
           "product_price_krw": 11200000,
           "size_system": "Size 25 / 30 / 35 cm",
           "care_notes": "월 1회 무색 크림으로 보습, 핸들은 6개월마다 상태 점검 권장",
-          "headline_finding": "핸들 마모 진행, 재코팅 권장 시점 근접"
+          "headline_finding": "핸들 표면 마모 진행"
         },
         {
           "asset_id": "AS-000042",
@@ -1206,7 +1206,7 @@
             {
               "part": "sole",
               "severity": "MEDIUM",
-              "note": "앞창 마모 진행, 재밑창 시점 근접"
+              "note": "앞창 마모 진행"
             },
             {
               "part": "upper",
@@ -1219,7 +1219,7 @@
           "product_price_krw": 2400000,
           "size_system": "EU 35-42 (하프 사이즈 제작 가능) / Last: Meridian",
           "care_notes": "착화 후 슈트리 필수, 3개월마다 크림 보습 및 앞창 마모 점검",
-          "headline_finding": "앞창 마모 진행, 재밑창 시점 근접"
+          "headline_finding": "앞창 마모 진행"
         },
         {
           "asset_id": "AS-000048",
@@ -1233,7 +1233,7 @@
             {
               "part": "handle",
               "severity": "MEDIUM",
-              "note": "핸들 마모 진행, 재코팅 권장 시점 근접"
+              "note": "핸들 표면 마모 진행"
             },
             {
               "part": "corner",
@@ -1246,7 +1246,7 @@
           "product_price_krw": 11200000,
           "size_system": "Size 25 / 30 / 35 cm",
           "care_notes": "월 1회 무색 크림으로 보습, 핸들은 6개월마다 상태 점검 권장",
-          "headline_finding": "핸들 마모 진행, 재코팅 권장 시점 근접"
+          "headline_finding": "핸들 표면 마모 진행"
         },
         {
           "asset_id": "AS-000052",
@@ -1282,7 +1282,7 @@
             {
               "part": "handle",
               "severity": "MEDIUM",
-              "note": "핸들 마모 진행, 재코팅 권장 시점 근접"
+              "note": "핸들 표면 마모 진행"
             },
             {
               "part": "corner",
@@ -1295,7 +1295,7 @@
           "product_price_krw": 6900000,
           "size_system": "Size 25 / 30 / 35 cm",
           "care_notes": "월 1회 무색 크림으로 보습, 핸들은 6개월마다 상태 점검 권장",
-          "headline_finding": "핸들 마모 진행, 재코팅 권장 시점 근접"
+          "headline_finding": "핸들 표면 마모 진행"
         },
         {
           "asset_id": "AS-000051",
@@ -1451,7 +1451,7 @@
             {
               "part": "sole",
               "severity": "MEDIUM",
-              "note": "앞창 마모 진행, 재밑창 시점 근접"
+              "note": "앞창 마모 진행"
             },
             {
               "part": "upper",
@@ -1464,7 +1464,7 @@
           "product_price_krw": 2000000,
           "size_system": "EU 35-42 (하프 사이즈 제작 가능) / Last: Solène",
           "care_notes": "착화 후 슈트리 필수, 3개월마다 크림 보습 및 앞창 마모 점검",
-          "headline_finding": "앞창 마모 진행, 재밑창 시점 근접"
+          "headline_finding": "앞창 마모 진행"
         },
         {
           "asset_id": "AS-000057",
@@ -1478,7 +1478,7 @@
             {
               "part": "handle",
               "severity": "MEDIUM",
-              "note": "핸들 마모 진행, 재코팅 권장 시점 근접"
+              "note": "핸들 표면 마모 진행"
             },
             {
               "part": "corner",
@@ -1491,7 +1491,7 @@
           "product_price_krw": 7700000,
           "size_system": "Size 25 / 30 / 35 cm",
           "care_notes": "월 1회 무색 크림으로 보습, 핸들은 6개월마다 상태 점검 권장",
-          "headline_finding": "핸들 마모 진행, 재코팅 권장 시점 근접"
+          "headline_finding": "핸들 표면 마모 진행"
         },
         {
           "asset_id": "AS-000058",
@@ -1505,7 +1505,7 @@
             {
               "part": "handle",
               "severity": "MEDIUM",
-              "note": "핸들 마모 진행, 재코팅 권장 시점 근접"
+              "note": "핸들 표면 마모 진행"
             },
             {
               "part": "corner",
@@ -1518,7 +1518,7 @@
           "product_price_krw": 6900000,
           "size_system": "Size 25 / 30 / 35 cm",
           "care_notes": "월 1회 무색 크림으로 보습, 핸들은 6개월마다 상태 점검 권장",
-          "headline_finding": "핸들 마모 진행, 재코팅 권장 시점 근접"
+          "headline_finding": "핸들 표면 마모 진행"
         },
         {
           "asset_id": "AS-000063",
@@ -1821,7 +1821,7 @@
             {
               "part": "sole",
               "severity": "MEDIUM",
-              "note": "앞창 마모 진행, 재밑창 시점 근접"
+              "note": "앞창 마모 진행"
             },
             {
               "part": "upper",
@@ -1834,7 +1834,7 @@
           "product_price_krw": 3000000,
           "size_system": "EU 35-42 (하프 사이즈 제작 가능) / Last: Vesper",
           "care_notes": "착화 후 슈트리 필수, 3개월마다 크림 보습 및 앞창 마모 점검",
-          "headline_finding": "앞창 마모 진행, 재밑창 시점 근접"
+          "headline_finding": "앞창 마모 진행"
         },
         {
           "asset_id": "AS-000074",
@@ -2017,7 +2017,7 @@
             {
               "part": "sole",
               "severity": "MEDIUM",
-              "note": "앞창 마모 진행, 재밑창 시점 근접"
+              "note": "앞창 마모 진행"
             },
             {
               "part": "upper",
@@ -2030,7 +2030,7 @@
           "product_price_krw": 2000000,
           "size_system": "EU 35-42 (하프 사이즈 제작 가능) / Last: Solène",
           "care_notes": "착화 후 슈트리 필수, 3개월마다 크림 보습 및 앞창 마모 점검",
-          "headline_finding": "앞창 마모 진행, 재밑창 시점 근접"
+          "headline_finding": "앞창 마모 진행"
         },
         {
           "asset_id": "AS-000084",
@@ -2192,7 +2192,7 @@
             {
               "part": "sole",
               "severity": "MEDIUM",
-              "note": "앞창 마모 진행, 재밑창 시점 근접"
+              "note": "앞창 마모 진행"
             },
             {
               "part": "upper",
@@ -2205,7 +2205,7 @@
           "product_price_krw": 2300000,
           "size_system": "EU 35-42 (하프 사이즈 제작 가능) / Last: Halcyon",
           "care_notes": "착화 후 슈트리 필수, 3개월마다 크림 보습 및 앞창 마모 점검",
-          "headline_finding": "앞창 마모 진행, 재밑창 시점 근접"
+          "headline_finding": "앞창 마모 진행"
         },
         {
           "asset_id": "AS-000089",
@@ -2219,7 +2219,7 @@
             {
               "part": "sole",
               "severity": "MEDIUM",
-              "note": "앞창 마모 진행, 재밑창 시점 근접"
+              "note": "앞창 마모 진행"
             },
             {
               "part": "upper",
@@ -2232,7 +2232,7 @@
           "product_price_krw": 2400000,
           "size_system": "EU 35-42 (하프 사이즈 제작 가능) / Last: Meridian",
           "care_notes": "착화 후 슈트리 필수, 3개월마다 크림 보습 및 앞창 마모 점검",
-          "headline_finding": "앞창 마모 진행, 재밑창 시점 근접"
+          "headline_finding": "앞창 마모 진행"
         },
         {
           "asset_id": "AS-000090",
@@ -2246,7 +2246,7 @@
             {
               "part": "sole",
               "severity": "MEDIUM",
-              "note": "앞창 마모 진행, 재밑창 시점 근접"
+              "note": "앞창 마모 진행"
             },
             {
               "part": "upper",
@@ -2259,7 +2259,7 @@
           "product_price_krw": 1500000,
           "size_system": "EU 35-42 (하프 사이즈 제작 가능) / Last: Serein",
           "care_notes": "착화 후 슈트리 필수, 3개월마다 크림 보습 및 앞창 마모 점검",
-          "headline_finding": "앞창 마모 진행, 재밑창 시점 근접"
+          "headline_finding": "앞창 마모 진행"
         },
         {
           "asset_id": "AS-000096",
@@ -2534,7 +2534,7 @@
             {
               "part": "sole",
               "severity": "MEDIUM",
-              "note": "앞창 마모 진행, 재밑창 시점 근접"
+              "note": "앞창 마모 진행"
             },
             {
               "part": "upper",
@@ -2547,7 +2547,7 @@
           "product_price_krw": 2300000,
           "size_system": "EU 35-42 (하프 사이즈 제작 가능) / Last: Halcyon",
           "care_notes": "착화 후 슈트리 필수, 3개월마다 크림 보습 및 앞창 마모 점검",
-          "headline_finding": "앞창 마모 진행, 재밑창 시점 근접"
+          "headline_finding": "앞창 마모 진행"
         },
         {
           "asset_id": "AS-000109",
@@ -3055,7 +3055,7 @@
             {
               "part": "sole",
               "severity": "MEDIUM",
-              "note": "앞창 마모 진행, 재밑창 시점 근접"
+              "note": "앞창 마모 진행"
             },
             {
               "part": "upper",
@@ -3068,7 +3068,7 @@
           "product_price_krw": 3100000,
           "size_system": "EU 35-42 (하프 사이즈 제작 가능) / Last: Petra",
           "care_notes": "착화 후 슈트리 필수, 3개월마다 크림 보습 및 앞창 마모 점검",
-          "headline_finding": "앞창 마모 진행, 재밑창 시점 근접"
+          "headline_finding": "앞창 마모 진행"
         },
         {
           "asset_id": "AS-000131",
@@ -3188,7 +3188,7 @@
             {
               "part": "sole",
               "severity": "MEDIUM",
-              "note": "앞창 마모 진행, 재밑창 시점 근접"
+              "note": "앞창 마모 진행"
             },
             {
               "part": "upper",
@@ -3201,7 +3201,7 @@
           "product_price_krw": 2000000,
           "size_system": "EU 35-42 (하프 사이즈 제작 가능) / Last: Solène",
           "care_notes": "착화 후 슈트리 필수, 3개월마다 크림 보습 및 앞창 마모 점검",
-          "headline_finding": "앞창 마모 진행, 재밑창 시점 근접"
+          "headline_finding": "앞창 마모 진행"
         },
         {
           "asset_id": "AS-000135",
@@ -3306,7 +3306,7 @@
             {
               "part": "sole",
               "severity": "MEDIUM",
-              "note": "앞창 마모 진행, 재밑창 시점 근접"
+              "note": "앞창 마모 진행"
             },
             {
               "part": "upper",
@@ -3319,7 +3319,7 @@
           "product_price_krw": 3100000,
           "size_system": "EU 35-42 (하프 사이즈 제작 가능) / Last: Petra",
           "care_notes": "착화 후 슈트리 필수, 3개월마다 크림 보습 및 앞창 마모 점검",
-          "headline_finding": "앞창 마모 진행, 재밑창 시점 근접"
+          "headline_finding": "앞창 마모 진행"
         },
         {
           "asset_id": "AS-000141",
@@ -3401,7 +3401,7 @@
             {
               "part": "sole",
               "severity": "MEDIUM",
-              "note": "앞창 마모 진행, 재밑창 시점 근접"
+              "note": "앞창 마모 진행"
             },
             {
               "part": "upper",
@@ -3414,7 +3414,7 @@
           "product_price_krw": 3000000,
           "size_system": "EU 35-42 (하프 사이즈 제작 가능) / Last: Aurelia",
           "care_notes": "착화 후 슈트리 필수, 3개월마다 크림 보습 및 앞창 마모 점검",
-          "headline_finding": "앞창 마모 진행, 재밑창 시점 근접"
+          "headline_finding": "앞창 마모 진행"
         },
         {
           "asset_id": "AS-000144",

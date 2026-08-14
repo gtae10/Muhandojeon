@@ -6,6 +6,8 @@
 
 from __future__ import annotations
 
+import os
+from datetime import datetime, timedelta, timezone
 from functools import lru_cache
 from pathlib import Path
 from typing import Literal
@@ -21,6 +23,29 @@ FINGERPRINT_DIR = DATA_DIR / "fingerprints"
 EXPORTS_DIR = ROOT / "exports"
 CACHE_DIR = ROOT / ".cache"
 DOCS_DIR = ROOT / "docs"
+
+KST = timezone(timedelta(hours=9))
+
+_DEFAULT_REFERENCE_NOW = datetime(2026, 8, 14, 12, 0, 0, tzinfo=KST)
+
+
+def reference_now() -> datetime:
+    """모든 시간 계산의 기준시각(고정). env `REFERENCE_NOW` 로만 덮을 수 있다.
+
+    컨디션 점수가 경과 연수의 함수라서 `datetime.now()` 를 쓰면 매일 점수가 흔들리고
+    "컨디션 71점" 이라는 데모 대사가 깨진다. 빌더와 런타임이 같은 기준시각을 써야 한다.
+    """
+    raw = os.environ.get("REFERENCE_NOW")
+    if not raw:
+        return _DEFAULT_REFERENCE_NOW
+    try:
+        parsed = datetime.fromisoformat(raw)
+    except ValueError:
+        return _DEFAULT_REFERENCE_NOW
+    return parsed if parsed.tzinfo else parsed.replace(tzinfo=KST)
+
+
+REFERENCE_NOW = reference_now()
 
 AdapterMode = Literal["mock", "http"]
 ModuleKey = Literal["intent", "clienteling", "asset", "fingerprint", "condition"]

@@ -134,7 +134,7 @@
 | condition_min | `61` |
 | condition_max | `99` |
 | care_due_now | `5` |
-| pinned_demo_asset | `{"customer_id": "CU-0001", "asset_id": "AS-000001", "product_name": "Nocturne Shoulder", "condition_score": "71", "next_service_months": "1", "headline": "핸들 마모 진행, 재코팅 권장 시점 근접"}` |
+| pinned_demo_asset | `{"customer_id": "CU-0001", "asset_id": "AS-000001", "product_name": "Nocturne Shoulder", "condition_score": "71", "next_service_months": "1", "headline": "핸들 표면 마모 진행, 케어 임계 근접"}` |
 
 ### `sessions`
 

@@ -14,7 +14,7 @@
       "product_name": "Nocturne Shoulder",
       "condition_score": "71",
       "next_service_months": "1",
-      "headline": "핸들 마모 진행, 재코팅 권장 시점 근접"
+      "headline": "핸들 표면 마모 진행, 케어 임계 근접"
     }
   },
   "customers": [
@@ -25,7 +25,7 @@
       "planned_tier": "VIP",
       "purchase_count": 16,
       "asset_count": 13,
-      "first_purchase_at": "2023-08-24T00:33:56.842105+09:00",
+      "first_purchase_at": "2022-01-25T23:17:38.823529+09:00",
       "last_purchase_at": "2026-02-17T04:29:12.631579+09:00",
       "source": {
         "dataset": "synth",
@@ -44,7 +44,7 @@
             {
               "part": "handle",
               "severity": "MEDIUM",
-              "note": "핸들 마모 진행, 재코팅 권장 시점 근접"
+              "note": "핸들 표면 마모 진행, 케어 임계 근접"
             },
             {
               "part": "corner",
@@ -85,7 +85,7 @@
             {
               "part": "handle",
               "severity": "MEDIUM",
-              "note": "핸들 마모 진행, 재코팅 권장 시점 근접"
+              "note": "핸들 표면 마모 진행"
             },
             {
               "part": "corner",
@@ -126,7 +126,7 @@
             {
               "part": "handle",
               "severity": "MEDIUM",
-              "note": "핸들 마모 진행, 재코팅 권장 시점 근접"
+              "note": "핸들 표면 마모 진행"
             },
             {
               "part": "corner",
@@ -149,7 +149,7 @@
             {
               "part": "sole",
               "severity": "MEDIUM",
-              "note": "앞창 마모 진행, 재밑창 시점 근접"
+              "note": "앞창 마모 진행, 케어 임계 근접"
             },
             {
               "part": "upper",
@@ -172,7 +172,7 @@
             {
               "part": "sole",
               "severity": "MEDIUM",
-              "note": "앞창 마모 진행, 재밑창 시점 근접"
+              "note": "앞창 마모 진행, 케어 임계 근접"
             },
             {
               "part": "upper",
@@ -289,7 +289,7 @@
             {
               "part": "handle",
               "severity": "MEDIUM",
-              "note": "핸들 마모 진행, 재코팅 권장 시점 근접"
+              "note": "핸들 표면 마모 진행"
             },
             {
               "part": "corner",
@@ -330,7 +330,7 @@
             {
               "part": "handle",
               "severity": "MEDIUM",
-              "note": "핸들 마모 진행, 재코팅 권장 시점 근접"
+              "note": "핸들 표면 마모 진행"
             },
             {
               "part": "corner",
@@ -399,7 +399,7 @@
             {
               "part": "sole",
               "severity": "MEDIUM",
-              "note": "앞창 마모 진행, 재밑창 시점 근접"
+              "note": "앞창 마모 진행"
             },
             {
               "part": "upper",
@@ -422,7 +422,7 @@
             {
               "part": "sole",
               "severity": "MEDIUM",
-              "note": "앞창 마모 진행, 재밑창 시점 근접"
+              "note": "앞창 마모 진행"
             },
             {
               "part": "upper",
@@ -533,7 +533,7 @@
             {
               "part": "handle",
               "severity": "MEDIUM",
-              "note": "핸들 마모 진행, 재코팅 권장 시점 근접"
+              "note": "핸들 표면 마모 진행"
             },
             {
               "part": "corner",
@@ -726,7 +726,7 @@
             {
               "part": "handle",
               "severity": "MEDIUM",
-              "note": "핸들 마모 진행, 재코팅 권장 시점 근접"
+              "note": "핸들 표면 마모 진행"
             },
             {
               "part": "corner",
@@ -795,7 +795,7 @@
             {
               "part": "handle",
               "severity": "MEDIUM",
-              "note": "핸들 마모 진행, 재코팅 권장 시점 근접"
+              "note": "핸들 표면 마모 진행"
             },
             {
               "part": "corner",
@@ -853,7 +853,7 @@
             {
               "part": "sole",
               "severity": "MEDIUM",
-              "note": "앞창 마모 진행, 재밑창 시점 근접"
+              "note": "앞창 마모 진행"
             },
             {
               "part": "upper",
@@ -876,7 +876,7 @@
             {
               "part": "sole",
               "severity": "MEDIUM",
-              "note": "앞창 마모 진행, 재밑창 시점 근접"
+              "note": "앞창 마모 진행"
             },
             {
               "part": "upper",
@@ -899,7 +899,7 @@
             {
               "part": "sole",
               "severity": "MEDIUM",
-              "note": "앞창 마모 진행, 재밑창 시점 근접"
+              "note": "앞창 마모 진행"
             },
             {
               "part": "upper",
@@ -956,7 +956,7 @@
             {
               "part": "handle",
               "severity": "MEDIUM",
-              "note": "핸들 마모 진행, 재코팅 권장 시점 근접"
+              "note": "핸들 표면 마모 진행"
             },
             {
               "part": "corner",
@@ -979,7 +979,7 @@
             {
               "part": "handle",
               "severity": "MEDIUM",
-              "note": "핸들 마모 진행, 재코팅 권장 시점 근접"
+              "note": "핸들 표면 마모 진행"
             },
             {
               "part": "corner",
@@ -1014,7 +1014,7 @@
             {
               "part": "sole",
               "severity": "MEDIUM",
-              "note": "앞창 마모 진행, 재밑창 시점 근접"
+              "note": "앞창 마모 진행"
             },
             {
               "part": "upper",
@@ -1148,7 +1148,7 @@
             {
               "part": "handle",
               "severity": "MEDIUM",
-              "note": "핸들 마모 진행, 재코팅 권장 시점 근접"
+              "note": "핸들 표면 마모 진행"
             },
             {
               "part": "corner",
@@ -1171,7 +1171,7 @@
             {
               "part": "handle",
               "severity": "MEDIUM",
-              "note": "핸들 마모 진행, 재코팅 권장 시점 근접"
+              "note": "핸들 표면 마모 진행"
             },
             {
               "part": "corner",
@@ -1212,7 +1212,7 @@
             {
               "part": "sole",
               "severity": "MEDIUM",
-              "note": "앞창 마모 진행, 재밑창 시점 근접"
+              "note": "앞창 마모 진행"
             },
             {
               "part": "upper",
@@ -1470,7 +1470,7 @@
             {
               "part": "sole",
               "severity": "MEDIUM",
-              "note": "앞창 마모 진행, 재밑창 시점 근접"
+              "note": "앞창 마모 진행"
             },
             {
               "part": "upper",
@@ -1599,7 +1599,7 @@
             {
               "part": "sole",
               "severity": "MEDIUM",
-              "note": "앞창 마모 진행, 재밑창 시점 근접"
+              "note": "앞창 마모 진행"
             },
             {
               "part": "upper",
@@ -1722,7 +1722,7 @@
             {
               "part": "sole",
               "severity": "MEDIUM",
-              "note": "앞창 마모 진행, 재밑창 시점 근접"
+              "note": "앞창 마모 진행"
             },
             {
               "part": "upper",
@@ -1745,7 +1745,7 @@
             {
               "part": "sole",
               "severity": "MEDIUM",
-              "note": "앞창 마모 진행, 재밑창 시점 근접"
+              "note": "앞창 마모 진행"
             },
             {
               "part": "upper",
@@ -1768,7 +1768,7 @@
             {
               "part": "sole",
               "severity": "MEDIUM",
-              "note": "앞창 마모 진행, 재밑창 시점 근접"
+              "note": "앞창 마모 진행"
             },
             {
               "part": "upper",
@@ -1985,7 +1985,7 @@
             {
               "part": "sole",
               "severity": "MEDIUM",
-              "note": "앞창 마모 진행, 재밑창 시점 근접"
+              "note": "앞창 마모 진행"
             },
             {
               "part": "upper",
@@ -2384,7 +2384,7 @@
             {
               "part": "sole",
               "severity": "MEDIUM",
-              "note": "앞창 마모 진행, 재밑창 시점 근접"
+              "note": "앞창 마모 진행"
             },
             {
               "part": "upper",
@@ -2501,7 +2501,7 @@
             {
               "part": "sole",
               "severity": "MEDIUM",
-              "note": "앞창 마모 진행, 재밑창 시점 근접"
+              "note": "앞창 마모 진행"
             },
             {
               "part": "upper",
@@ -2582,7 +2582,7 @@
             {
               "part": "sole",
               "severity": "MEDIUM",
-              "note": "앞창 마모 진행, 재밑창 시점 근접"
+              "note": "앞창 마모 진행"
             },
             {
               "part": "upper",
@@ -2657,7 +2657,7 @@
             {
               "part": "sole",
               "severity": "MEDIUM",
-              "note": "앞창 마모 진행, 재밑창 시점 근접"
+              "note": "앞창 마모 진행"
             },
             {
               "part": "upper",

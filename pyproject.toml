@@ -60,9 +60,13 @@ ignore_missing_imports = true
 plugins = ["pydantic.mypy"]
 
 [[tool.mypy.overrides]]
-module = "tests.*"
+module = ["tests.*"]
 disallow_untyped_defs = false
+disallow_untyped_calls = false
+disallow_untyped_decorators = false
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
+# 편집 설치(.pth)가 환경에 따라 sys.path 에 안 잡히는 경우가 있어 명시한다.
+pythonpath = ["."]
 filterwarnings = ["ignore::DeprecationWarning"]

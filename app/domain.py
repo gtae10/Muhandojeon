@@ -66,7 +66,7 @@ CATEGORY_PARTS: dict[ProductCategory, tuple[AssetPart, ...]] = {
 #: (부위, 심각도) → 소견 문장. 상담 문구가 이 문장을 인용한다.
 FINDING_NOTES: dict[tuple[AssetPart, Severity], str] = {
     (AssetPart.HANDLE, Severity.LOW): "핸들 표면 광택 변화 경미",
-    (AssetPart.HANDLE, Severity.MEDIUM): "핸들 마모 진행, 재코팅 권장 시점 근접",
+    (AssetPart.HANDLE, Severity.MEDIUM): "핸들 표면 마모 진행",
     (AssetPart.HANDLE, Severity.HIGH): "핸들 코팅 박리 및 심재 노출",
     (AssetPart.CORNER, Severity.LOW): "코너 마찰 흔적 경미",
     (AssetPart.CORNER, Severity.MEDIUM): "코너 4곳 마찰, 각 세우기 필요",
@@ -81,7 +81,7 @@ FINDING_NOTES: dict[tuple[AssetPart, Severity], str] = {
     (AssetPart.LINING, Severity.MEDIUM): "라이닝 얼룩 및 늘어짐",
     (AssetPart.LINING, Severity.HIGH): "라이닝 찢어짐",
     (AssetPart.SOLE, Severity.LOW): "아웃솔 트레드 양호",
-    (AssetPart.SOLE, Severity.MEDIUM): "앞창 마모 진행, 재밑창 시점 근접",
+    (AssetPart.SOLE, Severity.MEDIUM): "앞창 마모 진행",
     (AssetPart.SOLE, Severity.HIGH): "앞창 관통 마모, 재밑창 필요",
     (AssetPart.UPPER, Severity.LOW): "볼 부분 주름 자연 발생",
     (AssetPart.UPPER, Severity.MEDIUM): "갑피 주름 심화, 보습 필요",
@@ -159,6 +159,9 @@ def findings_for(score: int, category: ProductCategory) -> list[Finding]:
         if note is None:  # pragma: no cover - 표에 없는 조합 방어
             note = f"{part.value} 상태 점검 필요"
         out.append(Finding(part=part, severity=severity, note=note))
+    # 케어 임계(70) 바로 위 구간은 "임계 근접" 을 명시한다. 점수만 보고 판단하지 않아도 되게.
+    if out and CARE_THRESHOLD < score < CARE_THRESHOLD + 5:
+        out[0] = out[0].model_copy(update={"note": f"{out[0].note}, 케어 임계 근접"})
     return out
 
 
