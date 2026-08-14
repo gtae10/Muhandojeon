@@ -139,6 +139,7 @@
   <div class="row">
     <span class="chip" id="mode-chip">모드 확인 중…</span>
     <span class="chip" id="run-chip">실행 없음</span>
+    <a class="chip" href="/ops">/ops 예산</a>
     <a class="chip" href="/health/detail" target="_blank" rel="noopener">/health/detail</a>
   </div>
 </header>
@@ -146,7 +147,7 @@
 <main>
   <section class="card">
     <h2>시뮬레이션 실행</h2>
-    <div class="sub">기본 5 페르소나 × 3 전략 × 3회 = 45세션. 동시성은 환경변수 <code>LAB_CONCURRENCY</code> 기본값을 따른다.</div>
+    <div class="sub">기본 5 페르소나 × 3 전략 × 3회 = 45세션. 동시성 기본값은 <code>LLM_MAX_CONCURRENCY</code>. 실행 전 예상 비용을 확인한 뒤 진행한다.</div>
     <div class="row" style="margin-top:12px">
       <label>반복 <input type="number" id="runs" min="1" max="10" value="3" /></label>
       <label>동시성 <input type="number" id="conc" min="1" max="16" value="4" /></label>
@@ -192,6 +193,20 @@
 </main>
 
 <div id="tooltip"></div>
+<dialog id="cost-dlg">
+  <div class="dlg-head">
+    <div>
+      <h2>실행 전 예상 비용</h2>
+      <div class="sub">크레딧 총액 100달러. 실수로 여러 번 돌리는 것을 막기 위해 확인을 요구한다.</div>
+    </div>
+    <button class="secondary" onclick="document.getElementById('cost-dlg').close()">닫기</button>
+  </div>
+  <div class="dlg-body" id="cost-body"></div>
+  <div class="dlg-head" style="border-top:1px solid var(--border);border-bottom:none;justify-content:flex-end">
+    <button class="secondary" onclick="document.getElementById('cost-dlg').close()">취소</button>
+    <button id="cost-confirm">이 비용으로 실행</button>
+  </div>
+</dialog>
 <dialog id="dlg">
   <div class="dlg-head">
     <div>
@@ -384,16 +399,41 @@ function setProgress(p) {
     total ? `${done}/${total} 세션${p.converted != null ? ` · 전환 ${p.converted}` : ''}${p.status === 'done' ? ' · 완료' : ''}` : '';
 }
 
+function currentConfig() {
+  return {
+    runs_per_pair: +document.getElementById('runs').value,
+    concurrency: +document.getElementById('conc').value,
+    max_turns: +document.getElementById('turns').value,
+  };
+}
+
+async function askCost() {
+  const body = JSON.stringify(currentConfig());
+  const d = await api('/lab/estimate', { method: 'POST', headers: { 'content-type': 'application/json' }, body });
+  const e = d.estimate, b = d.budget;
+  const rows = Object.entries(e.per_purpose_usd || {})
+    .map(([k, v]) => `<tr><td>${esc(k)}</td><td class="bar-label">$${Number(v).toFixed(5)}</td></tr>`).join('');
+  document.getElementById('cost-body').innerHTML = `
+    <div class="turn advisor">
+      <div class="who">예상 비용 (캐시 미스 기준 상한)</div>
+      <div style="font-size:22px;font-weight:640">$${e.total_usd.toFixed(4)} <span class="sub">≈ ${e.total_krw.toLocaleString()}원</span></div>
+      <div class="meta">세션 ${e.total_sessions}건 · 세션당 $${e.per_session_usd.toFixed(5)} (≈${e.per_session_krw.toLocaleString()}원) · 최대 ${e.max_turns}턴</div>
+      <div class="meta">근거: ${esc(e.basis)} — ${esc(e.note)}</div>
+      <div class="meta">라우팅: ${esc(JSON.stringify(e.routing))}</div>
+    </div>
+    <table><thead><tr><th>용도</th><th>예상 비용</th></tr></thead><tbody>${rows}</tbody></table>
+    <div class="banner">예산: 누적 $${b.spent_usd.toFixed(4)} / 하드 $${b.hard_usd.toFixed(0)} → 잔액 $${b.remaining_to_hard_usd.toFixed(4)}
+      ${d.affordable ? '' : ' · <b>잔액 초과 — 실행이 거부된다</b>'}</div>`;
+  document.getElementById('cost-dlg').showModal();
+  return d;
+}
+
 async function run() {
   const btn = document.getElementById('run-btn');
   btn.disabled = true;
   btn.textContent = '실행 중…';
   try {
-    const body = JSON.stringify({
-      runs_per_pair: +document.getElementById('runs').value,
-      concurrency: +document.getElementById('conc').value,
-      max_turns: +document.getElementById('turns').value,
-    });
+    const body = JSON.stringify({ ...currentConfig(), confirm: true });
     const started = await api('/lab/run', { method: 'POST', headers: { 'content-type': 'application/json' }, body });
     currentRun = started.run_id;
     if (poller) clearInterval(poller);
@@ -416,7 +456,17 @@ async function run() {
   }
 }
 
-document.getElementById('run-btn').addEventListener('click', run);
+document.getElementById('run-btn').addEventListener('click', async () => {
+  try {
+    await askCost();
+  } catch (e) {
+    document.getElementById('caveat').innerHTML = `<div class="banner">비용 추정 실패: ${esc(e.message)}</div>`;
+  }
+});
+document.getElementById('cost-confirm').addEventListener('click', () => {
+  document.getElementById('cost-dlg').close();
+  run();
+});
 document.getElementById('reload-btn').addEventListener('click', loadLatest);
 document.getElementById('toggle-table').addEventListener('click', () => {
   const el = document.getElementById('strategy-table');

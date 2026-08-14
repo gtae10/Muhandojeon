@@ -62,7 +62,16 @@ def main() -> int:
     print(f"  캐시 활성화: {settings.llm_cache_enabled} / 디스크 항목 {llm.cache_count()}건")
     print(f"  캐시 위치: {settings.llm_cache_dir}")
     if not rows:
-        print("\n  기록이 없다. `make estimate` 또는 `make lab` 을 먼저 실행하라.")
+        if not settings.llm_active:
+            print(
+                "\n  호출 기록이 없다 — LLM 미연결(LLM_API_KEY 없음)이라 모든 응답이 결정적 "
+                "템플릿·규칙으로 처리됐다. 비용도 0 이다."
+            )
+            print(
+                "  호출 패턴을 보려면: make estimate (드라이런) 또는 LLM_API_KEY 설정 후 make lab"
+            )
+        else:
+            print("\n  기록이 없다. `make estimate` 또는 `make lab` 을 먼저 실행하라.")
         return 0
 
     lookups = [r for r in rows if not r["dry_run"] or r["cached"]]

@@ -20,8 +20,10 @@ from fastapi import APIRouter, HTTPException
 from fastapi.responses import FileResponse, StreamingResponse
 from pydantic import BaseModel, Field
 
+from app.lab.cost import estimate_lab_cost
 from app.lab.runner import LabConfig, get_progress, new_run_id, run_lab
 from app.lab.summary import latest_run_id, list_runs, session_detail, summarize
+from app.llm import get_budget
 from app.personas import load_personas, validate_bindings
 from app.strategies import load_strategies
 
@@ -40,6 +42,10 @@ class RunRequest(BaseModel):
     max_turns: int | None = Field(default=None, ge=2, le=12)
     persona_ids: list[str] | None = None
     strategy_ids: list[str] | None = None
+    confirm: bool = Field(
+        default=False,
+        description="예상 비용을 확인했다는 표시. false 면 실행하지 않고 추정만 돌려준다(409)",
+    )
 
 
 @router.get("/lab", summary="Persona Bot Lab 대시보드", include_in_schema=False)
@@ -62,8 +68,8 @@ def lab_config() -> dict[str, Any]:
     }
 
 
-@router.post("/lab/run", summary="시뮬레이션 실행 (백그라운드)")
-def lab_run(request: RunRequest) -> dict[str, Any]:
+@router.post("/lab/estimate", summary="실행 전 예상 비용 (실행하지 않는다)")
+def lab_estimate(request: RunRequest) -> dict[str, Any]:
     config = LabConfig.from_settings(
         runs_per_pair=request.runs_per_pair,
         concurrency=request.concurrency,
@@ -71,13 +77,69 @@ def lab_run(request: RunRequest) -> dict[str, Any]:
         persona_ids=request.persona_ids,
         strategy_ids=request.strategy_ids,
     )
+    estimate = estimate_lab_cost(config.total_sessions, config.max_turns)
+    budget = get_budget().state(refresh=True)
+    return {
+        "config": config.as_dict(),
+        "estimate": estimate,
+        "budget": budget.as_dict(),
+        "affordable": estimate["total_usd"] <= budget.remaining_to_hard,
+    }
+
+
+@router.post("/lab/run", summary="시뮬레이션 실행 (백그라운드, 비용 확인 필요)")
+def lab_run(request: RunRequest) -> dict[str, Any]:
+    """`confirm=true` 없이는 실행하지 않는다.
+
+    실수로 여러 번 돌리는 것이 예산 사고의 가장 흔한 경로다. 확인 없이 호출하면 409 와 함께
+    예상 비용을 돌려준다. 하드 리밋을 넘길 실행도 409 로 막는다(예산 가드가 호출 단위로 또 막지만
+    실행 자체를 시작하지 않는 편이 낫다).
+    """
+    config = LabConfig.from_settings(
+        runs_per_pair=request.runs_per_pair,
+        concurrency=request.concurrency,
+        max_turns=request.max_turns,
+        persona_ids=request.persona_ids,
+        strategy_ids=request.strategy_ids,
+    )
+    estimate = estimate_lab_cost(config.total_sessions, config.max_turns)
+    budget = get_budget().state(refresh=True)
+
+    if not request.confirm:
+        raise HTTPException(
+            status_code=409,
+            detail={
+                "reason": "confirm_required",
+                "message": (
+                    f"예상 비용 ${estimate['total_usd']:.4f} "
+                    f"(≈{estimate['total_krw']:,.0f}원, 세션 {config.total_sessions}건). "
+                    "확인했다면 confirm=true 로 다시 호출하라."
+                ),
+                "estimate": estimate,
+                "budget": budget.as_dict(),
+            },
+        )
+    if estimate["total_usd"] > budget.remaining_to_hard:
+        raise HTTPException(
+            status_code=409,
+            detail={
+                "reason": "budget_exhausted",
+                "message": (
+                    f"예상 비용 ${estimate['total_usd']:.4f} 이 하드 리밋 잔액 "
+                    f"${budget.remaining_to_hard:.4f} 을 초과한다. 실행하지 않았다."
+                ),
+                "estimate": estimate,
+                "budget": budget.as_dict(),
+            },
+        )
+
     run_id = new_run_id()
     thread = threading.Thread(
         target=run_lab, kwargs={"config": config, "run_id": run_id}, daemon=True
     )
     _threads[run_id] = thread
     thread.start()
-    return {"run_id": run_id, "config": config.as_dict()}
+    return {"run_id": run_id, "config": config.as_dict(), "estimate": estimate}
 
 
 @router.get("/lab/runs", summary="실행 목록")

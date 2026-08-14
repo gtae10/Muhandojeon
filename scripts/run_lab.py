@@ -12,12 +12,15 @@ from __future__ import annotations
 
 import argparse
 import sys
+import sys as _sys
 from typing import Any
 
 from app.config import get_settings
 from app.db import init_db
+from app.lab.cost import estimate_lab_cost
 from app.lab.runner import LabConfig, run_lab
 from app.lab.summary import latest_run_id, summarize
+from app.llm import get_budget
 from app.personas import validate_bindings
 from scripts.common import banner
 
@@ -77,6 +80,8 @@ def main() -> int:
     ap.add_argument("--personas", default=None, help="쉼표 구분 페르소나 id (예: P2,P5)")
     ap.add_argument("--strategies", default=None, help="쉼표 구분 전략 id (예: S1,S2)")
     ap.add_argument("--summary-only", action="store_true", help="최근 실행 결과만 출력")
+    ap.add_argument("--yes", action="store_true", help="예상 비용 확인 없이 바로 실행")
+    ap.add_argument("--estimate-only", action="store_true", help="예상 비용만 출력하고 종료")
     args = ap.parse_args()
 
     banner("Persona Bot Lab")
@@ -109,6 +114,33 @@ def main() -> int:
     )
     llm_note = f"연결됨 ({settings.llm_model})" if settings.llm_enabled else "미연결 → 규칙 모델"
     print(f"  LLM: {llm_note}")
+
+    # 실행 전 예상 비용 — 실수로 여러 번 돌리는 것을 막는다.
+    estimate = estimate_lab_cost(config.total_sessions, config.max_turns)
+    budget = get_budget().state(refresh=True)
+    print(
+        f"\n  예상 비용: ${estimate['total_usd']:.4f} (≈{estimate['total_krw']:,.0f}원) "
+        f"/ 세션당 ${estimate['per_session_usd']:.5f} (≈{estimate['per_session_krw']:,.1f}원)"
+    )
+    print(f"    근거: {estimate['basis']} · {estimate['note']}")
+    print(f"    라우팅: {estimate['routing']}")
+    print(
+        f"    예산: 누적 ${budget.spent_usd:.4f} / 하드 ${budget.hard_usd:.0f} "
+        f"→ 잔액 ${budget.remaining_to_hard:.4f}"
+    )
+    if estimate["total_usd"] > budget.remaining_to_hard:
+        print("\n  ! 예상 비용이 하드 리밋 잔액을 초과한다. 실행하지 않는다.")
+        return 1
+    if args.estimate_only:
+        return 0
+    if not args.yes:
+        if not _sys.stdin.isatty():
+            print("\n  ! 확인이 필요하다. 비용을 확인했다면 --yes 를 붙여 실행하라.")
+            return 1
+        answer = input("\n  이 비용으로 실행할까? [y/N] ").strip().lower()
+        if answer not in {"y", "yes"}:
+            print("  취소했다.")
+            return 1
 
     run_id = run_lab(config)
     print_summary(summarize(run_id))

@@ -232,3 +232,30 @@ def test_prompts_are_deterministic_across_builds():
     a = simulate_session(persona, "S2", iteration=0, max_turns=3)
     b = simulate_session(persona, "S2", iteration=0, max_turns=3)
     assert [t["content"] for t in a.transcript] == [t["content"] for t in b.transcript]
+
+
+def test_lab_rerun_hits_cache(tmp_path: Any, monkeypatch: Any, canned_post: Any) -> None:
+    """Lab 재실행 시 캐시 히트율이 90% 이상이어야 한다(B-4 요건).
+
+    미달이면 프롬프트에 비결정적 값이 섞였다는 뜻이고, 모르고 몇 번 돌리면 예산이 사라진다.
+    """
+    from app.lab.runner import simulate_session
+    from app.llm import client as client_mod
+    from app.personas import load_personas
+
+    client = _client(tmp_path, monkeypatch)  # 키 있음 + 캐시 ON
+    monkeypatch.setattr(client_mod, "_client", client)
+    persona = load_personas()["P3"]
+
+    simulate_session(persona, "S2", iteration=0, max_turns=3)
+    first_calls = len(canned_post)
+    hits_before = client.stats.cache_hits
+    assert first_calls > 0, "첫 실행에서 LLM 호출이 나가야 한다"
+
+    simulate_session(persona, "S2", iteration=0, max_turns=3)
+    second_calls = len(canned_post) - first_calls
+    new_hits = client.stats.cache_hits - hits_before
+    lookups = second_calls + new_hits
+    assert lookups > 0
+    hit_rate = new_hits / lookups
+    assert hit_rate >= 0.9, f"재실행 히트율 {hit_rate:.0%} < 90% — 프롬프트에 비결정적 값이 있다"
