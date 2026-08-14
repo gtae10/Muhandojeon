@@ -1,0 +1,28 @@
+{
+  "_meta": {
+    "note": "대회 제공 API 의 능력 플래그. **런타임 탐지를 하지 않고 이 값을 신뢰한다** — 탐지 호출도 크레딧을 쓴다.",
+    "confirmed_at": "2026-08-14",
+    "source": "대회 운영 공지 (텍스트 전용 확정)",
+    "how_to_change": "값을 고치고 서버를 재시작한다. 코드 수정은 필요 없다."
+  },
+  "capabilities": {
+    "vision": false,
+    "image_input": false,
+    "embeddings": false,
+    "function_calling": true,
+    "json_mode": true,
+    "streaming": true,
+    "seed": true
+  },
+  "implications": {
+    "vision_false": [
+      "이미지를 base64 로 프롬프트에 넣는 경로를 두지 않는다(호출 실패 + 토큰 소모).",
+      "컨디션 진단은 목에서 이미지를 보지 않고 fixtures/assets.json 값을 반환한다.",
+      "이미지 기반 실시간 채점은 백엔드 담당이 고전 CV 로 구현하며 계약은 그대로 유지된다."
+    ],
+    "embeddings_false": [
+      "RAG 는 임베딩 API 에 의존하지 않는다. 문서 수가 작아 키워드/BM25 급으로 충분하다.",
+      "개체 지문 임베딩은 백엔드 담당의 로컬 모델 몫이며 이 API 와 무관하다."
+    ]
+  }
+}

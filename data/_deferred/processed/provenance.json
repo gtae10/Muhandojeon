@@ -1,0 +1,114 @@
+{
+  "catalog": {
+    "reference_now": "2026-08-14T12:00:00+09:00",
+    "seed": 42,
+    "source": "external",
+    "reason": "원본 사용 (4.3 MB)",
+    "candidate_rows": 12665,
+    "styles_csv_rows": 44446,
+    "selected": 40,
+    "rewriter": [
+      "template"
+    ],
+    "images_dir": "data/processed/images"
+  },
+  "customers": {
+    "reference_now": "2026-08-14T12:00:00+09:00",
+    "seed": 42,
+    "reason": "원본 없음 → 합성 폴백 (transactions_train.csv)",
+    "synth_rows": 1908,
+    "source": "synth",
+    "customers": 30,
+    "assets": 170,
+    "tier_counts": {
+      "VIP": 10,
+      "ESTABLISHED": 14,
+      "NEW": 6
+    },
+    "condition_min": 61,
+    "condition_max": 99,
+    "care_due_now": 5,
+    "pinned_demo_asset": {
+      "customer_id": "CU-0001",
+      "asset_id": "AS-000001",
+      "product_name": "Nocturne Shoulder",
+      "condition_score": "71",
+      "next_service_months": "1",
+      "headline": "핸들 표면 마모 진행, 케어 임계 근접"
+    }
+  },
+  "sessions": {
+    "reference_now": "2026-08-14T12:00:00+09:00",
+    "seed": 42,
+    "source": "external",
+    "reason": "원본 사용 (3.9 MB)",
+    "raw_rows": 74817,
+    "raw_sessions": 10000,
+    "session_unit": "(UserID, SessionID)",
+    "selected_sessions": 60,
+    "label_counts": {
+      "PRICE_HESITANT": 14,
+      "STOCK_CONCERN": 17,
+      "SIZE_UNCERTAIN": 15,
+      "STYLE_DOUBT": 9,
+      "NONE": 5
+    },
+    "profile_counts": {
+      "price": 14,
+      "stock": 17,
+      "size": 15,
+      "style": 9,
+      "none": 5
+    },
+    "synthetic_events": 150,
+    "total_events": 458
+  },
+  "exports": {
+    "reference_now": "2026-08-14T12:00:00+09:00",
+    "seed": 42,
+    "intent_trainset": {
+      "rows": 60,
+      "columns": [
+        "session_id",
+        "customer_id",
+        "customer_tier",
+        "target_product_id",
+        "label",
+        "label_rule",
+        "label_confidence",
+        "split",
+        "n_events",
+        "n_synthetic_events",
+        "dwell_total_seconds",
+        "distinct_products",
+        "event_types",
+        "event_product_ids",
+        "event_dwell_seconds",
+        "event_timestamps",
+        "event_meta_json",
+        "events_json",
+        "signals_json"
+      ],
+      "split_counts": {
+        "train/NONE": 4,
+        "train/PRICE_HESITANT": 12,
+        "train/SIZE_UNCERTAIN": 12,
+        "train/STOCK_CONCERN": 14,
+        "train/STYLE_DOUBT": 8,
+        "val/NONE": 1,
+        "val/PRICE_HESITANT": 2,
+        "val/SIZE_UNCERTAIN": 3,
+        "val/STOCK_CONCERN": 3,
+        "val/STYLE_DOUBT": 1
+      }
+    },
+    "catalog_rag": {
+      "documents": 40,
+      "path": "catalog_rag.jsonl"
+    },
+    "customer_context": {
+      "customers": 30,
+      "assets": 170
+    }
+  }
+}

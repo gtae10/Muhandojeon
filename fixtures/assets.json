@@ -1,0 +1,217 @@
+{
+  "_meta": {
+    "note": "소유 개체 18개. 컨디션 점수와 findings 는 전부 손으로 지정했다(계산하지 않는다).",
+    "required_by_demo": {
+      "AS-0001": "컨디션 71점 + 핸들 마모 임계 근접 — 데모 대본의 핵심 대사",
+      "AS-0016": "컨디션 97점 신품급 — 대비용",
+      "AS-0007": "컨디션 54점 — 리세일/케어 시나리오용"
+    },
+    "product_name": "픽스처에 넣지 않는다. provider 가 products.json 에서 조인해 채운다.",
+    "reference_now": "2026-08-14T12:00:00+09:00 (app/config.py REFERENCE_NOW) 기준으로 경과 연수를 읽는다.",
+    "count": 18
+  },
+  "assets": [
+    {
+      "asset_id": "AS-0001",
+      "customer_id": "CU-0001",
+      "product_id": "LX-0001",
+      "purchased_at": "2022-04-16T00:00:00+09:00",
+      "condition_score": 71,
+      "findings": [
+        {
+          "part": "handle",
+          "severity": "MEDIUM",
+          "note": "핸들 표면 마모 진행, 케어 임계 근접"
+        },
+        { "part": "corner", "severity": "MEDIUM", "note": "코너 4곳 마찰, 각 세우기 필요" }
+      ],
+      "next_service_months": 1,
+      "last_scanned_at": "2026-07-03T14:20:00+09:00"
+    },
+    {
+      "asset_id": "AS-0002",
+      "customer_id": "CU-0001",
+      "product_id": "LX-0008",
+      "purchased_at": "2021-06-05T00:00:00+09:00",
+      "condition_score": 88,
+      "findings": [{ "part": "bracelet", "severity": "LOW", "note": "브레이슬릿 유격 없음" }],
+      "next_service_months": 22,
+      "last_scanned_at": "2026-02-11T11:05:00+09:00"
+    },
+    {
+      "asset_id": "AS-0003",
+      "customer_id": "CU-0001",
+      "product_id": "LX-0003",
+      "purchased_at": "2024-03-22T00:00:00+09:00",
+      "condition_score": 92,
+      "findings": [{ "part": "exterior", "severity": "LOW", "note": "외관 결 유지" }],
+      "next_service_months": 30,
+      "last_scanned_at": "2026-05-20T16:40:00+09:00"
+    },
+    {
+      "asset_id": "AS-0004",
+      "customer_id": "CU-0001",
+      "product_id": "LX-0005",
+      "purchased_at": "2023-11-08T00:00:00+09:00",
+      "condition_score": 76,
+      "findings": [
+        { "part": "sole", "severity": "MEDIUM", "note": "앞창 마모 진행" },
+        { "part": "upper", "severity": "LOW", "note": "볼 부분 주름 자연 발생" }
+      ],
+      "next_service_months": 5,
+      "last_scanned_at": "2026-06-30T10:15:00+09:00"
+    },
+    {
+      "asset_id": "AS-0005",
+      "customer_id": "CU-0001",
+      "product_id": "LX-0010",
+      "purchased_at": "2020-09-14T00:00:00+09:00",
+      "condition_score": 63,
+      "findings": [
+        { "part": "edge_coat", "severity": "HIGH", "note": "엣지 코트 대부분 손실" },
+        { "part": "stitching", "severity": "MEDIUM", "note": "접합부 스티치 이완" }
+      ],
+      "next_service_months": 0,
+      "last_scanned_at": null
+    },
+    {
+      "asset_id": "AS-0006",
+      "customer_id": "CU-0002",
+      "product_id": "LX-0002",
+      "purchased_at": "2021-02-19T00:00:00+09:00",
+      "condition_score": 79,
+      "findings": [
+        { "part": "handle", "severity": "MEDIUM", "note": "핸들 표면 마모 진행" },
+        { "part": "hardware", "severity": "LOW", "note": "금속 광택 양호, 미세 스크래치" }
+      ],
+      "next_service_months": 9,
+      "last_scanned_at": "2026-04-02T13:30:00+09:00"
+    },
+    {
+      "asset_id": "AS-0007",
+      "customer_id": "CU-0002",
+      "product_id": "LX-0005",
+      "purchased_at": "2021-09-12T00:00:00+09:00",
+      "condition_score": 54,
+      "findings": [
+        { "part": "sole", "severity": "HIGH", "note": "앞창 관통 마모, 재밑창 필요" },
+        { "part": "edge_coat", "severity": "MEDIUM", "note": "엣지 코트 벗겨짐 구간 확인" }
+      ],
+      "next_service_months": 0,
+      "last_scanned_at": "2026-07-21T09:50:00+09:00"
+    },
+    {
+      "asset_id": "AS-0008",
+      "customer_id": "CU-0002",
+      "product_id": "LX-0004",
+      "purchased_at": "2023-05-30T00:00:00+09:00",
+      "condition_score": 85,
+      "findings": [{ "part": "exterior", "severity": "LOW", "note": "외관 결 유지" }],
+      "next_service_months": 18,
+      "last_scanned_at": null
+    },
+    {
+      "asset_id": "AS-0009",
+      "customer_id": "CU-0002",
+      "product_id": "LX-0012",
+      "purchased_at": "2022-08-08T00:00:00+09:00",
+      "condition_score": 70,
+      "findings": [
+        { "part": "edge_coat", "severity": "MEDIUM", "note": "엣지 코트 벗겨짐 구간 확인" },
+        { "part": "hardware", "severity": "MEDIUM", "note": "금속 변색 시작(도금 산화)" }
+      ],
+      "next_service_months": 0,
+      "last_scanned_at": "2026-03-15T15:10:00+09:00"
+    },
+    {
+      "asset_id": "AS-0010",
+      "customer_id": "CU-0003",
+      "product_id": "LX-0005",
+      "purchased_at": "2023-04-18T00:00:00+09:00",
+      "condition_score": 81,
+      "findings": [{ "part": "sole", "severity": "MEDIUM", "note": "앞창 마모 진행" }],
+      "next_service_months": 6,
+      "last_scanned_at": "2026-06-05T14:00:00+09:00"
+    },
+    {
+      "asset_id": "AS-0011",
+      "customer_id": "CU-0003",
+      "product_id": "LX-0007",
+      "purchased_at": "2024-10-02T00:00:00+09:00",
+      "condition_score": 90,
+      "findings": [{ "part": "upper", "severity": "LOW", "note": "볼 부분 주름 자연 발생" }],
+      "next_service_months": 24,
+      "last_scanned_at": null
+    },
+    {
+      "asset_id": "AS-0012",
+      "customer_id": "CU-0003",
+      "product_id": "LX-0011",
+      "purchased_at": "2025-01-15T00:00:00+09:00",
+      "condition_score": 94,
+      "findings": [],
+      "next_service_months": 33,
+      "last_scanned_at": "2026-01-30T12:20:00+09:00"
+    },
+    {
+      "asset_id": "AS-0013",
+      "customer_id": "CU-0004",
+      "product_id": "LX-0011",
+      "purchased_at": "2023-09-09T00:00:00+09:00",
+      "condition_score": 82,
+      "findings": [{ "part": "edge_coat", "severity": "LOW", "note": "엣지 코트 상태 양호" }],
+      "next_service_months": 12,
+      "last_scanned_at": null
+    },
+    {
+      "asset_id": "AS-0014",
+      "customer_id": "CU-0004",
+      "product_id": "LX-0012",
+      "purchased_at": "2024-06-21T00:00:00+09:00",
+      "condition_score": 87,
+      "findings": [{ "part": "exterior", "severity": "LOW", "note": "외관 결 유지" }],
+      "next_service_months": 16,
+      "last_scanned_at": "2026-02-24T17:45:00+09:00"
+    },
+    {
+      "asset_id": "AS-0015",
+      "customer_id": "CU-0004",
+      "product_id": "LX-0010",
+      "purchased_at": "2025-08-01T00:00:00+09:00",
+      "condition_score": 95,
+      "findings": [],
+      "next_service_months": 36,
+      "last_scanned_at": null
+    },
+    {
+      "asset_id": "AS-0016",
+      "customer_id": "CU-0005",
+      "product_id": "LX-0004",
+      "purchased_at": "2026-06-02T00:00:00+09:00",
+      "condition_score": 97,
+      "findings": [],
+      "next_service_months": 40,
+      "last_scanned_at": "2026-06-10T11:00:00+09:00"
+    },
+    {
+      "asset_id": "AS-0017",
+      "customer_id": "CU-0006",
+      "product_id": "LX-0009",
+      "purchased_at": "2022-12-11T00:00:00+09:00",
+      "condition_score": 84,
+      "findings": [{ "part": "dial", "severity": "LOW", "note": "다이얼 청결" }],
+      "next_service_months": 20,
+      "last_scanned_at": null
+    },
+    {
+      "asset_id": "AS-0018",
+      "customer_id": "CU-0006",
+      "product_id": "LX-0006",
+      "purchased_at": "2024-02-14T00:00:00+09:00",
+      "condition_score": 86,
+      "findings": [{ "part": "upper", "severity": "LOW", "note": "볼 부분 주름 자연 발생" }],
+      "next_service_months": 14,
+      "last_scanned_at": "2026-05-05T10:30:00+09:00"
+    }
+  ]
+}

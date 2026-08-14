@@ -1,0 +1,48 @@
+{
+  "customer_id": "CU-0007",
+  "hesitation_type": "SIZE_UNCERTAIN",
+  "target_product": {
+    "product_id": "LX-0012",
+    "name": "Aurelia Derby",
+    "category": "SHOES",
+    "collection": "Maison Nord",
+    "material": "박스카프 카프스킨 / 굿이어 웰트",
+    "color": "Ebony",
+    "price_krw": 2380000,
+    "size_system": "EU 35-42 / Last: Aurelia",
+    "available_sizes": [
+      "38",
+      "38.5",
+      "40"
+    ],
+    "care_notes": "3개월마다 슈트리 사용 및 크림 보습 권장",
+    "image_path": "images/LX-0012.jpg"
+  },
+  "owned_assets": [
+    {
+      "asset_id": "AS-000031",
+      "customer_id": "CU-0007",
+      "product_id": "LX-0004",
+      "product_name": "Aurelia Oxford",
+      "category": "SHOES",
+      "purchased_at": "2023-04-18T00:00:00+09:00",
+      "condition_score": 71,
+      "findings": [
+        {
+          "part": "sole",
+          "severity": "MEDIUM",
+          "note": "앞창 마모 진행, 재밑창 시점 근접"
+        }
+      ],
+      "next_service_months": 2,
+      "last_scanned_at": "2026-07-02T14:20:00+09:00"
+    }
+  ],
+  "strategy_id": "S2",
+  "history": [
+    {
+      "role": "customer",
+      "content": "38이 맞을지 38.5가 맞을지 모르겠어요."
+    }
+  ]
+}

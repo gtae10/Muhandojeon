@@ -1,0 +1,479 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Persona Bot Lab</title>
+<style>
+  /* 팔레트: 검증된 기본 팔레트(범주형 3슬롯 + 순차 blue 램프). 다크는 자동 반전이 아니라
+     다크 표면 기준으로 별도 선택된 스텝이다. 대비 미달 슬롯은 값 라벨을 항상 노출해 보완한다. */
+  :root {
+    color-scheme: light;
+    --surface-0: #f7f7f5;
+    --surface-1: #fcfcfb;
+    --surface-2: #f0efec;
+    --border: #dcdbd6;
+    --text-primary: #0b0b0b;
+    --text-secondary: #52514e;
+    --text-muted: #77756e;
+    --series-1: #2a78d6;
+    --series-2: #eb6834;
+    --series-3: #1baf7a;
+    --good: #0ca30c;
+    --critical: #d03b3b;
+    --warning: #fab219;
+    --seq-100: #cde2fb; --seq-200: #9ec5f4; --seq-300: #6da7ec;
+    --seq-400: #3987e5; --seq-500: #256abf; --seq-600: #184f95; --seq-700: #0d366b;
+    --seq-ink-light: #0b0b0b;
+    --seq-ink-dark: #ffffff;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      color-scheme: dark;
+      --surface-0: #121211;
+      --surface-1: #1a1a19;
+      --surface-2: #232322;
+      --border: #383835;
+      --text-primary: #ffffff;
+      --text-secondary: #c3c2b7;
+      --text-muted: #8f8e85;
+      --series-1: #3987e5;
+      --series-2: #d95926;
+      --series-3: #199e70;
+      --seq-100: #0d366b; --seq-200: #104281; --seq-300: #184f95;
+      --seq-400: #256abf; --seq-500: #2a78d6; --seq-600: #3987e5; --seq-700: #5598e7;
+      --seq-ink-light: #ffffff;
+      --seq-ink-dark: #0b0b0b;
+    }
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--surface-0);
+    color: var(--text-primary);
+    font: 14px/1.55 -apple-system, BlinkMacSystemFont, "Apple SD Gothic Neo", "Malgun Gothic", sans-serif;
+  }
+  header {
+    position: sticky; top: 0; z-index: 20;
+    display: flex; flex-wrap: wrap; gap: 12px; align-items: center; justify-content: space-between;
+    padding: 14px 20px; background: var(--surface-1); border-bottom: 1px solid var(--border);
+  }
+  h1 { margin: 0; font-size: 17px; letter-spacing: .02em; font-weight: 620; }
+  h2 { margin: 0 0 4px; font-size: 14px; font-weight: 620; letter-spacing: .01em; }
+  .sub { color: var(--text-secondary); font-size: 12px; }
+  main { padding: 20px; max-width: 1180px; margin: 0 auto; display: grid; gap: 18px; }
+  .card { background: var(--surface-1); border: 1px solid var(--border); border-radius: 10px; padding: 16px; }
+  .row { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; }
+  .chip {
+    display: inline-flex; align-items: center; gap: 6px; padding: 3px 9px; border-radius: 999px;
+    background: var(--surface-2); color: var(--text-secondary); font-size: 12px; border: 1px solid var(--border);
+  }
+  .dot { width: 8px; height: 8px; border-radius: 50%; }
+  button {
+    font: inherit; padding: 7px 14px; border-radius: 8px; border: 1px solid var(--border);
+    background: var(--text-primary); color: var(--surface-1); cursor: pointer; font-weight: 560;
+  }
+  button.secondary { background: var(--surface-2); color: var(--text-primary); }
+  button:disabled { opacity: .5; cursor: default; }
+  label { font-size: 12px; color: var(--text-secondary); display: inline-flex; gap: 6px; align-items: center; }
+  input[type=number] {
+    font: inherit; width: 62px; padding: 5px 7px; border-radius: 6px;
+    border: 1px solid var(--border); background: var(--surface-2); color: var(--text-primary);
+  }
+  .progress { height: 6px; background: var(--surface-2); border-radius: 999px; overflow: hidden; }
+  .progress > div { height: 100%; background: var(--series-1); width: 0; transition: width .3s; }
+  .banner {
+    border-left: 3px solid var(--warning); background: var(--surface-2);
+    padding: 9px 12px; border-radius: 0 8px 8px 0; font-size: 12.5px; color: var(--text-secondary);
+  }
+  /* 막대: 얇은 마크 + 데이터 끝만 라운드 + 값 직접 라벨 */
+  .bars { display: grid; gap: 10px; margin-top: 10px; }
+  .bar-row { display: grid; grid-template-columns: 148px 1fr 92px; gap: 10px; align-items: center; }
+  .bar-track { background: var(--surface-2); border-radius: 4px; height: 18px; position: relative; }
+  .bar-fill { height: 100%; border-radius: 0 4px 4px 0; min-width: 2px; }
+  .bar-label { font-variant-numeric: tabular-nums; font-size: 12.5px; color: var(--text-secondary); }
+  .bar-name { font-size: 12.5px; color: var(--text-primary); display: flex; gap: 6px; align-items: center; }
+  table { width: 100%; border-collapse: collapse; font-size: 12.5px; }
+  th, td { text-align: left; padding: 6px 8px; border-bottom: 1px solid var(--border); white-space: nowrap; }
+  th { color: var(--text-muted); font-weight: 560; font-size: 11.5px; letter-spacing: .03em; text-transform: uppercase; }
+  td.num, th.num { text-align: right; font-variant-numeric: tabular-nums; }
+  .scroll { overflow-x: auto; }
+  .heat { border-collapse: separate; border-spacing: 2px; }
+  .heat td.cell { text-align: center; border-radius: 4px; border: none; font-variant-numeric: tabular-nums; padding: 9px 6px; min-width: 78px; }
+  .heat td.rowhead { border: none; color: var(--text-primary); font-size: 12.5px; }
+  .heat th { border: none; text-align: center; }
+  tr.clickable { cursor: pointer; }
+  tr.clickable:hover td { background: var(--surface-2); }
+  .pill { padding: 1px 7px; border-radius: 999px; font-size: 11.5px; border: 1px solid var(--border); }
+  .pill.yes { color: var(--good); border-color: color-mix(in oklab, var(--good) 40%, var(--border)); }
+  .pill.no { color: var(--critical); border-color: color-mix(in oklab, var(--critical) 40%, var(--border)); }
+  #tooltip {
+    position: fixed; pointer-events: none; opacity: 0; transition: opacity .12s;
+    background: var(--text-primary); color: var(--surface-1); font-size: 12px;
+    padding: 6px 9px; border-radius: 6px; max-width: 260px; z-index: 60; line-height: 1.4;
+  }
+  dialog {
+    border: 1px solid var(--border); border-radius: 12px; background: var(--surface-1);
+    color: var(--text-primary); max-width: 760px; width: 92vw; padding: 0;
+  }
+  dialog::backdrop { background: rgba(0,0,0,.45); }
+  .dlg-head { padding: 14px 16px; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; gap: 10px; align-items: flex-start; }
+  .dlg-body { padding: 14px 16px; max-height: 62vh; overflow-y: auto; display: grid; gap: 10px; }
+  .turn { border-radius: 8px; padding: 9px 11px; font-size: 13px; }
+  .turn.customer { background: var(--surface-2); }
+  .turn.advisor { background: color-mix(in oklab, var(--series-1) 12%, var(--surface-1)); }
+  .turn .who { font-size: 11px; color: var(--text-muted); letter-spacing: .04em; text-transform: uppercase; margin-bottom: 3px; }
+  .turn .meta { font-size: 11.5px; color: var(--text-secondary); margin-top: 5px; }
+  .empty { color: var(--text-muted); font-size: 13px; padding: 10px 0; }
+  .legend { display: flex; gap: 14px; flex-wrap: wrap; font-size: 12px; color: var(--text-secondary); }
+  .legend span.key { display: inline-flex; gap: 5px; align-items: center; }
+  .toggle { background: none; border: none; color: var(--series-1); cursor: pointer; font-size: 12px; padding: 0; }
+</style>
+</head>
+<body data-palette="#2a78d6,#eb6834,#1baf7a">
+<header>
+  <div>
+    <h1>Persona Bot Lab</h1>
+    <div class="sub">페르소나 5종 × 전략 3종 시뮬레이션 — 상담 전략의 효과를 실측한다</div>
+  </div>
+  <div class="row">
+    <span class="chip" id="mode-chip">모드 확인 중…</span>
+    <span class="chip" id="run-chip">실행 없음</span>
+    <a class="chip" href="/ops">/ops 예산</a>
+    <a class="chip" href="/health/detail" target="_blank" rel="noopener">/health/detail</a>
+  </div>
+</header>
+
+<main>
+  <section class="card">
+    <h2>시뮬레이션 실행</h2>
+    <div class="sub">기본 5 페르소나 × 3 전략 × 3회 = 45세션. 동시성 기본값은 <code>LLM_MAX_CONCURRENCY</code>. 실행 전 예상 비용을 확인한 뒤 진행한다.</div>
+    <div class="row" style="margin-top:12px">
+      <label>반복 <input type="number" id="runs" min="1" max="10" value="3" /></label>
+      <label>동시성 <input type="number" id="conc" min="1" max="16" value="4" /></label>
+      <label>최대 턴 <input type="number" id="turns" min="2" max="12" value="6" /></label>
+      <button id="run-btn">Run simulation</button>
+      <button class="secondary" id="reload-btn">최신 결과 불러오기</button>
+      <span class="bar-label" id="progress-text"></span>
+    </div>
+    <div class="progress" style="margin-top:12px"><div id="progress-fill"></div></div>
+    <div id="caveat" style="margin-top:12px"></div>
+  </section>
+
+  <section class="card">
+    <h2>전략별 전환율</h2>
+    <div class="sub">전환 = 심판이 "고객이 다음 단계로 넘어갈 의사를 표현했다"고 판정한 세션 비율</div>
+    <div class="legend" style="margin-top:10px">
+      <span class="key"><span class="dot" style="background:var(--series-1)"></span>S1 정보 제공형</span>
+      <span class="key"><span class="dot" style="background:var(--series-2)"></span>S2 소유 자산 연계형</span>
+      <span class="key"><span class="dot" style="background:var(--series-3)"></span>S3 희소성·타이밍</span>
+    </div>
+    <div class="bars" id="strategy-bars"></div>
+    <button class="toggle" id="toggle-table" style="margin-top:12px">표로 보기</button>
+    <div class="scroll" id="strategy-table" hidden></div>
+  </section>
+
+  <section class="card">
+    <h2>페르소나 × 전략 히트맵</h2>
+    <div class="sub">칸 = 전환율(값을 직접 표시한다). 색은 단일 색상 순차 램프.</div>
+    <div class="scroll" id="heatmap"></div>
+  </section>
+
+  <section class="card">
+    <h2>이탈 사유 분포</h2>
+    <div class="sub">전환되지 않은 세션의 사유. 심판이 대화 내용만 보고 판정한 값이다.</div>
+    <div class="bars" id="drop-bars"></div>
+  </section>
+
+  <section class="card">
+    <h2>세션 목록</h2>
+    <div class="sub">행을 클릭하면 대화 전문과 신뢰도 변화 근거를 볼 수 있다.</div>
+    <div class="scroll" id="sessions"></div>
+  </section>
+</main>
+
+<div id="tooltip"></div>
+<dialog id="cost-dlg">
+  <div class="dlg-head">
+    <div>
+      <h2>실행 전 예상 비용</h2>
+      <div class="sub">크레딧 총액 100달러. 실수로 여러 번 돌리는 것을 막기 위해 확인을 요구한다.</div>
+    </div>
+    <button class="secondary" onclick="document.getElementById('cost-dlg').close()">닫기</button>
+  </div>
+  <div class="dlg-body" id="cost-body"></div>
+  <div class="dlg-head" style="border-top:1px solid var(--border);border-bottom:none;justify-content:flex-end">
+    <button class="secondary" onclick="document.getElementById('cost-dlg').close()">취소</button>
+    <button id="cost-confirm">이 비용으로 실행</button>
+  </div>
+</dialog>
+<dialog id="dlg">
+  <div class="dlg-head">
+    <div>
+      <h2 id="dlg-title">세션</h2>
+      <div class="sub" id="dlg-sub"></div>
+    </div>
+    <button class="secondary" onclick="document.getElementById('dlg').close()">닫기</button>
+  </div>
+  <div class="dlg-body" id="dlg-body"></div>
+</dialog>
+
+<script>
+const SERIES = { S1: 'var(--series-1)', S2: 'var(--series-2)', S3: 'var(--series-3)' };
+const SEQ = ['--seq-100','--seq-200','--seq-300','--seq-400','--seq-500','--seq-600','--seq-700'];
+const tooltip = document.getElementById('tooltip');
+let currentRun = null;
+let poller = null;
+
+function pct(x) { return (x * 100).toFixed(0) + '%'; }
+function esc(s) { return String(s ?? '').replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c])); }
+
+function bindTip(el, html) {
+  el.addEventListener('mousemove', (e) => {
+    tooltip.innerHTML = html;
+    tooltip.style.opacity = '1';
+    const pad = 12;
+    tooltip.style.left = Math.min(e.clientX + pad, window.innerWidth - 280) + 'px';
+    tooltip.style.top = (e.clientY + pad) + 'px';
+  });
+  el.addEventListener('mouseleave', () => { tooltip.style.opacity = '0'; });
+}
+
+async function api(path, options) {
+  const res = await fetch(path, options);
+  if (!res.ok) throw new Error(path + ' → ' + res.status);
+  return res.json();
+}
+
+async function loadConfig() {
+  const cfg = await api('/lab/config');
+  const d = cfg.defaults || {};
+  document.getElementById('runs').value = d.runs_per_pair ?? 3;
+  document.getElementById('conc').value = d.concurrency ?? 4;
+  document.getElementById('turns').value = d.max_turns ?? 6;
+  const chip = document.getElementById('mode-chip');
+  const llm = d.llm_enabled;
+  chip.innerHTML = `<span class="dot" style="background:${llm ? 'var(--good)' : 'var(--warning)'}"></span>` +
+    (llm ? 'LLM 연결 — 페르소나·심판 LLM' : 'LLM 미연결 — 규칙 모델 시뮬레이션');
+  if ((cfg.binding_problems || []).length) {
+    document.getElementById('caveat').innerHTML =
+      `<div class="banner">페르소나 바인딩 문제: ${cfg.binding_problems.map(esc).join(', ')}</div>`;
+  }
+}
+
+function renderStrategyBars(rows) {
+  const host = document.getElementById('strategy-bars');
+  if (!rows.length) { host.innerHTML = '<div class="empty">결과 없음 — Run simulation 을 눌러라.</div>'; return; }
+  const max = Math.max(0.001, ...rows.map(r => r.conversion_rate));
+  host.innerHTML = '';
+  rows.forEach(r => {
+    const row = document.createElement('div');
+    row.className = 'bar-row';
+    row.innerHTML =
+      `<div class="bar-name"><span class="dot" style="background:${SERIES[r.strategy_id] || 'var(--series-1)'}"></span>${esc(r.strategy_id)} ${esc(r.name)}</div>` +
+      `<div class="bar-track"><div class="bar-fill" style="width:${(r.conversion_rate / max) * 100}%;background:${SERIES[r.strategy_id] || 'var(--series-1)'}"></div></div>` +
+      `<div class="bar-label">${pct(r.conversion_rate)} · ${r.converted}/${r.sessions}</div>`;
+    bindTip(row, `<b>${esc(r.strategy_id)} ${esc(r.name)}</b><br>전환 ${r.converted}/${r.sessions} (${pct(r.conversion_rate)})<br>` +
+      `평균 턴 ${r.avg_turns_to_decision} · 평균 신뢰 ${r.avg_trust}/5<br>자산 인용률 ${pct(r.asset_citation_rate)}` +
+      `<br>인용 정책: ${r.cite_assets ? '자산 인용' : '자산 미인용'}`);
+    host.appendChild(row);
+  });
+}
+
+function renderStrategyTable(rows) {
+  document.getElementById('strategy-table').innerHTML = `<table>
+    <thead><tr><th>전략</th><th class="num">세션</th><th class="num">전환</th><th class="num">전환율</th>
+    <th class="num">평균 턴</th><th class="num">평균 신뢰</th><th class="num">자산 인용률</th><th class="num">폴백</th></tr></thead>
+    <tbody>${rows.map(r => `<tr><td>${esc(r.strategy_id)} ${esc(r.name)}</td><td class="num">${r.sessions}</td>
+      <td class="num">${r.converted}</td><td class="num">${pct(r.conversion_rate)}</td>
+      <td class="num">${r.avg_turns_to_decision}</td><td class="num">${r.avg_trust}</td>
+      <td class="num">${pct(r.asset_citation_rate)}</td><td class="num">${r.degraded_sessions}</td></tr>`).join('')}</tbody></table>`;
+}
+
+function renderHeatmap(rows, strategies) {
+  const host = document.getElementById('heatmap');
+  if (!rows.length) { host.innerHTML = '<div class="empty">결과 없음</div>'; return; }
+  const head = strategies.map(s => `<th>${esc(s)}</th>`).join('');
+  const body = rows.map(r => {
+    const cells = strategies.map(s => {
+      const c = r.cells[s] || { conversion_rate: 0, sessions: 0, converted: 0, avg_trust: 0 };
+      const idx = Math.min(SEQ.length - 1, Math.round(c.conversion_rate * (SEQ.length - 1)));
+      const ink = idx >= 3 ? 'var(--seq-ink-dark)' : 'var(--seq-ink-light)';
+      return `<td class="cell" style="background:var(${SEQ[idx]});color:${ink}"
+        data-tip="${esc(r.persona_id)} × ${esc(s)}|전환 ${c.converted}/${c.sessions} (${pct(c.conversion_rate)})|평균 신뢰 ${c.avg_trust}/5">${pct(c.conversion_rate)}</td>`;
+    }).join('');
+    return `<tr><td class="rowhead">${esc(r.persona_id)} ${esc(r.persona_name)}<br><span class="sub">${esc(r.customer_id)}</span></td>${cells}</tr>`;
+  }).join('');
+  host.innerHTML = `<table class="heat"><thead><tr><th></th>${head}</tr></thead><tbody>${body}</tbody></table>`;
+  host.querySelectorAll('td.cell').forEach(td => {
+    const [a, b, c] = (td.dataset.tip || '').split('|');
+    bindTip(td, `<b>${a}</b><br>${b}<br>${c}`);
+  });
+}
+
+function renderDrops(rows) {
+  const host = document.getElementById('drop-bars');
+  if (!rows.length) { host.innerHTML = '<div class="empty">이탈 세션 없음</div>'; return; }
+  const max = Math.max(...rows.map(r => r.count));
+  host.innerHTML = '';
+  rows.forEach(r => {
+    const row = document.createElement('div');
+    row.className = 'bar-row';
+    row.innerHTML = `<div class="bar-name">${esc(r.reason)}</div>` +
+      `<div class="bar-track"><div class="bar-fill" style="width:${(r.count / max) * 100}%;background:var(--seq-500)"></div></div>` +
+      `<div class="bar-label">${r.count}건</div>`;
+    bindTip(row, `<b>${esc(r.reason)}</b><br>${r.count}건`);
+    host.appendChild(row);
+  });
+}
+
+function renderSessions(rows) {
+  const host = document.getElementById('sessions');
+  if (!rows.length) { host.innerHTML = '<div class="empty">결과 없음</div>'; return; }
+  host.innerHTML = `<table><thead><tr>
+    <th>페르소나</th><th>전략</th><th class="num">회차</th><th>고객</th><th>망설임</th>
+    <th>전환</th><th class="num">턴</th><th class="num">신뢰</th><th>이탈 사유</th><th>자산 인용</th><th>폴백</th>
+    </tr></thead><tbody>${rows.map(r => `<tr class="clickable" data-id="${r.id}">
+      <td>${esc(r.persona_id)}</td><td>${esc(r.strategy_id)}</td><td class="num">${r.iteration + 1}</td>
+      <td>${esc(r.customer_id)}</td><td>${esc(r.hesitation_type)}</td>
+      <td><span class="pill ${r.converted ? 'yes' : 'no'}">${r.converted ? '전환' : '이탈'}</span></td>
+      <td class="num">${r.turns_to_decision}</td><td class="num">${r.trust_score}</td>
+      <td>${esc(r.drop_reason || '—')}</td>
+      <td>${r.owned_assets_used ? esc((r.cited_asset_ids || []).join(', ')) : '없음'}</td>
+      <td>${r.degraded ? 'true' : '—'}</td></tr>`).join('')}</tbody></table>`;
+  host.querySelectorAll('tr.clickable').forEach(tr => {
+    tr.addEventListener('click', () => openSession(tr.dataset.id));
+  });
+}
+
+async function openSession(id) {
+  const d = await api('/lab/sessions/' + id);
+  document.getElementById('dlg-title').textContent =
+    `${d.persona_id} × ${d.strategy_id} · ${d.converted ? '전환' : '이탈' + (d.drop_reason ? ' (' + d.drop_reason + ')' : '')}`;
+  document.getElementById('dlg-sub').textContent =
+    `${d.customer_id} · ${d.target_product_id} · 망설임 ${d.hesitation_type} · 신뢰 ${d.trust_score}/5 · ${d.judge_reasoning || ''}`;
+  document.getElementById('dlg-body').innerHTML = (d.transcript || []).map(t => {
+    const meta = [];
+    if (t.cta) meta.push('CTA ' + t.cta);
+    if (t.cited) meta.push('인용 ' + t.cited);
+    if (t.trust_after) meta.push('신뢰 ' + t.trust_after);
+    return `<div class="turn ${t.role}"><div class="who">${t.role === 'advisor' ? '어드바이저' : '고객'}</div>` +
+      `${esc(t.content)}${meta.length ? `<div class="meta">${esc(meta.join(' · '))}</div>` : ''}` +
+      `${t.trust_reasons ? `<div class="meta">${esc(t.trust_reasons)}</div>` : ''}</div>`;
+  }).join('');
+  document.getElementById('dlg').showModal();
+}
+
+function renderSummary(data) {
+  const strategies = (data.by_strategy || []).map(s => s.strategy_id);
+  renderStrategyBars(data.by_strategy || []);
+  renderStrategyTable(data.by_strategy || []);
+  renderHeatmap(data.heatmap || [], strategies);
+  renderDrops(data.drop_reasons || []);
+  renderSessions(data.sessions || []);
+  const t = data.totals || {};
+  const run = data.run || {};
+  document.getElementById('run-chip').textContent =
+    run.run_id ? `${run.run_id} · ${t.sessions || 0}세션 · 전환 ${pct(t.conversion_rate || 0)}` : '실행 없음';
+  const mode = data.simulation_mode || {};
+  document.getElementById('caveat').innerHTML = mode.caveat
+    ? `<div class="banner">${esc(mode.caveat)}${mode.judge_sources ? ' · 심판: ' + esc(JSON.stringify(mode.judge_sources)) : ''}</div>`
+    : '';
+}
+
+async function loadLatest() {
+  try {
+    const data = await api('/lab/runs/latest');
+    currentRun = (data.run || {}).run_id || null;
+    renderSummary(data);
+  } catch (e) {
+    document.getElementById('strategy-bars').innerHTML = `<div class="empty">${esc(e.message)}</div>`;
+  }
+}
+
+function setProgress(p) {
+  const total = p.total || 0;
+  const done = p.completed || 0;
+  document.getElementById('progress-fill').style.width = total ? (done / total) * 100 + '%' : '0';
+  document.getElementById('progress-text').textContent =
+    total ? `${done}/${total} 세션${p.converted != null ? ` · 전환 ${p.converted}` : ''}${p.status === 'done' ? ' · 완료' : ''}` : '';
+}
+
+function currentConfig() {
+  return {
+    runs_per_pair: +document.getElementById('runs').value,
+    concurrency: +document.getElementById('conc').value,
+    max_turns: +document.getElementById('turns').value,
+  };
+}
+
+async function askCost() {
+  const body = JSON.stringify(currentConfig());
+  const d = await api('/lab/estimate', { method: 'POST', headers: { 'content-type': 'application/json' }, body });
+  const e = d.estimate, b = d.budget;
+  const rows = Object.entries(e.per_purpose_usd || {})
+    .map(([k, v]) => `<tr><td>${esc(k)}</td><td class="bar-label">$${Number(v).toFixed(5)}</td></tr>`).join('');
+  document.getElementById('cost-body').innerHTML = `
+    <div class="turn advisor">
+      <div class="who">예상 비용 (캐시 미스 기준 상한)</div>
+      <div style="font-size:22px;font-weight:640">$${e.total_usd.toFixed(4)} <span class="sub">≈ ${e.total_krw.toLocaleString()}원</span></div>
+      <div class="meta">세션 ${e.total_sessions}건 · 세션당 $${e.per_session_usd.toFixed(5)} (≈${e.per_session_krw.toLocaleString()}원) · 최대 ${e.max_turns}턴</div>
+      <div class="meta">근거: ${esc(e.basis)} — ${esc(e.note)}</div>
+      <div class="meta">라우팅: ${esc(JSON.stringify(e.routing))}</div>
+    </div>
+    <table><thead><tr><th>용도</th><th>예상 비용</th></tr></thead><tbody>${rows}</tbody></table>
+    <div class="banner">예산: 누적 $${b.spent_usd.toFixed(4)} / 하드 $${b.hard_usd.toFixed(0)} → 잔액 $${b.remaining_to_hard_usd.toFixed(4)}
+      ${d.affordable ? '' : ' · <b>잔액 초과 — 실행이 거부된다</b>'}</div>`;
+  document.getElementById('cost-dlg').showModal();
+  return d;
+}
+
+async function run() {
+  const btn = document.getElementById('run-btn');
+  btn.disabled = true;
+  btn.textContent = '실행 중…';
+  try {
+    const body = JSON.stringify({ ...currentConfig(), confirm: true });
+    const started = await api('/lab/run', { method: 'POST', headers: { 'content-type': 'application/json' }, body });
+    currentRun = started.run_id;
+    if (poller) clearInterval(poller);
+    poller = setInterval(async () => {
+      try {
+        const p = await api(`/lab/runs/${currentRun}/progress`);
+        setProgress(p);
+        if (p.status === 'done') {
+          clearInterval(poller); poller = null;
+          btn.disabled = false; btn.textContent = 'Run simulation';
+          const data = await api('/lab/runs/' + currentRun);
+          renderSummary(data);
+        }
+      } catch (e) { /* 진행률 조회 실패는 무시하고 다음 폴에서 재시도 */ }
+    }, 600);
+  } catch (e) {
+    btn.disabled = false;
+    btn.textContent = 'Run simulation';
+    document.getElementById('caveat').innerHTML = `<div class="banner">실행 실패: ${esc(e.message)}</div>`;
+  }
+}
+
+document.getElementById('run-btn').addEventListener('click', async () => {
+  try {
+    await askCost();
+  } catch (e) {
+    document.getElementById('caveat').innerHTML = `<div class="banner">비용 추정 실패: ${esc(e.message)}</div>`;
+  }
+});
+document.getElementById('cost-confirm').addEventListener('click', () => {
+  document.getElementById('cost-dlg').close();
+  run();
+});
+document.getElementById('reload-btn').addEventListener('click', loadLatest);
+document.getElementById('toggle-table').addEventListener('click', () => {
+  const el = document.getElementById('strategy-table');
+  el.hidden = !el.hidden;
+  document.getElementById('toggle-table').textContent = el.hidden ? '표로 보기' : '표 숨기기';
+});
+loadConfig().then(loadLatest);
+</script>
+</body>
+</html>

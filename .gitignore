@@ -1,0 +1,25 @@
+# data
+data/raw/
+data/_deferred/processed/images/
+data/fingerprints/
+*.db
+*.sqlite3
+
+# caches
+.cache/
+__pycache__/
+*.py[cod]
+.mypy_cache/
+.ruff_cache/
+.pytest_cache/
+
+# env / venv
+.venv/
+.env
+
+# 프론트(muhandojeon/frontend) 빌드 산출물
+node_modules/
+dist/
+
+# os
+.DS_Store

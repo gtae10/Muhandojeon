@@ -1,0 +1,27 @@
+{
+  "customer_id": "CU-0007",
+  "target_product_id": "LX-0012",
+  "session_events": [
+    {
+      "event_type": "size_guide",
+      "product_id": "LX-0012",
+      "timestamp": "2026-08-14T10:03:20+09:00",
+      "dwell_seconds": 88.5,
+      "meta": {
+        "size": "38"
+      }
+    },
+    {
+      "event_type": "size_guide",
+      "product_id": "LX-0012",
+      "timestamp": "2026-08-14T10:05:02+09:00",
+      "dwell_seconds": 61.0,
+      "meta": {
+        "size": "38.5"
+      }
+    }
+  ],
+  "strategy_id": "S2",
+  "history": [],
+  "scenario_id": null
+}

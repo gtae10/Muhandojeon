@@ -1,0 +1,57 @@
+# 용도별 모델 티어 — 크레딧 100달러를 지키는 첫 번째 수단.
+#
+# 페르소나 봇을 저가 티어로 내리는 것이 가장 큰 절감이다. Persona Bot Lab 호출의 절반이
+# 페르소나 측이고, 고객 역할 연기는 문장 품질 요구가 낮다.
+#
+# 모델 이름은 `/models` 조회로 채우고(1회, 결과 캐시), 실패하면 env → fallback 순으로 쓴다.
+
+tiers:
+  high:
+    model_env: LLM_MODEL
+    fallback: gpt-4o-mini
+    note: 데모에 직접 노출되거나 판정 일관성이 필요한 용도
+  low:
+    model_env: LLM_MODEL_CHEAP
+    fallback: gpt-4o-mini
+    note: 품질 요구가 낮거나 전량 캐시되는 용도
+
+purposes:
+  clienteling:
+    tier: high
+    reason: 상담 문구는 데모 화면에 그대로 나온다. 문장 품질이 곧 제품 인상이다.
+  judge:
+    tier: high
+    reason: 판정 일관성이 실험 신뢰도를 결정한다. 여기서 아끼면 결과를 못 믿는다.
+  persona:
+    tier: low
+    reason: 고객 역할 연기는 품질 요구가 낮다. Lab 호출의 절반이라 절감 효과가 가장 크다.
+  intent:
+    tier: low
+    reason: 5클래스 분류. 저가 모델로 충분한지는 평가셋으로 검증한다(AI1 담당).
+  condition_note:
+    tier: low
+    reason: 짧은 정형 출력이고 자산당 1회라 전량 캐시된다. (예약 — 현재 호출 경로 없음)
+  other:
+    tier: low
+    reason: 분류되지 않은 호출. 저가 티어로 떨어뜨려 사고를 막는다.
+
+# `/models` 조회 결과에서 아래 후보를 순서대로 찾아 첫 일치를 쓴다(부분 문자열 일치).
+# 대회 API 의 실제 모델명이 확정되면 이 목록만 고친다.
+discovery:
+  enabled: true
+  endpoint: /models
+  cache_file: models.json
+  prefer:
+    high:
+      - gpt-4.1
+      - gpt-4o
+      - claude-3-7-sonnet
+      - claude-3-5-sonnet
+      - qwen2.5-72b
+      - llama-3.3-70b
+    low:
+      - gpt-4o-mini
+      - gpt-4.1-mini
+      - claude-3-5-haiku
+      - qwen2.5-7b
+      - llama-3.1-8b

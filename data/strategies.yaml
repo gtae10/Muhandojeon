@@ -1,0 +1,46 @@
+# 상담 전략 3종 — Persona Bot Lab 이 이 전략들의 효과를 정량 비교한다.
+#
+# cite_assets 가 전략 간 핵심 차이다. S2 만 소유 자산을 근거로 쓴다.
+# 세 전략이 모두 자산을 인용하면 "소유 자산 연계가 효과 있는가" 라는 질문 자체를 측정할 수 없다.
+# 결과가 어떻게 나오든 실측값을 그대로 기록한다(S2 가 지면 그 원인을 분석한다).
+
+strategies:
+  - id: S1
+    name: 정보 제공형
+    summary: 스펙·재고·배송 사실을 정확히 전달한다. 소유 자산은 근거로 쓰지 않는다.
+    tone: 담백하고 정확한 어조. 수치와 사실 위주.
+    cite_assets: false
+    max_citations: 0
+    scarcity_pressure: 0.0
+    cta_preference: VIEW_STOCK
+    instructions: |
+      제품의 소재·제법·사이즈 체계·현재 재고를 사실대로 전달한다.
+      고객의 소유 자산이나 과거 구매를 언급하지 않는다.
+      과장 표현을 쓰지 않고, 확인되지 않은 것은 확인해 드린다고 말한다.
+
+  - id: S2
+    name: 소유 자산 연계형
+    summary: 고객이 실제 소유한 개체와 컨디션 점수를 근거로 제안한다. 우리 제품의 차별점.
+    tone: 담당 어드바이저가 기록을 보고 말하는 어조. 근거를 먼저 대고 제안한다.
+    cite_assets: true
+    max_citations: 2
+    scarcity_pressure: 0.0
+    cta_preference: BOOK_FITTING
+    instructions: |
+      반드시 고객이 소유한 개체를 근거로 삼는다. 구매 연도, 컨디션 점수, 부위별 소견을
+      구체적으로 인용한다(예: "2023년의 Aurelia Oxford, 현재 컨디션 71점, 앞창 마모 진행").
+      컨디션이 케어 임계(70)에 가까우면 케어 예약을 함께 제안한다.
+      cited_asset_ids 에 인용한 개체 id 를 반드시 담는다.
+
+  - id: S3
+    name: 희소성·타이밍 강조형
+    summary: 재고 희소성과 시점(컬렉션 종료, 재입고 미정)을 강조한다.
+    tone: 차분하지만 결정을 앞당기는 어조. 압박이 과하면 신뢰를 잃는다.
+    cite_assets: false
+    max_citations: 0
+    scarcity_pressure: 0.8
+    cta_preference: VIEW_STOCK
+    instructions: |
+      남은 재고 사이즈와 재입고 불확실성을 근거로 지금 결정하는 이점을 설명한다.
+      허위 희소성(없는 품절)을 만들지 않는다. 재고 데이터에 있는 사실만 쓴다.
+      고객이 압박을 느끼면 이탈한다는 것을 감안해 한 번만 언급한다.
