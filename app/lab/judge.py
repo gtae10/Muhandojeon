@@ -123,9 +123,13 @@ def llm_verdict(
     persona: Persona,
     transcript: list[dict[str, str]],
     fallback: Verdict,
+    run_id: str | None = None,
 ) -> Verdict:
-    """LLM 심판. 파싱 실패나 미연결이면 규칙 판정을 그대로 쓴다."""
-    if not llm.settings.llm_enabled:
+    """LLM 심판. 파싱 실패나 미연결이면 규칙 판정을 그대로 쓴다.
+
+    **상위 티어**로 라우팅된다. 판정 일관성이 실험 신뢰도를 결정하므로 여기서는 아끼지 않는다.
+    """
+    if not llm.settings.llm_active:
         return fallback
     convo = "\n".join(f"{t['role']}: {t['content']}" for t in transcript)
     messages: list[Message] = [
@@ -142,7 +146,11 @@ def llm_verdict(
         },
     ]
     parsed = llm.complete_json(
-        messages, fallback=lambda: fallback.as_dict(), cache=True, max_tokens=400
+        messages,
+        purpose="judge",
+        fallback=lambda: fallback.as_dict(),
+        max_tokens=400,
+        run_id=run_id,
     )
     if not isinstance(parsed, dict):
         return fallback

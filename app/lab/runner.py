@@ -69,7 +69,7 @@ class LabConfig:
         config = cls(
             runs_per_pair=settings.lab_runs_per_pair,
             max_turns=settings.lab_max_turns,
-            concurrency=settings.lab_concurrency,
+            concurrency=settings.lab_max_concurrency,
             persona_ids=sorted(load_personas()),
             strategy_ids=sorted(load_strategies()),
         )
@@ -144,6 +144,7 @@ def simulate_session(
     strategy_id: str,
     iteration: int,
     max_turns: int,
+    run_id: str | None = None,
 ) -> SessionResult:
     """한 세션(최대 max_turns 턴)을 끝까지 돌리고 판정까지 낸다."""
     llm = get_llm()
@@ -228,6 +229,7 @@ def simulate_session(
             [(t["role"], t["content"]) for t in transcript],
             trust,
             unmet,
+            run_id=run_id,
         ) or customer_reply(persona, feats, trust, turn, unmet)
         transcript.append({"role": "customer", "content": reply})
         history.append(ChatTurn(role=Role.CUSTOMER, content=reply))
@@ -241,7 +243,7 @@ def simulate_session(
         cta_seen=cta_seen,
         cited_any=bool(cited_any),
     )
-    verdict = llm_verdict(llm, persona, transcript, base)
+    verdict = llm_verdict(llm, persona, transcript, base, run_id=run_id)
 
     return SessionResult(
         persona_id=persona.id,
@@ -332,7 +334,11 @@ def run_lab(config: LabConfig | None = None, run_id: str | None = None) -> str:
     converted = 0
     with ThreadPoolExecutor(max_workers=max(1, config.concurrency)) as pool:
         futures = {
-            pool.submit(simulate_session, persona, sid, i, config.max_turns): (persona, sid, i)
+            pool.submit(simulate_session, persona, sid, i, config.max_turns, run_id): (
+                persona,
+                sid,
+                i,
+            )
             for persona, sid, i in jobs
         }
         for future in as_completed(futures):

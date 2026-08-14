@@ -232,9 +232,14 @@ def llm_customer_reply(
     history: list[tuple[str, str]],
     trust: float,
     unmet: list[str],
+    run_id: str | None = None,
 ) -> str | None:
-    """LLM 페르소나 봇. 실패하면 None(호출자가 규칙 봇으로 폴백)."""
-    if not llm.settings.llm_enabled:
+    """LLM 페르소나 봇. 실패하면 None(호출자가 규칙 봇으로 폴백).
+
+    **저가 티어**로 라우팅된다(config/model_routing.yaml). 고객 역할 연기는 품질 요구가 낮고
+    Lab 호출의 절반이 이쪽이라 절감 효과가 가장 크다.
+    """
+    if not llm.settings.llm_active:
         return None
     convo = "\n".join(f"{role}: {content}" for role, content in history)
     unmet_labels = ", ".join(NEED_LABELS.get(n, n) for n in unmet) or "없음"
@@ -254,7 +259,9 @@ def llm_customer_reply(
             ),
         },
     ]
-    text = llm.complete(messages, fallback=lambda: "", cache=True, max_tokens=200)
+    text = llm.complete(
+        messages, purpose="persona", fallback=lambda: "", max_tokens=200, run_id=run_id
+    )
     return text.strip() or None
 
 

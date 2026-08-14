@@ -1,0 +1,45 @@
+# 모델별 단가 (USD / 100만 토큰) — 예산 계산의 근거.
+#
+# **주의**: 대회 제공 API 의 실제 청구 단가가 확정되면 이 파일을 먼저 고친다. 아래 값은
+# 각 벤더 공개가 기준의 참고치이며, 미등록 모델은 `default`(보수적으로 높게)로 계산한다.
+# 어떤 항목이 적용됐는지는 /ops 대시보드와 llm_usage.note 에서 확인할 수 있다.
+#
+# 로컬 vLLM 처럼 과금이 없는 엔드포인트는 0 으로 두면 예산 계산에서 빠진다.
+
+default:
+  input_per_1m: 1.0
+  output_per_1m: 3.0
+  note: 미등록 모델. 과소 추정으로 예산을 넘기지 않도록 보수적으로 높게 잡았다.
+
+models:
+  gpt-4o-mini:
+    input_per_1m: 0.15
+    output_per_1m: 0.60
+  gpt-4.1-mini:
+    input_per_1m: 0.40
+    output_per_1m: 1.60
+  gpt-4o:
+    input_per_1m: 2.50
+    output_per_1m: 10.00
+  gpt-4.1:
+    input_per_1m: 2.00
+    output_per_1m: 8.00
+  claude-3-5-haiku:
+    input_per_1m: 0.80
+    output_per_1m: 4.00
+  claude-3-5-sonnet:
+    input_per_1m: 3.00
+    output_per_1m: 15.00
+  claude-3-7-sonnet:
+    input_per_1m: 3.00
+    output_per_1m: 15.00
+  # 로컬 서빙(vLLM 등) — 과금 없음
+  local:
+    input_per_1m: 0.0
+    output_per_1m: 0.0
+  qwen2.5-7b:
+    input_per_1m: 0.0
+    output_per_1m: 0.0
+  qwen2.5-72b:
+    input_per_1m: 0.0
+    output_per_1m: 0.0

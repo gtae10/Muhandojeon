@@ -1,0 +1,276 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Ops — 예산 통제</title>
+<style>
+  /* 검증된 기본 팔레트. 용도별 비용은 '한 가지 측정값의 크기 비교'라 단일 색상 막대를 쓴다
+     (범주형 색은 정체성을 나타낼 때만). 다크는 자동 반전이 아니라 다크 표면 기준 스텝이다. */
+  :root {
+    color-scheme: light;
+    --surface-0: #f7f7f5; --surface-1: #fcfcfb; --surface-2: #f0efec;
+    --border: #dcdbd6;
+    --text-primary: #0b0b0b; --text-secondary: #52514e; --text-muted: #77756e;
+    --series-1: #2a78d6;
+    --good: #0ca30c; --warning: #fab219; --critical: #d03b3b;
+    --bar: #2a78d6; --bar-soft: #9ec5f4;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      color-scheme: dark;
+      --surface-0: #121211; --surface-1: #1a1a19; --surface-2: #232322;
+      --border: #383835;
+      --text-primary: #ffffff; --text-secondary: #c3c2b7; --text-muted: #8f8e85;
+      --series-1: #3987e5;
+      --bar: #3987e5; --bar-soft: #184f95;
+    }
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; background: var(--surface-0); color: var(--text-primary);
+    font: 14px/1.55 -apple-system, BlinkMacSystemFont, "Apple SD Gothic Neo", "Malgun Gothic", sans-serif;
+  }
+  header {
+    position: sticky; top: 0; z-index: 20; display: flex; flex-wrap: wrap; gap: 12px;
+    align-items: center; justify-content: space-between;
+    padding: 14px 20px; background: var(--surface-1); border-bottom: 1px solid var(--border);
+  }
+  h1 { margin: 0; font-size: 17px; font-weight: 620; letter-spacing: .02em; }
+  h2 { margin: 0 0 4px; font-size: 14px; font-weight: 620; }
+  .sub { color: var(--text-secondary); font-size: 12px; }
+  main { padding: 20px; max-width: 1120px; margin: 0 auto; display: grid; gap: 18px; }
+  .card { background: var(--surface-1); border: 1px solid var(--border); border-radius: 10px; padding: 16px; }
+  .row { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; }
+  .chip {
+    display: inline-flex; align-items: center; gap: 6px; padding: 3px 9px; border-radius: 999px;
+    background: var(--surface-2); color: var(--text-secondary); font-size: 12px; border: 1px solid var(--border);
+  }
+  .dot { width: 8px; height: 8px; border-radius: 50%; }
+  button {
+    font: inherit; padding: 7px 14px; border-radius: 8px; border: 1px solid var(--border);
+    background: var(--text-primary); color: var(--surface-1); cursor: pointer; font-weight: 560;
+  }
+  .tiles { display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: 12px; }
+  .tile { background: var(--surface-2); border-radius: 10px; padding: 13px 14px; }
+  .tile .label { font-size: 11.5px; color: var(--text-muted); letter-spacing: .03em; text-transform: uppercase; }
+  .tile .value { font-size: 23px; font-weight: 640; font-variant-numeric: tabular-nums; margin-top: 4px; }
+  .tile .foot { font-size: 12px; color: var(--text-secondary); margin-top: 3px; }
+  /* 게이지: 데이터 끝만 라운드, 경고/하드 지점을 눈금으로 표시 */
+  .gauge { position: relative; height: 26px; background: var(--surface-2); border-radius: 6px; overflow: hidden; }
+  .gauge .fill { height: 100%; border-radius: 0 6px 6px 0; background: var(--bar); transition: width .3s; }
+  .gauge .fill.warn { background: var(--warning); }
+  .gauge .fill.hard { background: var(--critical); }
+  .ticks { position: relative; height: 18px; margin-top: 4px; font-size: 11px; color: var(--text-muted); }
+  .tick { position: absolute; transform: translateX(-50%); white-space: nowrap; }
+  .tick::before {
+    content: ""; position: absolute; left: 50%; top: -8px; width: 1px; height: 6px;
+    background: var(--border);
+  }
+  .bars { display: grid; gap: 9px; margin-top: 10px; }
+  .bar-row { display: grid; grid-template-columns: 150px 1fr 132px; gap: 10px; align-items: center; }
+  .bar-track { background: var(--surface-2); border-radius: 4px; height: 16px; }
+  .bar-fill { height: 100%; border-radius: 0 4px 4px 0; background: var(--bar); min-width: 2px; }
+  .bar-label { font-size: 12.5px; color: var(--text-secondary); font-variant-numeric: tabular-nums; }
+  table { width: 100%; border-collapse: collapse; font-size: 12.5px; }
+  th, td { text-align: left; padding: 6px 8px; border-bottom: 1px solid var(--border); white-space: nowrap; }
+  th { color: var(--text-muted); font-weight: 560; font-size: 11.5px; text-transform: uppercase; letter-spacing: .03em; }
+  td.num, th.num { text-align: right; font-variant-numeric: tabular-nums; }
+  .scroll { overflow-x: auto; }
+  .banner { border-left: 3px solid var(--warning); background: var(--surface-2); padding: 9px 12px; border-radius: 0 8px 8px 0; font-size: 12.5px; color: var(--text-secondary); }
+  .banner.hard { border-left-color: var(--critical); }
+  .banner.ok { border-left-color: var(--good); }
+  #tooltip {
+    position: fixed; pointer-events: none; opacity: 0; transition: opacity .12s;
+    background: var(--text-primary); color: var(--surface-1); font-size: 12px;
+    padding: 6px 9px; border-radius: 6px; max-width: 280px; z-index: 60;
+  }
+</style>
+</head>
+<body data-palette="#2a78d6">
+<header>
+  <div>
+    <h1>Ops — 예산 통제</h1>
+    <div class="sub">크레딧 총액 100달러. 초과 시 복구 수단이 없다 → 경고선 60 / 하드 리밋 85</div>
+  </div>
+  <div class="row">
+    <span class="chip" id="level-chip">불러오는 중…</span>
+    <span class="chip" id="mode-chip"></span>
+    <button id="refresh">새로고침</button>
+    <a class="chip" href="/lab">/lab</a>
+    <a class="chip" href="/health/detail" target="_blank" rel="noopener">/health/detail</a>
+  </div>
+</header>
+
+<main>
+  <section class="card">
+    <h2>누적 사용액</h2>
+    <div class="sub" id="gauge-caption"></div>
+    <div class="gauge" style="margin-top:12px"><div class="fill" id="gauge-fill"></div></div>
+    <div class="ticks" id="gauge-ticks"></div>
+    <div id="budget-banner" style="margin-top:12px"></div>
+  </section>
+
+  <section class="card">
+    <h2>발표용 수치</h2>
+    <div class="sub">세션당 원가와 잔여 실행 횟수는 슬라이드에 그대로 넣을 수 있게 계산한다.</div>
+    <div class="tiles" id="tiles" style="margin-top:12px"></div>
+  </section>
+
+  <section class="card">
+    <h2>용도별 비용</h2>
+    <div class="sub">청구된 호출만 합산한다(캐시 히트·드라이런 제외). 단일 색상 = 한 가지 측정값.</div>
+    <div class="bars" id="purpose-bars"></div>
+    <div class="scroll" style="margin-top:12px" id="purpose-table"></div>
+  </section>
+
+  <section class="card">
+    <h2>모델 라우팅</h2>
+    <div class="sub">용도 → 티어 → 실제 모델. 페르소나 봇을 저가 티어로 내린 것이 가장 큰 절감이다.</div>
+    <div class="scroll" style="margin-top:10px" id="routing-table"></div>
+  </section>
+
+  <section class="card">
+    <h2>Persona Bot Lab 실행 이력</h2>
+    <div class="sub">실행별 호출 수·캐시 히트·비용. 재실행에서 캐시 히트율이 90% 미만이면 프롬프트에 비결정적 값이 있다.</div>
+    <div class="scroll" style="margin-top:10px" id="runs-table"></div>
+  </section>
+</main>
+
+<div id="tooltip"></div>
+
+<script>
+const tooltip = document.getElementById('tooltip');
+const usd = (v) => '$' + Number(v || 0).toFixed(4);
+const usd2 = (v) => '$' + Number(v || 0).toFixed(2);
+const pct = (v) => (Number(v || 0) * 100).toFixed(1) + '%';
+const esc = (s) => String(s ?? '').replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+
+function bindTip(el, html) {
+  el.addEventListener('mousemove', (e) => {
+    tooltip.innerHTML = html; tooltip.style.opacity = '1';
+    tooltip.style.left = Math.min(e.clientX + 12, window.innerWidth - 300) + 'px';
+    tooltip.style.top = (e.clientY + 12) + 'px';
+  });
+  el.addEventListener('mouseleave', () => { tooltip.style.opacity = '0'; });
+}
+
+function renderGauge(b) {
+  const fill = document.getElementById('gauge-fill');
+  const ratio = Math.min(1, b.spent_usd / b.total_usd);
+  fill.style.width = (ratio * 100).toFixed(2) + '%';
+  fill.className = 'fill' + (b.level === 'hard' ? ' hard' : b.level === 'warn' ? ' warn' : '');
+  document.getElementById('gauge-caption').textContent =
+    `${usd2(b.spent_usd)} / ${usd2(b.total_usd)} 사용 (${pct(b.usage_ratio)}) · 하드 리밋까지 ${usd2(b.remaining_to_hard_usd)}`;
+  const ticks = document.getElementById('gauge-ticks');
+  ticks.innerHTML = [
+    { at: 0, label: '$0' },
+    { at: b.warn_usd / b.total_usd, label: `경고 ${usd2(b.warn_usd)}` },
+    { at: b.hard_usd / b.total_usd, label: `하드 ${usd2(b.hard_usd)}` },
+    { at: 1, label: usd2(b.total_usd) },
+  ].map(t => `<span class="tick" style="left:${(t.at * 100).toFixed(2)}%">${t.label}</span>`).join('');
+  bindTip(document.getElementById('gauge-fill'),
+    `<b>누적 ${usd(b.spent_usd)}</b><br>경고 ${usd2(b.warn_usd)} / 하드 ${usd2(b.hard_usd)} / 총 ${usd2(b.total_usd)}`);
+
+  const banner = document.getElementById('budget-banner');
+  const level = b.level;
+  banner.innerHTML = level === 'hard'
+    ? `<div class="banner hard">하드 리밋 초과 — 새 LLM 호출을 거부하고 캐시만 반환한다. 캐시에 없는 시나리오는 결정적 템플릿으로 응답한다.</div>`
+    : level === 'warn'
+      ? `<div class="banner">경고선 ${usd2(b.warn_usd)} 초과. 남은 여유 ${usd2(b.remaining_to_hard_usd)} (하드 리밋 기준). Lab 재실행 전 <code>make estimate</code> 로 확인하라.</div>`
+      : `<div class="banner ok">정상. 하드 리밋까지 ${usd2(b.remaining_to_hard_usd)} 남았다. 하드 85달러는 발표 당일 재실행 여유분 15달러를 남기기 위한 값이다.</div>`;
+}
+
+function renderTiles(d) {
+  const per = d.per_session, est = d.lab_estimate, t = d.totals;
+  const runsLeft = est.runs_left_with_remaining_budget;
+  document.getElementById('tiles').innerHTML = [
+    {
+      label: '누적 사용액', value: usd2(d.budget.spent_usd),
+      foot: `총 ${usd2(d.budget.total_usd)} 중 ${pct(d.budget.usage_ratio)}`,
+    },
+    {
+      label: '세션 1건당 원가', value: `${per.cost_per_session_krw.toLocaleString()}원`,
+      foot: `${usd(per.cost_per_session_usd)} · 세션 ${per.lab_sessions_recorded}건 기준 (환율 ${per.usd_krw.toLocaleString()}원)`,
+    },
+    {
+      label: '캐시 히트율', value: pct(t.cache_hit_rate),
+      foot: `히트 ${t.cached_calls} / 청구 ${t.billable_calls} · 절감 ${usd(t.saved_usd)}`,
+    },
+    {
+      label: 'Lab 잔여 실행', value: runsLeft === null ? '—' : `${runsLeft}회`,
+      foot: est.last_billable_usd > 0
+        ? `최근 실행 ${usd(est.last_billable_usd)} 기준`
+        : '과금된 실행 없음 → make estimate 로 추정',
+    },
+  ].map(t2 => `<div class="tile"><div class="label">${t2.label}</div><div class="value">${t2.value}</div><div class="foot">${esc(t2.foot)}</div></div>`).join('');
+}
+
+function renderPurposes(rows) {
+  const host = document.getElementById('purpose-bars');
+  if (!rows.length) { host.innerHTML = '<div class="sub">기록 없음 — make estimate 또는 make lab 을 실행하라.</div>'; return; }
+  const max = Math.max(0.000001, ...rows.map(r => r.cost_usd));
+  host.innerHTML = '';
+  rows.slice().sort((a, b) => b.cost_usd - a.cost_usd).forEach(r => {
+    const row = document.createElement('div');
+    row.className = 'bar-row';
+    row.innerHTML = `<div class="bar-label" style="color:var(--text-primary)">${esc(r.purpose)} <span class="sub">(${esc(r.tier)})</span></div>` +
+      `<div class="bar-track"><div class="bar-fill" style="width:${(r.cost_usd / max * 100).toFixed(2)}%"></div></div>` +
+      `<div class="bar-label">${usd(r.cost_usd)} · ${r.billable_calls}건</div>`;
+    bindTip(row, `<b>${esc(r.purpose)}</b> (${esc(r.tier)} / ${esc(r.model)})<br>` +
+      `청구 ${r.billable_calls}건 ${usd(r.cost_usd)}<br>캐시 ${r.cached_calls}건 절감 ${usd(r.saved_usd)}<br>` +
+      `토큰 in ${r.prompt_tokens.toLocaleString()} / out ${r.completion_tokens.toLocaleString()}<br>평균 지연 ${r.avg_latency_ms}ms`);
+    host.appendChild(row);
+  });
+  document.getElementById('purpose-table').innerHTML = `<table><thead><tr>
+    <th>용도</th><th>티어</th><th>모델</th><th class="num">청구</th><th class="num">캐시</th>
+    <th class="num">비용</th><th class="num">절감</th><th class="num">입력토큰</th><th class="num">출력토큰</th></tr></thead>
+    <tbody>${rows.map(r => `<tr><td>${esc(r.purpose)}</td><td>${esc(r.tier)}</td><td>${esc(r.model)}</td>
+      <td class="num">${r.billable_calls}</td><td class="num">${r.cached_calls}</td>
+      <td class="num">${usd(r.cost_usd)}</td><td class="num">${usd(r.saved_usd)}</td>
+      <td class="num">${r.prompt_tokens.toLocaleString()}</td><td class="num">${r.completion_tokens.toLocaleString()}</td></tr>`).join('')}</tbody></table>`;
+}
+
+function renderRouting(rows) {
+  document.getElementById('routing-table').innerHTML = `<table><thead><tr>
+    <th>용도</th><th>티어</th><th>모델</th><th>출처</th>
+    <th class="num">입력 $/1M</th><th class="num">출력 $/1M</th><th>단가표</th><th>이유</th></tr></thead>
+    <tbody>${rows.map(r => `<tr><td>${esc(r.purpose)}</td><td>${esc(r.tier)}</td><td>${esc(r.model)}</td>
+      <td>${esc(r.source)}</td><td class="num">${r.input_per_1m_usd}</td><td class="num">${r.output_per_1m_usd}</td>
+      <td>${esc(r.pricing_entry)}</td><td class="sub" style="white-space:normal">${esc(r.reason)}</td></tr>`).join('')}</tbody></table>`;
+}
+
+function renderRuns(rows) {
+  const host = document.getElementById('runs-table');
+  if (!rows.length) { host.innerHTML = '<div class="sub">Lab 실행 기록 없음</div>'; return; }
+  host.innerHTML = `<table><thead><tr>
+    <th>run_id</th><th>상태</th><th class="num">세션</th><th class="num">LLM 호출</th>
+    <th class="num">캐시</th><th class="num">비용</th><th class="num">절감</th><th class="num">세션당</th></tr></thead>
+    <tbody>${rows.map(r => `<tr><td>${esc(r.run_id)}</td><td>${esc(r.status)}</td>
+      <td class="num">${r.sessions}</td><td class="num">${r.llm_calls}</td><td class="num">${r.cached_calls}</td>
+      <td class="num">${usd(r.billable_usd)}</td><td class="num">${usd(r.saved_usd)}</td>
+      <td class="num">${usd(r.cost_per_session_usd)}</td></tr>`).join('')}</tbody></table>`;
+}
+
+async function load() {
+  const res = await fetch('/ops/summary');
+  const d = await res.json();
+  renderGauge(d.budget);
+  renderTiles(d);
+  renderPurposes(d.by_purpose || []);
+  renderRouting(d.routing || []);
+  renderRuns(d.lab_runs || []);
+  const chip = document.getElementById('level-chip');
+  const color = d.budget.level === 'hard' ? 'var(--critical)' : d.budget.level === 'warn' ? 'var(--warning)' : 'var(--good)';
+  chip.innerHTML = `<span class="dot" style="background:${color}"></span>${d.budget.level.toUpperCase()} · ${usd2(d.budget.spent_usd)}/${usd2(d.budget.total_usd)}`;
+  const caps = d.capabilities || {};
+  document.getElementById('mode-chip').textContent =
+    `vision=${caps.vision === false ? 'false' : String(caps.vision)} · ${d.llm_enabled ? 'LLM 연결' : 'LLM 미연결(템플릿)'}` +
+    (d.dry_run ? ' · DRY RUN' : '') + (d.cache_enabled ? ' · 캐시 ON' : ' · 캐시 OFF');
+}
+
+document.getElementById('refresh').addEventListener('click', load);
+load();
+</script>
+</body>
+</html>

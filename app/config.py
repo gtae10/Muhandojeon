@@ -144,6 +144,15 @@ class Settings(BaseSettings):
         return bool(self.llm_api_key and self.llm_base_url)
 
     @property
+    def llm_active(self) -> bool:
+        """LLM 코드 경로를 태울지 여부.
+
+        드라이런은 **키가 없어도** 이 경로를 타야 한다. 그래야 `make estimate` 가 실제와 같은
+        호출 횟수·프롬프트 크기로 비용을 추정할 수 있다(호출은 하지 않고 기록만 남는다).
+        """
+        return self.llm_enabled or self.llm_dry_run
+
+    @property
     def llm_cache_dir(self) -> Path:
         return CACHE_DIR / "llm"
 

@@ -15,7 +15,7 @@ from fastapi import APIRouter
 
 from app.adapters.registry import adapter_report
 from app.config import get_settings
-from app.llm import get_llm
+from app.llm import get_budget, get_llm, load_capabilities, routing_report
 from app.store import get_store
 
 router = APIRouter(tags=["Health"])
@@ -80,12 +80,15 @@ def health_detail() -> dict[str, Any]:
         "db": db_counts,
         "llm": {
             "enabled": settings.llm_enabled,
-            "model": settings.llm_model if settings.llm_enabled else None,
-            "judge_model": settings.judge_model if settings.llm_enabled else None,
+            "dry_run": settings.llm_dry_run,
+            "cache_enabled": settings.llm_cache_enabled,
             "base_url": settings.llm_base_url if settings.llm_enabled else None,
             "cache_entries": llm.cache_count(),
+            "capabilities": load_capabilities(),
+            "routing": routing_report(),
             **llm.stats.as_dict(),
         },
+        "budget": get_budget().state(refresh=True).as_dict(),
         "demo": {
             "demo_mode": settings.demo_mode,
             "scenarios": scenarios,

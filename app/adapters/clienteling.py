@@ -134,7 +134,7 @@ class MockClientelingAdapter(AdapterBase):
         strategy = get_strategy(request.strategy_id)
         template = build_reply(request, strategy)
 
-        if not self.llm.settings.llm_enabled:
+        if not self.llm.settings.llm_active:
             elapsed = (time.perf_counter() - started) * 1000
             self.status.record_success(
                 elapsed, f"template {strategy.id} / 인용 {len(template.cited_asset_ids)}건"
@@ -143,8 +143,11 @@ class MockClientelingAdapter(AdapterBase):
 
         parsed = self.llm.complete_json(
             build_prompt(request, strategy),
+            purpose="clienteling",
             fallback=lambda: json.loads(template.model_dump_json()),
-            cache=True,
+            # 상담 문구는 2~4문장 + JSON 필드다. 상한을 조여야 예산 게이트의 추정이 정확해지고
+            # 모델이 길게 늘어지는 사고도 막는다.
+            max_tokens=400,
         )
         result = parse_llm_reply(parsed, request, strategy) or template
         elapsed = (time.perf_counter() - started) * 1000
