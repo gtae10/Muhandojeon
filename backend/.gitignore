@@ -1,0 +1,12 @@
+# Git에 포함하지 말아야 할 파일들
+.env
+*.db
+*.db-shm
+*.db-wal
+__pycache__/
+*.pyc
+*.pyo
+.venv/
+venv/
+env/
+data/
