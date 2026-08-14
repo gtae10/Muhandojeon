@@ -3,7 +3,7 @@ UVICORN := .venv/bin/uvicorn
 PORT ?= 8000
 
 .DEFAULT_GOAL := help
-.PHONY: help setup contracts docs data data-synth seed dev demo lab check test fmt clean-db clean-cache
+.PHONY: help setup contracts docs data demo-check data-synth seed dev demo lab check test fmt clean-db clean-cache
 
 help:  ## 사용 가능한 타깃 목록
 	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | awk 'BEGIN {FS = ":.*?## "}; {printf "  \033[36m%-12s\033[0m %s\n", $$1, $$2}'
@@ -48,11 +48,15 @@ demo:  ## 데모 모드 기동 (LLM 디스크 캐시 + 캐시 워밍업)
 lab:  ## Persona Bot Lab 시뮬레이션 실행 (5 페르소나 x 3 전략 x N회)
 	$(PY) -m scripts.run_lab
 
-check:  ## ruff + mypy + 헬스 체크
+check:  ## ruff + mypy + 헬스 체크 + 데모 시나리오 검증
 	.venv/bin/ruff check .
 	.venv/bin/ruff format --check .
 	.venv/bin/mypy .
 	$(PY) -m scripts.healthcheck
+	$(PY) -m scripts.check_demo
+
+demo-check:  ## 데모 시나리오 3종만 검증 (발표 직전)
+	$(PY) -m scripts.check_demo --verbose
 
 test:  ## pytest
 	.venv/bin/pytest -q

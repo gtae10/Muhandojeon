@@ -23,7 +23,7 @@ from fastapi.staticfiles import StaticFiles
 
 from app.config import PROCESSED_DIR, get_settings
 from app.db import init_db
-from app.routers import catalog, health, lab, modules, session
+from app.routers import catalog, demo, health, lab, modules, session
 from app.store import get_store
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)-7s %(name)s | %(message)s")
@@ -74,6 +74,7 @@ app.include_router(session.router)
 app.include_router(modules.router)
 app.include_router(catalog.router)
 app.include_router(lab.router)
+app.include_router(demo.router)
 
 if PROCESSED_DIR.exists():
     app.mount("/static", StaticFiles(directory=PROCESSED_DIR), name="static")

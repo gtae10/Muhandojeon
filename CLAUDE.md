@@ -30,6 +30,8 @@ make dev       # 시드 + 서버 기동 (목 모드, :8000)
 make demo      # DEMO_MODE=true 기동 + LLM 캐시 워밍업
 make check     # ruff + mypy + 헬스체크
 make lab       # Persona Bot Lab 45세션 시뮬레이션 실행(CLI)
+make demo-check # 데모 시나리오 3종 검증 (발표 직전 필수)
+make docs      # 생성 문서 재생성 (CONTRACTS.md + DATA_PROVENANCE.md)
 make clean-db  # SQLite 삭제 (data/processed/*.json 은 보존)
 ```
 
@@ -54,13 +56,24 @@ uv run mypy .
    - **목은 Phase 2 산출 실데이터(`data/processed/*.json`)를 읽어서 응답한다.** 하드코딩 더미 문자열 금지.
 3. `app/services/orchestrator.py` — `/session/advise`의 5단계 플로우(인텐트 → 자산 조회 → 컨디션
    우선 정렬 → 상담 호출 → **인용 검증**). 데모의 심장.
-4. `app/lab/` — Persona Bot Lab. 페르소나 봇(고객) ↔ 상담 어댑터(직원) ↔ 심판 LLM.
-   5 페르소나 × 3 전략 × N회. 결과는 SQLite에 저장하고 `/lab` 대시보드에서 조회.
-5. `scripts/` — 데이터 파이프라인. `data/raw/`(원본, gitignore) → `data/processed/`(정규화) → SQLite.
+4. `app/lab/` — Persona Bot Lab. 페르소나 봇(고객) ↔ 오케스트레이터(직원) ↔ 심판.
+   5 페르소나 × 3 전략 × N회. 결과·대화 전문은 SQLite에 저장하고 `/lab` 대시보드에서 조회.
+   - **판정 함수는 전략 id를 보지 않는다**(`rule_verdict`, `evaluate_turn`, `extract_features`).
+     테스트가 시그니처와 소스를 검사해 이를 고정한다. 전략이 만든 *문구 차이*만이 결과를 갈라야 한다.
+   - LLM 미연결이면 페르소나·심판이 규칙 모델이다. 그 경우 S2 우세는 규칙의 가정이 반영된
+     순환이므로 캐비어트를 지운 채 수치를 인용하지 않는다.
+5. `app/demo.py` + `data/demo_scenarios.yaml` — 데모 시나리오 3종. 고객·상품·전략·세션을 id로
+   못박고 `expect` 블록을 `make demo-check`가 검증한다.
+6. `app/personas.py` / `app/strategies.py` — `data/personas.yaml`, `data/strategies.yaml` 로딩.
+   페르소나는 Phase 2에서 만든 **실제 고객**에 바인딩된다(`validate_bindings()`가 검사).
+7. `scripts/` — 데이터 파이프라인 + 문서 생성기 + Lab/데모 CLI.
+   `data/raw/`(원본, gitignore) → `data/processed/`(정규화) → SQLite.
 
 ## 데이터 파이프라인 불변식 (깨면 데모가 깨진다)
 
 - **모든 샘플링/분할은 seed=42 고정.** 데모가 매번 달라지면 안 된다. `random`/`polars` 시드를 반드시 명시한다.
+- **기준시각은 `app/config.py`의 `REFERENCE_NOW`(2026-08-14T12:00+09:00) 하나뿐이다.** 빌더와
+  런타임이 같은 값을 쓴다. `datetime.now()`로 컨디션을 계산하면 "71점" 대사가 매일 흔들린다.
 - **`data/processed/catalog_luxury.json`은 한 번 만들면 재생성하지 않는다.** 상품명이 바뀌면 발표 대본이 깨진다.
   `scripts/build_catalog.py`는 `--force` 없이 기존 파일을 덮어쓰지 않는다.
 - **`transactions_train.csv`(3,000만 행 이상)를 메모리에 올리지 않는다.** polars `scan_csv` lazy만 사용.
@@ -96,6 +109,10 @@ OpenAI 호환 엔드포인트로만 호출한다(`LLM_BASE_URL`, `LLM_API_KEY`, 
 - 모든 업스트림 호출: 타임아웃 5초 + 재시도 1회. 실패 시 사전 준비 응답으로 대체하고 응답 헤더에
   `X-Degraded: true`를 실는다. **화면에 에러를 노출하지 않는다.** 발표 중 빨간 에러 화면이 최악이다.
 - `/health/detail`에 어댑터 모드, 최근 응답 상태, 데이터 소스, 캐시 건수를 노출한다(발표 직전 5초 점검용).
+- 데모 당일 절차와 사고 대응은 `docs/DEMO_RUNBOOK.md`. 발표 직전 `build_catalog --force`와
+  `REFERENCE_NOW` 변경은 금지(대본이 깨진다).
+- 팀 백엔드는 이미 다른 필드 스키마로 구현돼 있고 HTTP 어댑터가 레거시 매퍼로 흡수한다.
+  차이와 백엔드가 채워야 할 `cited_asset_ids`는 `docs/BACKEND_INTEGRATION.md`.
 
 ## 코드 스타일
 

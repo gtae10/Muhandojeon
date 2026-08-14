@@ -140,7 +140,7 @@ def resolution_sentence(
         if same is not None:
             return (
                 f"{same.asset.product_name}과 {target.name}은 "
-                f"{SIZE_BASIS[target.category]}라, 그때 맞춰 드린 치수를 그대로 적용하면 "
+                f"{SIZE_BASIS[target.category]}입니다. 그때 맞춰 드린 치수를 그대로 적용하면 "
                 f"편차가 거의 없습니다. "
                 f"현재 준비된 사이즈는 {_sizes_label(target)}입니다."
             )

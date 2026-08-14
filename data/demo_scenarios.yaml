@@ -1,0 +1,67 @@
+# 데모 시나리오 3종 — 발표에서 그대로 재생하는 고정 시나리오.
+#
+# 같은 시나리오를 돌리면 항상 같은 흐름이 나와야 한다. 그래서
+#   - 고객·상품·세션을 id 로 못박고 (자동 선택 금지)
+#   - LLM 은 temperature 0 + 시드 고정 + 디스크 캐시(DEMO_MODE=true)
+#   - 컨디션 계산의 기준시각은 REFERENCE_NOW 고정
+# expect 블록은 `python -m scripts.check_demo` 가 검증하는 값이다. 여기가 깨지면
+# 발표 대본이 깨진 것이므로 데모 전에 반드시 통과시킨다.
+
+scenarios:
+  - id: D1
+    title: 사이즈 불확실 — 같은 사이즈 체계 보유 고객
+    narrative: |
+      온라인에서 사이즈표를 두 번 열어 본 고객. 같은 카테고리 개체를 이미 갖고 있어
+      "그때 맞춰 드린 치수" 를 근거로 사이즈 불안을 해소한다.
+    customer_id: CU-0014
+    target_product_id: LX-0005
+    session_id_label: SIZE_UNCERTAIN
+    strategy_id: S2
+    talking_points:
+      - 세션 이벤트에서 size_guide 반복 조회가 잡힌다(AI1 라벨 SIZE_UNCERTAIN)
+      - 상담 문구가 보유 개체의 구매 연도와 컨디션 점수를 인용한다
+      - CTA 는 피팅 예약 또는 케어 예약
+    expect:
+      hesitation_type: SIZE_UNCERTAIN
+      owned_assets_used: true
+      min_citations: 1
+      cta_in: [BOOK_FITTING, CARE_BOOKING]
+
+  - id: D2
+    title: 가격 망설임 — 보유 자산의 수명으로 답한다
+    narrative: |
+      보유 평균가보다 비싼 상품을 보며 가격을 망설이는 고객. "N년 쓴 개체가 아직 몇 점" 이라는
+      실제 컨디션 기록으로 연 단위 비용 논거를 만든다.
+    customer_id: CU-0016
+    target_product_id: LX-0019
+    session_id_label: PRICE_HESITANT
+    strategy_id: S2
+    talking_points:
+      - 가격 필터 하향/저가 대안 조회가 신호로 잡힌다(AI1 라벨 PRICE_HESITANT)
+      - 상담 문구가 보유 개체의 사용 연수와 현재 컨디션을 인용한다
+      - 할인 없이 근거로 설득한다는 점이 차별점
+    expect:
+      hesitation_type: PRICE_HESITANT
+      owned_assets_used: true
+      min_citations: 1
+      cta_in: [BOOK_FITTING, CARE_BOOKING, VIEW_STOCK]
+
+  - id: D3
+    title: 재고 확인 — 케어 시점이 임박한 VIP
+    narrative: |
+      재고를 확인하러 온 장기 VIP. 컨디션 71점(핸들 마모 임계 근접) 개체가 있어
+      재고 안내와 케어 예약을 함께 제안한다. 발표 대본의 핵심 대사가 나오는 시나리오다.
+    customer_id: CU-0001
+    target_product_id: LX-0025
+    session_id_label: STOCK_CONCERN
+    strategy_id: S2
+    talking_points:
+      - 재고·배송 조회가 신호로 잡힌다(AI1 라벨 STOCK_CONCERN)
+      - 컨디션 71점 / 케어 1개월 이내 개체를 인용한다
+      - CTA 는 케어 예약 — 소유 자산 없이는 나올 수 없는 제안
+    expect:
+      hesitation_type: STOCK_CONCERN
+      owned_assets_used: true
+      min_citations: 1
+      cta_in: [CARE_BOOKING, VIEW_STOCK]
+      must_include_asset_condition: 71
