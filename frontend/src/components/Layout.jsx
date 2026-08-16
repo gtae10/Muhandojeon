@@ -1,15 +1,29 @@
 import { Outlet, Link, useLocation } from 'react-router-dom'
 import { useEffect, useState } from 'react'
-import { getHealth, isMockMode } from '../api/client.js'
+import { getHealth, connectionState } from '../api/client.js'
+
+const POLL_MS = 5000
 
 export default function Layout() {
   const location = useLocation()
   const [status, setStatus] = useState('checking') // checking | live | mock
 
   useEffect(() => {
-    getHealth().then(() => {
-      setStatus(isMockMode.current ? 'mock' : 'live')
-    })
+    let cancelled = false
+
+    async function poll() {
+      // getHealth() 는 NetworkUnavailableError 만 목업으로 흡수한다. 헬스체크가 4xx/5xx(ApiError)를
+      // 내더라도 서버는 응답한 것이므로(connectionState 는 이미 'live') 배지 갱신만 계속한다.
+      await getHealth().catch(() => {})
+      if (!cancelled) setStatus(connectionState.current)
+    }
+
+    poll()
+    const timer = setInterval(poll, POLL_MS)
+    return () => {
+      cancelled = true
+      clearInterval(timer)
+    }
   }, [])
 
   return (

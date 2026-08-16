@@ -59,7 +59,7 @@ export default function AdviseResultScreen() {
       <div className="rounded-2xl bg-[var(--color-surface-raised)] p-5">
         <p className="text-sm leading-relaxed">{advise.message}</p>
         {ctaLabel && (
-          <button className="w-full mt-4 py-2.5 rounded-full bg-[var(--color-accent)] text-black text-sm">
+          <button className="w-full mt-4 py-2.5 rounded-full bg-[var(--color-accent)] text-black text-sm transition-opacity duration-150 hover:opacity-90">
             {ctaLabel}
           </button>
         )}
@@ -90,13 +90,13 @@ export default function AdviseResultScreen() {
       <div className="flex gap-3 pt-2">
         <button
           onClick={() => navigate('/')}
-          className="flex-1 py-2.5 rounded-full border border-[var(--color-border)] text-sm"
+          className="flex-1 py-2.5 rounded-full border border-[var(--color-border)] text-sm transition-colors duration-150 hover:border-[var(--color-accent)]/40"
         >
           다른 시나리오
         </button>
         <Link
           to="/consult"
-          className="flex-1 text-center py-2.5 rounded-full border border-[var(--color-border)] text-sm"
+          className="flex-1 text-center py-2.5 rounded-full border border-[var(--color-border)] text-sm transition-colors duration-150 hover:border-[var(--color-accent)]/40"
         >
           직접 상담
         </Link>

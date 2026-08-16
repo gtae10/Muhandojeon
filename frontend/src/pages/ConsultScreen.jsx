@@ -1,6 +1,8 @@
 import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { getCustomers, getCatalog, advise } from '../api/client.js'
+import { getCustomers, getCatalog, advise, ApiError } from '../api/client.js'
+import { FieldSkeleton } from '../components/Skeleton.jsx'
+import ErrorBanner from '../components/ErrorBanner.jsx'
 
 export default function ConsultScreen() {
   const navigate = useNavigate()
@@ -8,36 +10,74 @@ export default function ConsultScreen() {
   const [products, setProducts] = useState([])
   const [customerId, setCustomerId] = useState('')
   const [productId, setProductId] = useState('')
-  const [status, setStatus] = useState('loading') // loading | ready
+  const [status, setStatus] = useState('loading') // loading | ready | error
+  const [loadError, setLoadError] = useState(null)
   const [submitting, setSubmitting] = useState(false)
+  const [submitError, setSubmitError] = useState(null)
+
+  function load() {
+    setStatus('loading')
+    setLoadError(null)
+    Promise.all([getCustomers(), getCatalog()])
+      .then(([customersRes, catalogRes]) => {
+        setCustomers(customersRes.items ?? [])
+        setProducts(catalogRes.items ?? [])
+        setStatus('ready')
+      })
+      .catch((err) => {
+        setLoadError(err instanceof ApiError ? err.message : '목록을 불러오지 못했어요')
+        setStatus('error')
+      })
+  }
 
   useEffect(() => {
-    Promise.all([getCustomers(), getCatalog()]).then(([customersRes, catalogRes]) => {
-      setCustomers(customersRes.items ?? [])
-      setProducts(catalogRes.items ?? [])
-      setStatus('ready')
-    })
+    load()
   }, [])
 
   async function handleSubmit() {
     if (!customerId || !productId) return
     setSubmitting(true)
-    const result = await advise({ customer_id: customerId, target_product_id: productId })
-    navigate('/result', { state: { advise: result } })
+    setSubmitError(null)
+    try {
+      const result = await advise({ customer_id: customerId, target_product_id: productId })
+      navigate('/result', { state: { advise: result } })
+    } catch (err) {
+      setSubmitError(err instanceof ApiError ? err.message : '상담 생성에 실패했어요')
+    } finally {
+      setSubmitting(false)
+    }
   }
 
+  const header = (
+    <div>
+      <h1 className="text-lg font-medium">직접 상담</h1>
+      <p className="text-xs text-[var(--color-muted)] mt-1">
+        세션 이벤트 없이 호출해요 — 일반 제안 모드로 상담이 생성돼요
+      </p>
+    </div>
+  )
+
   if (status === 'loading') {
-    return <p className="text-sm text-[var(--color-muted)]">불러오는 중…</p>
+    return (
+      <div className="space-y-6">
+        {header}
+        <FieldSkeleton count={2} />
+      </div>
+    )
+  }
+
+  if (status === 'error') {
+    return (
+      <div className="space-y-6">
+        {header}
+        <ErrorBanner message={loadError} onRetry={load} />
+      </div>
+    )
   }
 
   return (
     <div className="space-y-6">
-      <div>
-        <h1 className="text-lg font-medium">직접 상담</h1>
-        <p className="text-xs text-[var(--color-muted)] mt-1">
-          세션 이벤트 없이 호출해요 — 일반 제안 모드로 상담이 생성돼요
-        </p>
-      </div>
+      {header}
 
       <div className="space-y-4">
         <div>
@@ -72,10 +112,12 @@ export default function ConsultScreen() {
           </select>
         </div>
 
+        {submitError && <ErrorBanner message={submitError} onRetry={handleSubmit} />}
+
         <button
           onClick={handleSubmit}
           disabled={!customerId || !productId || submitting}
-          className="w-full py-2.5 rounded-full bg-[var(--color-accent)] text-black text-sm disabled:opacity-50"
+          className="w-full py-2.5 rounded-full bg-[var(--color-accent)] text-black text-sm transition-opacity duration-150 hover:opacity-90 disabled:opacity-50 disabled:hover:opacity-50"
         >
           {submitting ? '상담 생성 중…' : '상담 생성'}
         </button>

@@ -1,6 +1,6 @@
 export default function CitationCard({ citation }) {
   return (
-    <div className="rounded-xl border border-[var(--color-accent)]/30 bg-[var(--color-accent-soft)] px-4 py-3">
+    <div className="rounded-xl border border-[var(--color-accent)]/30 bg-[var(--color-accent-soft)] px-4 py-3 transition-colors duration-150 hover:border-[var(--color-accent)]/30 hover:bg-[var(--color-surface-raised)]">
       <div className="flex items-center justify-between">
         <p className="text-sm font-medium">{citation.product_name}</p>
         <span className="text-xs text-[var(--color-accent)]">
