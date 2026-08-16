@@ -1,0 +1,16 @@
+@import "tailwindcss";
+
+/* 브랜드 톤 확정되면 값 교체 — 지금은 자리만 잡아둔 placeholder */
+:root {
+  --color-bg: #0f0f0f;
+  --color-surface: #1a1a1a;
+  --color-text: #f2f0ec;
+  --color-muted: #9a9a9a;
+  --color-accent: #c9a86a; /* MCM 헤리티지 톤을 참고한 임시 골드 */
+}
+
+body {
+  background: var(--color-bg);
+  color: var(--color-text);
+  font-family: 'Pretendard', system-ui, sans-serif;
+}

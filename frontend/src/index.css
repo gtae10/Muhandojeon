@@ -1,0 +1,21 @@
+@import "tailwindcss";
+
+:root {
+  --color-bg: #0b0b0c;
+  --color-surface: #161617;
+  --color-surface-raised: #1f1f21;
+  --color-border: rgba(255, 255, 255, 0.08);
+  --color-text: #f2f0ec;
+  --color-muted: #9a9691;
+  --color-accent: #c9a86a;
+  --color-accent-soft: rgba(201, 168, 106, 0.12);
+  --color-warn: #d98a4a;
+  --color-danger: #c9584f;
+}
+
+body {
+  background: var(--color-bg);
+  color: var(--color-text);
+  font-family: 'Pretendard', -apple-system, system-ui, sans-serif;
+  letter-spacing: -0.01em;
+}
