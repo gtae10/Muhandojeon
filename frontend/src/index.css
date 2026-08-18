@@ -1,21 +1,46 @@
 @import "tailwindcss";
 
+/* 다크(느와르 골드) 기본, [data-theme="light"]에서 라이트(에디토리얼 아이보리)로 전환 */
 :root {
-  --color-bg: #0b0908;
-  --color-surface: #181310;
-  --color-surface-raised: #221b15;
-  --color-border: rgba(232, 218, 199, 0.08);
-  --color-text: #f4eee3;
-  --color-muted: #a3907d;
-  --color-accent: #b06b35;
-  --color-accent-soft: rgba(176, 107, 53, 0.16);
-  --color-warn: #d0973f;
+  --color-bg: #15110c;
+  --color-surface: rgba(239, 231, 216, 0.045);
+  --color-border: rgba(239, 231, 216, 0.16);
+  --color-text: #efe7d8;
+  --color-muted: #8c8272;
+  --color-accent: #cba15b;
+  --color-warn: #c98263;
   --color-danger: #c15644;
+
+  --font-display: 'Iowan Old Style', 'Palatino Linotype', 'Noto Serif KR', Georgia, 'Times New Roman', serif;
+  --font-sans: -apple-system, 'Pretendard', 'Apple SD Gothic Neo', 'Malgun Gothic', system-ui, sans-serif;
+}
+
+:root[data-theme='light'] {
+  --color-bg: #f8f4ec;
+  --color-surface: #f1ebdd;
+  --color-border: #ddd3bf;
+  --color-text: #2b2319;
+  --color-muted: #8a7d68;
+  --color-accent: #8a4a2d;
+  --color-warn: #a24a3a;
+  --color-danger: #a23f2f;
 }
 
 body {
   background: var(--color-bg);
   color: var(--color-text);
-  font-family: 'Pretendard', -apple-system, system-ui, sans-serif;
-  letter-spacing: -0.01em;
+  font-family: var(--font-sans);
+  transition: background-color 0.15s ease, color 0.15s ease;
+}
+
+.font-display {
+  font-family: var(--font-display);
+}
+
+/* 네이티브 드롭다운 팝업은 부모 배경을 상속하지 않고 브라우저 기본값(흰 배경)으로
+   뜨는 경우가 있어, 다크 테마에서 밝은 글자색과 겹쳐 안 보이는 문제가 생긴다.
+   option에 배경/글자색을 명시해 팝업 안에서도 테마 색이 적용되게 한다. */
+select option {
+  background-color: var(--color-bg);
+  color: var(--color-text);
 }

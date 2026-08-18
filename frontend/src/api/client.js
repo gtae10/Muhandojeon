@@ -50,6 +50,12 @@ async function request(path, options = {}) {
   }
 
   if (!res.ok) {
+    // 502/503/504 — 프록시(vite dev server 또는 운영 리버스 프록시)는 응답했지만 업스트림
+    // 백엔드에 닿지 못했다는 뜻이다. 백엔드가 실제로 응답한 4xx/유효성 에러와 달리 이 경우는
+    // "서버 미기동"과 동일하게 목업으로 조용히 폴백해야 한다(vite.config.js 프록시 주석 참고).
+    if (res.status === 502 || res.status === 503 || res.status === 504) {
+      throw new NetworkUnavailableError(`업스트림 서버에 연결할 수 없어요 (${res.status}): ${path}`)
+    }
     const body = await res.json().catch(() => ({}))
     throw new ApiError(body.detail || `요청 실패 (${res.status})`, {
       status: res.status,
@@ -59,21 +65,39 @@ async function request(path, options = {}) {
   return await res.json()
 }
 
-/** 'live' | 'mock' — 화면 상태 배지에서 그대로 읽는다. */
-export const connectionState = { current: 'live' }
+const connectionListeners = new Set()
+
+/**
+ * 'live' | 'mock' — 화면 상태 배지에서 그대로 읽는다.
+ * 값이 바뀔 때마다 구독자에게 즉시 알린다(subscribe) — 폴링 주기를 기다리지 않고
+ * 실제 API 폴백이 발생한 순간 배지가 갱신되도록 하기 위함이다.
+ */
+export const connectionState = {
+  current: 'live',
+  subscribe(listener) {
+    connectionListeners.add(listener)
+    return () => connectionListeners.delete(listener)
+  },
+}
+
+function setConnectionState(next) {
+  if (connectionState.current === next) return
+  connectionState.current = next
+  connectionListeners.forEach((listener) => listener(next))
+}
 
 async function withFallback(realCall, mockValue) {
   try {
     const result = await realCall()
-    connectionState.current = 'live'
+    setConnectionState('live')
     return result
   } catch (err) {
     if (err instanceof NetworkUnavailableError) {
-      connectionState.current = 'mock'
+      setConnectionState('mock')
       return typeof mockValue === 'function' ? mockValue() : mockValue
     }
     // ApiError: 서버가 실제로 응답했으니 연결 상태는 live 로 두고, 에러는 호출자에게 그대로 넘긴다.
-    connectionState.current = 'live'
+    setConnectionState('live')
     throw err
   }
 }

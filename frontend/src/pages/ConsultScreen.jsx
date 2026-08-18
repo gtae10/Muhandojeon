@@ -50,8 +50,8 @@ export default function ConsultScreen() {
 
   const header = (
     <div>
-      <h1 className="text-lg font-medium">직접 상담</h1>
-      <p className="text-xs text-[var(--color-muted)] mt-1">
+      <h1 className="font-display text-xl text-[var(--color-text)]">직접 상담</h1>
+      <p className="text-xs text-[var(--color-muted)] mt-2">
         세션 이벤트 없이 호출해요 — 일반 제안 모드로 상담이 생성돼요
       </p>
     </div>
@@ -59,7 +59,7 @@ export default function ConsultScreen() {
 
   if (status === 'loading') {
     return (
-      <div className="space-y-6">
+      <div className="space-y-8">
         {header}
         <FieldSkeleton count={2} />
       </div>
@@ -68,7 +68,7 @@ export default function ConsultScreen() {
 
   if (status === 'error') {
     return (
-      <div className="space-y-6">
+      <div className="space-y-8">
         {header}
         <ErrorBanner message={loadError} onRetry={load} />
       </div>
@@ -76,16 +76,18 @@ export default function ConsultScreen() {
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-8">
       {header}
 
-      <div className="space-y-4">
+      <div className="space-y-6">
         <div>
-          <label className="text-xs text-[var(--color-muted)] block mb-2">고객</label>
+          <label className="text-[10px] tracking-[0.18em] uppercase text-[var(--color-muted)] block mb-2.5">
+            고객
+          </label>
           <select
             value={customerId}
             onChange={(e) => setCustomerId(e.target.value)}
-            className="w-full bg-[var(--color-surface)] border border-[var(--color-border)] rounded-lg px-3 py-2 text-sm"
+            className="w-full bg-[var(--color-surface)] border border-[var(--color-border)] px-3 py-2.5 text-sm text-[var(--color-text)]"
           >
             <option value="">선택하세요</option>
             {customers.map((c) => (
@@ -97,11 +99,13 @@ export default function ConsultScreen() {
         </div>
 
         <div>
-          <label className="text-xs text-[var(--color-muted)] block mb-2">상담 대상 상품</label>
+          <label className="text-[10px] tracking-[0.18em] uppercase text-[var(--color-muted)] block mb-2.5">
+            상담 대상 상품
+          </label>
           <select
             value={productId}
             onChange={(e) => setProductId(e.target.value)}
-            className="w-full bg-[var(--color-surface)] border border-[var(--color-border)] rounded-lg px-3 py-2 text-sm"
+            className="w-full bg-[var(--color-surface)] border border-[var(--color-border)] px-3 py-2.5 text-sm text-[var(--color-text)]"
           >
             <option value="">선택하세요</option>
             {products.map((p) => (
@@ -117,7 +121,7 @@ export default function ConsultScreen() {
         <button
           onClick={handleSubmit}
           disabled={!customerId || !productId || submitting}
-          className="w-full py-2.5 rounded-full bg-[var(--color-accent)] text-black text-sm transition-opacity duration-150 hover:opacity-90 disabled:opacity-50 disabled:hover:opacity-50"
+          className="w-full py-3 border border-[var(--color-accent)] text-[var(--color-accent)] text-[11px] tracking-[0.14em] uppercase transition-colors duration-150 hover:bg-[var(--color-accent)] hover:text-[var(--color-bg)] disabled:opacity-50 disabled:hover:bg-transparent disabled:hover:text-[var(--color-accent)]"
         >
           {submitting ? '상담 생성 중…' : '상담 생성'}
         </button>

@@ -47,10 +47,10 @@ export default function ScenarioScreen() {
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-8">
       <div>
-        <h1 className="text-lg font-medium">데모 시나리오</h1>
-        <p className="text-xs text-[var(--color-muted)] mt-1">
+        <h1 className="font-display text-xl text-[var(--color-text)]">데모 시나리오</h1>
+        <p className="text-xs text-[var(--color-muted)] mt-2">
           고정된 고객·상품·세션으로 상담을 재생해요
         </p>
       </div>
@@ -60,20 +60,15 @@ export default function ScenarioScreen() {
       {status === 'error' && <ErrorBanner message={loadError} onRetry={load} />}
 
       {status === 'ready' && (
-        <div className="space-y-3">
+        <div className="divide-y divide-[var(--color-border)]">
           {scenarios.map((s) => (
-            <div
-              key={s.id}
-              className="rounded-2xl border border-[var(--color-border)] bg-[var(--color-surface)] p-4 transition-colors duration-150 hover:border-[var(--color-accent)]/30 hover:bg-[var(--color-surface-raised)]"
-            >
-              <span className="text-xs font-mono text-[var(--color-accent)]">{s.id}</span>
-              <p className="text-sm font-medium mt-1">{s.title}</p>
-              <p className="text-xs text-[var(--color-muted)] mt-2 leading-relaxed">
-                {s.narrative}
-              </p>
+            <div key={s.id} className="py-7 first:pt-0 last:pb-0">
+              <span className="text-[10px] tracking-[0.14em] text-[var(--color-accent)]">{s.id}</span>
+              <p className="font-display text-[17px] mt-2 text-[var(--color-text)]">{s.title}</p>
+              <p className="text-xs text-[var(--color-muted)] mt-2.5 leading-relaxed">{s.narrative}</p>
 
               {runError?.scenarioId === s.id && (
-                <div className="mt-3">
+                <div className="mt-4">
                   <ErrorBanner message={runError.message} onRetry={() => handleRun(s.id)} />
                 </div>
               )}
@@ -81,7 +76,7 @@ export default function ScenarioScreen() {
               <button
                 onClick={() => handleRun(s.id)}
                 disabled={runningId === s.id}
-                className="w-full mt-4 py-2.5 rounded-full bg-[var(--color-accent)] text-black text-sm transition-opacity duration-150 hover:opacity-90 disabled:opacity-50 disabled:hover:opacity-50"
+                className="w-full mt-5 py-3 border border-[var(--color-accent)] text-[var(--color-accent)] text-[11px] tracking-[0.14em] uppercase transition-colors duration-150 hover:bg-[var(--color-accent)] hover:text-[var(--color-bg)] disabled:opacity-50 disabled:hover:bg-transparent disabled:hover:text-[var(--color-accent)]"
               >
                 {runningId === s.id ? '상담 생성 중…' : '이 시나리오 재생'}
               </button>

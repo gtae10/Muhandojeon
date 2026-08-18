@@ -1,22 +1,22 @@
 export default function CitationCard({ citation }) {
   return (
-    <div className="rounded-xl border border-[var(--color-accent)]/30 bg-[var(--color-accent-soft)] px-4 py-3 transition-colors duration-150 hover:border-[var(--color-accent)]/30 hover:bg-[var(--color-surface-raised)]">
-      <div className="flex items-center justify-between">
-        <p className="text-sm font-medium">{citation.product_name}</p>
-        <span className="text-xs text-[var(--color-accent)]">
-          컨디션 {citation.condition_score}점
-        </span>
+    <div className="flex items-start justify-between gap-6">
+      <div>
+        <p className="font-display text-base text-[var(--color-text)]">{citation.product_name}</p>
+        {citation.headline_finding && (
+          <p className="text-xs text-[var(--color-muted)] mt-1.5">{citation.headline_finding}</p>
+        )}
+        {citation.next_service_months <= 3 && (
+          <p className="text-[11px] text-[var(--color-warn)] mt-1.5">
+            {citation.next_service_months === 0
+              ? '즉시 케어 권장'
+              : `${citation.next_service_months}개월 내 케어 권장`}
+          </p>
+        )}
       </div>
-      {citation.headline_finding && (
-        <p className="text-xs text-[var(--color-muted)] mt-1">{citation.headline_finding}</p>
-      )}
-      {citation.next_service_months <= 3 && (
-        <p className="text-xs text-[var(--color-warn)] mt-1">
-          {citation.next_service_months === 0
-            ? '즉시 케어 권장'
-            : `${citation.next_service_months}개월 내 케어 권장`}
-        </p>
-      )}
+      <p className="font-display italic text-base text-[var(--color-accent)] whitespace-nowrap">
+        {citation.condition_score}점
+      </p>
     </div>
   )
 }
