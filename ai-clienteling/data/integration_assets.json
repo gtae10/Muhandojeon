@@ -1,0 +1,642 @@
+{
+  "_meta": {
+    "description": "고객별 자산 목록. CU 는 팀 fixtures 원본, C(AS-9…)는 시연용 가정값.",
+    "generated_by": "scripts/build_integration_data.py — 직접 수정 금지"
+  },
+  "assets_by_customer": {
+    "C001": [
+      {
+        "asset_id": "AS-900100",
+        "customer_id": "C001",
+        "product_id": "P003",
+        "product_name": "Liz 비세토스 리버서블 쇼퍼",
+        "purchased_at": "2023-05-01T00:00:00+09:00",
+        "condition_score": 71,
+        "next_service_months": 2,
+        "findings": [
+          {
+            "part": "",
+            "severity": "",
+            "note": "가죽 핸들 마모 진행. 손이 닿는 중앙부 색이 옅어짐"
+          }
+        ],
+        "care_history": []
+      }
+    ],
+    "C004": [
+      {
+        "asset_id": "AS-900400",
+        "customer_id": "C004",
+        "product_id": "P005",
+        "product_name": "Tracy 비세토스 레더 믹스 크로스바디",
+        "purchased_at": "2025-11-01T00:00:00+09:00",
+        "condition_score": 95,
+        "next_service_months": 12,
+        "findings": [
+          {
+            "part": "",
+            "severity": "",
+            "note": "구매 9개월. 사용감 거의 없음"
+          }
+        ],
+        "care_history": []
+      }
+    ],
+    "C005": [
+      {
+        "asset_id": "AS-900500",
+        "customer_id": "C005",
+        "product_id": "P004",
+        "product_name": "Stark 비세토스 사이드 스터드 백팩",
+        "purchased_at": "2024-09-01T00:00:00+09:00",
+        "condition_score": 85,
+        "next_service_months": 6,
+        "findings": [
+          {
+            "part": "",
+            "severity": "",
+            "note": "약 2년 사용. 바닥 모서리에 가벼운 마찰 흔적"
+          }
+        ],
+        "care_history": []
+      }
+    ],
+    "C006": [
+      {
+        "asset_id": "AS-900600",
+        "customer_id": "C006",
+        "product_id": "P006",
+        "product_name": "Pina 비세토스 스터드 장식 토트",
+        "purchased_at": "2021-03-01T00:00:00+09:00",
+        "condition_score": 55,
+        "next_service_months": 1,
+        "findings": [
+          {
+            "part": "",
+            "severity": "",
+            "note": "5년 사용. 가죽 핸들 갈라짐 시작, 바닥 메탈 피트 도금 벗겨짐"
+          }
+        ],
+        "care_history": [
+          {
+            "date": "2023-08",
+            "type": "핸들 클리닝",
+            "store": "MCM 롯데백화점 본점"
+          }
+        ]
+      },
+      {
+        "asset_id": "AS-900601",
+        "customer_id": "C006",
+        "product_id": "P001",
+        "product_name": "Aren 비세토스 스쿨 토트",
+        "purchased_at": "2024-06-01T00:00:00+09:00",
+        "condition_score": 85,
+        "next_service_months": 6,
+        "findings": [
+          {
+            "part": "",
+            "severity": "",
+            "note": "2년 사용. 상태 양호"
+          }
+        ],
+        "care_history": []
+      }
+    ],
+    "C007": [
+      {
+        "asset_id": "AS-900700",
+        "customer_id": "C007",
+        "product_id": "P006",
+        "product_name": "Pina 비세토스 스터드 장식 토트",
+        "purchased_at": "2022-09-01T00:00:00+09:00",
+        "condition_score": 71,
+        "next_service_months": 2,
+        "findings": [
+          {
+            "part": "",
+            "severity": "",
+            "note": "4년 사용. 가죽 핸들 색이 옅어짐"
+          }
+        ],
+        "care_history": []
+      }
+    ],
+    "C008": [
+      {
+        "asset_id": "AS-900800",
+        "customer_id": "C008",
+        "product_id": "P004",
+        "product_name": "Stark 비세토스 사이드 스터드 백팩",
+        "purchased_at": "2024-03-01T00:00:00+09:00",
+        "condition_score": 85,
+        "next_service_months": 6,
+        "findings": [
+          {
+            "part": "",
+            "severity": "",
+            "note": "2년 사용. 상태 양호"
+          }
+        ],
+        "care_history": []
+      }
+    ],
+    "C009": [
+      {
+        "asset_id": "AS-900900",
+        "customer_id": "C009",
+        "product_id": "P002",
+        "product_name": "Aren 노바 모노그램 ECONYL® 백팩",
+        "purchased_at": "2026-08-01T00:00:00+09:00",
+        "condition_score": 95,
+        "next_service_months": 12,
+        "findings": [
+          {
+            "part": "",
+            "severity": "",
+            "note": "이번 달 구매. 아직 수령 전"
+          }
+        ],
+        "care_history": []
+      }
+    ],
+    "C010": [
+      {
+        "asset_id": "AS-901000",
+        "customer_id": "C010",
+        "product_id": "P006",
+        "product_name": "Pina 비세토스 스터드 장식 토트",
+        "purchased_at": "2019-11-01T00:00:00+09:00",
+        "condition_score": 55,
+        "next_service_months": 1,
+        "findings": [
+          {
+            "part": "",
+            "severity": "",
+            "note": "7년 사용. 핸들 갈라짐, 바닥 모서리 마찰 심함"
+          }
+        ],
+        "care_history": [
+          {
+            "date": "2021-06",
+            "type": "핸들 클리닝",
+            "store": "MCM 롯데백화점 본점"
+          },
+          {
+            "date": "2024-02",
+            "type": "전체 클리닝",
+            "store": "MCM 롯데백화점 본점"
+          }
+        ]
+      },
+      {
+        "asset_id": "AS-901001",
+        "customer_id": "C010",
+        "product_id": "P001",
+        "product_name": "Aren 비세토스 스쿨 토트",
+        "purchased_at": "2023-04-01T00:00:00+09:00",
+        "condition_score": 85,
+        "next_service_months": 6,
+        "findings": [
+          {
+            "part": "",
+            "severity": "",
+            "note": "3년 사용. 상태 양호"
+          }
+        ],
+        "care_history": []
+      },
+      {
+        "asset_id": "AS-901002",
+        "customer_id": "C010",
+        "product_id": "P005",
+        "product_name": "Tracy 비세토스 레더 믹스 크로스바디",
+        "purchased_at": "2025-02-01T00:00:00+09:00",
+        "condition_score": 95,
+        "next_service_months": 12,
+        "findings": [
+          {
+            "part": "",
+            "severity": "",
+            "note": "구매 1년 6개월. 사용감 거의 없음"
+          }
+        ],
+        "care_history": []
+      }
+    ],
+    "CU-0001": [
+      {
+        "asset_id": "AS-0001",
+        "customer_id": "CU-0001",
+        "product_id": "LX-0001",
+        "purchased_at": "2022-04-16T00:00:00+09:00",
+        "condition_score": 71,
+        "findings": [
+          {
+            "part": "handle",
+            "severity": "MEDIUM",
+            "note": "핸들 표면 마모 진행, 케어 임계 근접"
+          },
+          {
+            "part": "corner",
+            "severity": "MEDIUM",
+            "note": "코너 4곳 마찰, 각 세우기 필요"
+          }
+        ],
+        "next_service_months": 1,
+        "last_scanned_at": "2026-07-03T14:20:00+09:00",
+        "product_name": "Aurelia Top Handle",
+        "care_history": [
+          {
+            "date": "2026-07",
+            "type": "컨디션 점검",
+            "store": "부티크"
+          }
+        ]
+      },
+      {
+        "asset_id": "AS-0002",
+        "customer_id": "CU-0001",
+        "product_id": "LX-0008",
+        "purchased_at": "2021-06-05T00:00:00+09:00",
+        "condition_score": 88,
+        "findings": [
+          {
+            "part": "bracelet",
+            "severity": "LOW",
+            "note": "브레이슬릿 유격 없음"
+          }
+        ],
+        "next_service_months": 22,
+        "last_scanned_at": "2026-02-11T11:05:00+09:00",
+        "product_name": "Meridian Chronograph",
+        "care_history": [
+          {
+            "date": "2026-02",
+            "type": "컨디션 점검",
+            "store": "부티크"
+          }
+        ]
+      },
+      {
+        "asset_id": "AS-0003",
+        "customer_id": "CU-0001",
+        "product_id": "LX-0003",
+        "purchased_at": "2024-03-22T00:00:00+09:00",
+        "condition_score": 92,
+        "findings": [
+          {
+            "part": "exterior",
+            "severity": "LOW",
+            "note": "외관 결 유지"
+          }
+        ],
+        "next_service_months": 30,
+        "last_scanned_at": "2026-05-20T16:40:00+09:00",
+        "product_name": "Marée Tote",
+        "care_history": [
+          {
+            "date": "2026-05",
+            "type": "컨디션 점검",
+            "store": "부티크"
+          }
+        ]
+      },
+      {
+        "asset_id": "AS-0004",
+        "customer_id": "CU-0001",
+        "product_id": "LX-0005",
+        "purchased_at": "2023-11-08T00:00:00+09:00",
+        "condition_score": 76,
+        "findings": [
+          {
+            "part": "sole",
+            "severity": "MEDIUM",
+            "note": "앞창 마모 진행"
+          },
+          {
+            "part": "upper",
+            "severity": "LOW",
+            "note": "볼 부분 주름 자연 발생"
+          }
+        ],
+        "next_service_months": 5,
+        "last_scanned_at": "2026-06-30T10:15:00+09:00",
+        "product_name": "Aurelia Derby",
+        "care_history": [
+          {
+            "date": "2026-06",
+            "type": "컨디션 점검",
+            "store": "부티크"
+          }
+        ]
+      },
+      {
+        "asset_id": "AS-0005",
+        "customer_id": "CU-0001",
+        "product_id": "LX-0010",
+        "purchased_at": "2020-09-14T00:00:00+09:00",
+        "condition_score": 63,
+        "findings": [
+          {
+            "part": "edge_coat",
+            "severity": "HIGH",
+            "note": "엣지 코트 대부분 손실"
+          },
+          {
+            "part": "stitching",
+            "severity": "MEDIUM",
+            "note": "접합부 스티치 이완"
+          }
+        ],
+        "next_service_months": 0,
+        "last_scanned_at": null,
+        "product_name": "Lisière Long Wallet"
+      }
+    ],
+    "CU-0002": [
+      {
+        "asset_id": "AS-0006",
+        "customer_id": "CU-0002",
+        "product_id": "LX-0002",
+        "purchased_at": "2021-02-19T00:00:00+09:00",
+        "condition_score": 79,
+        "findings": [
+          {
+            "part": "handle",
+            "severity": "MEDIUM",
+            "note": "핸들 표면 마모 진행"
+          },
+          {
+            "part": "hardware",
+            "severity": "LOW",
+            "note": "금속 광택 양호, 미세 스크래치"
+          }
+        ],
+        "next_service_months": 9,
+        "last_scanned_at": "2026-04-02T13:30:00+09:00",
+        "product_name": "Solène Shoulder",
+        "care_history": [
+          {
+            "date": "2026-04",
+            "type": "컨디션 점검",
+            "store": "부티크"
+          }
+        ]
+      },
+      {
+        "asset_id": "AS-0007",
+        "customer_id": "CU-0002",
+        "product_id": "LX-0005",
+        "purchased_at": "2021-09-12T00:00:00+09:00",
+        "condition_score": 54,
+        "findings": [
+          {
+            "part": "sole",
+            "severity": "HIGH",
+            "note": "앞창 관통 마모, 재밑창 필요"
+          },
+          {
+            "part": "edge_coat",
+            "severity": "MEDIUM",
+            "note": "엣지 코트 벗겨짐 구간 확인"
+          }
+        ],
+        "next_service_months": 0,
+        "last_scanned_at": "2026-07-21T09:50:00+09:00",
+        "product_name": "Aurelia Derby",
+        "care_history": [
+          {
+            "date": "2026-07",
+            "type": "컨디션 점검",
+            "store": "부티크"
+          }
+        ]
+      },
+      {
+        "asset_id": "AS-0008",
+        "customer_id": "CU-0002",
+        "product_id": "LX-0004",
+        "purchased_at": "2023-05-30T00:00:00+09:00",
+        "condition_score": 85,
+        "findings": [
+          {
+            "part": "exterior",
+            "severity": "LOW",
+            "note": "외관 결 유지"
+          }
+        ],
+        "next_service_months": 18,
+        "last_scanned_at": null,
+        "product_name": "Nocturne Clutch"
+      },
+      {
+        "asset_id": "AS-0009",
+        "customer_id": "CU-0002",
+        "product_id": "LX-0012",
+        "purchased_at": "2022-08-08T00:00:00+09:00",
+        "condition_score": 70,
+        "findings": [
+          {
+            "part": "edge_coat",
+            "severity": "MEDIUM",
+            "note": "엣지 코트 벗겨짐 구간 확인"
+          },
+          {
+            "part": "hardware",
+            "severity": "MEDIUM",
+            "note": "금속 변색 시작(도금 산화)"
+          }
+        ],
+        "next_service_months": 0,
+        "last_scanned_at": "2026-03-15T15:10:00+09:00",
+        "product_name": "Cadence Belt",
+        "care_history": [
+          {
+            "date": "2026-03",
+            "type": "컨디션 점검",
+            "store": "부티크"
+          }
+        ]
+      }
+    ],
+    "CU-0003": [
+      {
+        "asset_id": "AS-0010",
+        "customer_id": "CU-0003",
+        "product_id": "LX-0005",
+        "purchased_at": "2023-04-18T00:00:00+09:00",
+        "condition_score": 81,
+        "findings": [
+          {
+            "part": "sole",
+            "severity": "MEDIUM",
+            "note": "앞창 마모 진행"
+          }
+        ],
+        "next_service_months": 6,
+        "last_scanned_at": "2026-06-05T14:00:00+09:00",
+        "product_name": "Aurelia Derby",
+        "care_history": [
+          {
+            "date": "2026-06",
+            "type": "컨디션 점검",
+            "store": "부티크"
+          }
+        ]
+      },
+      {
+        "asset_id": "AS-0011",
+        "customer_id": "CU-0003",
+        "product_id": "LX-0007",
+        "purchased_at": "2024-10-02T00:00:00+09:00",
+        "condition_score": 90,
+        "findings": [
+          {
+            "part": "upper",
+            "severity": "LOW",
+            "note": "볼 부분 주름 자연 발생"
+          }
+        ],
+        "next_service_months": 24,
+        "last_scanned_at": null,
+        "product_name": "Vesper Ankle Boot"
+      },
+      {
+        "asset_id": "AS-0012",
+        "customer_id": "CU-0003",
+        "product_id": "LX-0011",
+        "purchased_at": "2025-01-15T00:00:00+09:00",
+        "condition_score": 94,
+        "findings": [],
+        "next_service_months": 33,
+        "last_scanned_at": "2026-01-30T12:20:00+09:00",
+        "product_name": "Lisière Card Holder",
+        "care_history": [
+          {
+            "date": "2026-01",
+            "type": "컨디션 점검",
+            "store": "부티크"
+          }
+        ]
+      }
+    ],
+    "CU-0004": [
+      {
+        "asset_id": "AS-0013",
+        "customer_id": "CU-0004",
+        "product_id": "LX-0011",
+        "purchased_at": "2023-09-09T00:00:00+09:00",
+        "condition_score": 82,
+        "findings": [
+          {
+            "part": "edge_coat",
+            "severity": "LOW",
+            "note": "엣지 코트 상태 양호"
+          }
+        ],
+        "next_service_months": 12,
+        "last_scanned_at": null,
+        "product_name": "Lisière Card Holder"
+      },
+      {
+        "asset_id": "AS-0014",
+        "customer_id": "CU-0004",
+        "product_id": "LX-0012",
+        "purchased_at": "2024-06-21T00:00:00+09:00",
+        "condition_score": 87,
+        "findings": [
+          {
+            "part": "exterior",
+            "severity": "LOW",
+            "note": "외관 결 유지"
+          }
+        ],
+        "next_service_months": 16,
+        "last_scanned_at": "2026-02-24T17:45:00+09:00",
+        "product_name": "Cadence Belt",
+        "care_history": [
+          {
+            "date": "2026-02",
+            "type": "컨디션 점검",
+            "store": "부티크"
+          }
+        ]
+      },
+      {
+        "asset_id": "AS-0015",
+        "customer_id": "CU-0004",
+        "product_id": "LX-0010",
+        "purchased_at": "2025-08-01T00:00:00+09:00",
+        "condition_score": 95,
+        "findings": [],
+        "next_service_months": 36,
+        "last_scanned_at": null,
+        "product_name": "Lisière Long Wallet"
+      }
+    ],
+    "CU-0005": [
+      {
+        "asset_id": "AS-0016",
+        "customer_id": "CU-0005",
+        "product_id": "LX-0004",
+        "purchased_at": "2026-06-02T00:00:00+09:00",
+        "condition_score": 97,
+        "findings": [],
+        "next_service_months": 40,
+        "last_scanned_at": "2026-06-10T11:00:00+09:00",
+        "product_name": "Nocturne Clutch",
+        "care_history": [
+          {
+            "date": "2026-06",
+            "type": "컨디션 점검",
+            "store": "부티크"
+          }
+        ]
+      }
+    ],
+    "CU-0006": [
+      {
+        "asset_id": "AS-0017",
+        "customer_id": "CU-0006",
+        "product_id": "LX-0009",
+        "purchased_at": "2022-12-11T00:00:00+09:00",
+        "condition_score": 84,
+        "findings": [
+          {
+            "part": "dial",
+            "severity": "LOW",
+            "note": "다이얼 청결"
+          }
+        ],
+        "next_service_months": 20,
+        "last_scanned_at": null,
+        "product_name": "Tessera Automatic"
+      },
+      {
+        "asset_id": "AS-0018",
+        "customer_id": "CU-0006",
+        "product_id": "LX-0006",
+        "purchased_at": "2024-02-14T00:00:00+09:00",
+        "condition_score": 86,
+        "findings": [
+          {
+            "part": "upper",
+            "severity": "LOW",
+            "note": "볼 부분 주름 자연 발생"
+          }
+        ],
+        "next_service_months": 14,
+        "last_scanned_at": "2026-05-05T10:30:00+09:00",
+        "product_name": "Aurelia Oxford",
+        "care_history": [
+          {
+            "date": "2026-05",
+            "type": "컨디션 점검",
+            "store": "부티크"
+          }
+        ]
+      }
+    ]
+  }
+}

@@ -9,6 +9,8 @@ data/ 폴더의 JSON 3개를 읽어서, 시스템 프롬프트에 붙일 하나�
 
 import json
 import re
+from contextlib import contextmanager
+from contextvars import ContextVar
 from datetime import date, timedelta
 from pathlib import Path
 
@@ -16,10 +18,43 @@ from pathlib import Path
 # 이렇게 하면 어느 위치에서 실행해도 경로가 깨지지 않는다.
 DATA_DIR = Path(__file__).resolve().parent.parent / "data"
 
+# 데이터 오버레이 (2026-08-18, 통합 경로용)
+#
+# /clienteling/reply 는 "한 메종 · 18종 카탈로그" 세계관으로 답해야 하는데,
+# /chat(MCM 데모)은 6종 데이터로 동결되어 있다. load() 가 이 모듈의 유일한
+# 데이터 관문이므로(33개 호출부 전부 여기를 지남), 그 호출 동안만 파일 경로를
+# 갈아끼우는 오버레이를 둔다.
+#
+# - 값은 파싱된 dict 가 아니라 **경로**다. 매 호출 디스크에서 새로 읽는 기존
+#   시맨틱이 유지되고, 요청 사이에 가변 상태를 공유하지 않는다.
+# - ContextVar 라서 FastAPI 의 요청 간에 새지 않는다 (anyio 가 sync 핸들러를
+#   호출마다 copy_context 로 돌리는 것을 소스로 확인함).
+# - 맨몸 set 은 노출하지 않는다. 반드시 with data_overlay({...}): 로만 쓴다 —
+#   reset 없이 set 하면 콘솔·직접 호출 경로에서 프로세스 전체가 오염된다.
+_DATA_OVERRIDE: ContextVar = ContextVar("_DATA_OVERRIDE", default=None)
+
+
+@contextmanager
+def data_overlay(mapping):
+    """이 블록 안의 load(filename) 을 다른 파일로 돌린다.
+
+    mapping: {"products.json": Path(...), ...}
+    오버레이에 없는 파일은 평소처럼 data/ 에서 읽는다.
+    """
+    token = _DATA_OVERRIDE.set({str(k): Path(v) for k, v in (mapping or {}).items()})
+    try:
+        yield
+    finally:
+        _DATA_OVERRIDE.reset(token)
+
 
 def load(filename: str) -> dict:
     """data/ 안의 JSON 파일 하나를 읽어서 파이썬 딕셔너리로 돌려준다."""
-    path = DATA_DIR / filename
+    override = _DATA_OVERRIDE.get()
+    if override and filename in override:
+        path = override[filename]
+    else:
+        path = DATA_DIR / filename
     with open(path, encoding="utf-8") as f:
         return json.load(f)
 
@@ -398,7 +433,14 @@ def build_laptop_table() -> str:
     products = load("products.json")["products"]
 
     lines = []
+    # 실측 치수가 없는 제품(통합 카탈로그의 fixture 제품)은 표에서 뺀다.
+    # 없는 치수로 판정을 계산하면 지어낸 실측이 된다. 뺀 사실은 각주로 밝힌다 —
+    # 안 밝히면 "표에 없으니 불가"로 잘못 읽는다 (봤던 매장 사례와 같은 원칙).
+    skipped = []
     for p in products:
+        if "dimensions" not in p or "laptop" not in p:
+            skipped.append(p.get("name_ko") or p.get("product_id", ""))
+            continue
         dims = sorted(
             [
                 p["dimensions"]["depth_cm"],
@@ -427,6 +469,16 @@ def build_laptop_table() -> str:
 
         lines.append(f"  {p['name_ko']}\n    {' / '.join(results)}  —  {sleeve_text}")
 
+    # MCM 6종만 있을 때 skipped 는 빈 목록이고 이 각주는 생기지 않는다 —
+    # 기존 /chat 프롬프트가 바이트 단위로 불변이어야 하기 때문이다 (동결).
+    skipped_note = ""
+    if skipped:
+        skipped_note = (
+            f"\n다음 제품은 실측 치수가 확인되지 않아 표에 없습니다: {', '.join(skipped)}"
+            "\n표에 없다고 안 들어가는 것이 아닙니다. 수납 여부를 단정하지 말고"
+            "\n확인해서 안내드리겠다고 답합니다.\n"
+        )
+
     return f"""
 ## 노트북 수납 (코드가 계산한 표)
 
@@ -439,7 +491,7 @@ def build_laptop_table() -> str:
 
 전용 슬리브와 수납 가능 여부는 다른 이야기입니다.
 슬리브가 없어도 들어가는 제품이 있고, 슬리브가 있어도 크기가 안 맞으면 소용없습니다.
-"""
+{skipped_note}"""
 
 
 # 데이터 파일에 섞여 있는 '지침' 성격의 필드들.
@@ -1959,7 +2011,18 @@ def resolve_place(message: str):
         if any(
             (n in text if n == country["ko"] else n in lowered) for n in names
         ):
-            return {"kind": "has_site", "city": None, "country": country["ko"]}
+            # 그 나라에 우리가 매장을 아는 도시가 있으면 함께 알린다 (한국·일본).
+            # 없으면 빈 목록 — build_place_note 가 외국 영업국 안내로 처리한다.
+            store_cities = [
+                c["ko"] for c in data["cities"]
+                if c["country"] == country["ko"] and c["ko"] in store_regions
+            ]
+            return {
+                "kind": "has_site",
+                "city": None,
+                "country": country["ko"],
+                "store_cities": store_cities,
+            }
 
     return None
 
@@ -2091,6 +2154,27 @@ def build_place_note(message: str, customer: dict) -> str:
 
 액션은 이번 답변에서 **실제로 제안한 것**으로 고릅니다.
 매장 확인만 제안했다면 staff_connect 입니다."""
+
+        # 나라만 말했는데 **우리가 매장을 아는 나라**인 경우 (한국·일본).
+        # 아래 외국 영업국용 템플릿("어느 매장인지 확인해드려야 합니다")을 그대로
+        # 쓰면, 매장 안내 블록의 "서울·부산에 매장이 있다"와 한 답변 안에서
+        # 모순된다 — 아는 것을 모른다고 말하는 것. "한국에 귀국할 때 살 수
+        # 있을까요?" 에서 3/3 재현돼 잡았다 (2026-08-18).
+        store_cities = place.get("store_cities") or []
+        if not city and store_cities:
+            cities_line = "·".join(store_cities)
+            return f"""
+
+# 고객이 말한 지역: {country} — 우리가 매장을 아는 나라입니다
+
+{country}에는 우리가 매장 정보를 가진 지역이 있습니다: {cities_line}.
+"어느 매장인지 확인해드려야 합니다" 라고 말하지 않습니다 — 우리가 압니다.
+매장 이름·재고는 매장 안내와 재고 표를 그대로 씁니다.
+
+하던 이야기(제품 상담 등)를 먼저 이어갑니다. 지역 이름이 나왔다고
+매장 이야기로 화제를 갈아타지 않습니다.
+받으실 지역을 정해야 하는 이야기라면, 위 지역 중 어느 쪽이 편하신지
+여쭙니다 — 위치를 캐묻는 것이 아니라 선택을 여쭙는 것입니다."""
 
         # 나라 단위 사실을 도시 단위로 옮겨 말하는 것을 규칙으로 두 번 막았지만
         # "파리에는 매장이 운영되고 있다는 사실을 알고 있습니다" 로 계속 돌아왔다.

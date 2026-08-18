@@ -2,7 +2,7 @@
 
 먼저 다른 터미널에서 서버를 띄운 뒤 실행한다.
 
-  uvicorn api:app --reload --port 8000
+  uvicorn api:app --reload --port 8102
   python tests/test_api.py
 """
 
@@ -10,7 +10,7 @@ import json
 import urllib.error
 import urllib.request
 
-BASE = "http://127.0.0.1:8000"
+BASE = "http://127.0.0.1:8102"
 
 
 def call(path, payload=None):
@@ -38,7 +38,7 @@ def show(title, result):
 try:
     print(f"서버 상태: {call('/health')}\n")
 except urllib.error.URLError:
-    print("서버에 연결하지 못했습니다. 먼저 uvicorn api:app --port 8000 을 실행하세요.")
+    print("서버에 연결하지 못했습니다. 먼저 uvicorn api:app --port 8102 를 실행하세요.")
     raise SystemExit(1)
 
 # 1) 팀 합의 스펙 그대로의 요청

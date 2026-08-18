@@ -664,10 +664,17 @@ def generate_reply(
     hesitation_type=None,
     owned_products=None,
     variant="default",
+    pick_hint="",
 ):
     """고객 발화 하나에 대한 답변을 만든다. (팀 합의 스펙의 입력을 그대로 받는다)
 
     variant 는 응대 전략 버전이다. (개발 단계 6, Persona Bot Lab 실험용)
+
+    pick_hint (2026-08-18, 통합 경로용): 제품 매칭 텍스트에만 덧붙는 힌트.
+    통합 레이어가 "고객이 지금 보고 있는 제품"을 보내주는데, 고객이 발화에서
+    이름을 안 불렀어도 그 제품 상세가 잡히게 한다. message 나 대화 기록에
+    덧붙이면 고객이 안 한 말이 생기므로(대화 오염) 매칭 입력에만 잇는다.
+    기본값 "" — /chat 경로는 아무것도 달라지지 않는다.
     """
 
     # 들어온 값을 여기서 한 번 정리한다.
@@ -769,9 +776,11 @@ def generate_reply(
             extras.append({"role": "system", "content": unanswerable})
 
         # 제품 상세는 이번 대화에 등장한 것만 넣는다. (전부 넣으면 4,400 토큰)
-        conversation_text = " ".join(
-            [m.get("content", "") for m in conversation_history] + [message]
-        )
+        _text_parts = [m.get("content", "") for m in conversation_history] + [message]
+        _hint = _clean_text(pick_hint)
+        if _hint:
+            _text_parts.append(_hint)
+        conversation_text = " ".join(_text_parts)
         # 추천을 묻는 턴에서는 보유 제품 상세를 뺀다.
         # 보여주면서 "권하지 마라"고 하면 모델이 그 지시를 해설한다.
         # 판단은 이번 발화만 본다 — hides_owned_detail() 의 주석 참고.
