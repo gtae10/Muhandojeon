@@ -38,7 +38,7 @@ except ImportError:
         "opencv-python-headless 미설치. 지문 매칭이 목업으로 폴백됩니다."
     )
 
-_REPO_ROOT = Path(__file__).resolve().parents[4]  # Muhandojeon/
+_REPO_ROOT = Path(__file__).resolve().parents[3]  # Muhandojeon/
 _FINGERPRINT_DIR = _REPO_ROOT / "data" / "fingerprints"
 
 MATCH_THRESHOLD = 0.75  # 기본 임계값 (docs/CONTRACTS.md)
@@ -228,7 +228,7 @@ def _mock_match(candidate_ids: list[str], top_k: int) -> dict[str, Any]:
     # 첫 번째 후보를 매칭된 것으로 처리 (시연용 결정적 값)
     best_id = candidate_ids[0]
     candidates = [
-        {"asset_id": aid, "similarity": round(0.9 - i * 0.2, 2)}
+        {"asset_id": aid, "similarity": round(max(0.0, 0.9 - i * 0.2), 2)}
         for i, aid in enumerate(candidate_ids[:top_k])
     ]
     # 첫 후보 유사도는 임계값 초과

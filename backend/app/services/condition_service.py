@@ -38,7 +38,7 @@ except ImportError:
         "컨디션 분석이 픽스처 데이터로 폴백됩니다."
     )
 
-_REPO_ROOT = Path(__file__).resolve().parents[4]  # Muhandojeon/
+_REPO_ROOT = Path(__file__).resolve().parents[3]  # Muhandojeon/
 
 
 def _load_image_bytes(image_path: str) -> bytes | None:
