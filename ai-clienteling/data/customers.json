@@ -1,0 +1,376 @@
+{
+  "_meta": {
+    "description": "테스트용 가상 고객 프로필. 해커톤 규칙상 실제 고객 데이터는 사용할 수 없으므로 전부 직접 만든 더미 데이터임.",
+    "created_at": "2026-08-14",
+    "today": "2026-08-14",
+    "condition_vocabulary": {
+      "excellent": "거의 새것에 가까움",
+      "good": "잘 관리된 상태, 가벼운 사용감",
+      "fair": "사용감이 뚜렷함, 케어 권장 시점",
+      "needs_care": "수선 접수를 권할 단계"
+    },
+    "rule": "condition 값을 고객에게 그대로 말하지 말 것. 'fair 상태입니다' 같은 진단서 화법 금지."
+  },
+
+  "customers": [
+    {
+      "customer_id": "C001",
+      "name": "지현",
+      "age": 28,
+      "nationality": "한국",
+      "languages": ["ko", "en"],
+      "current_location": "도쿄 (출장 중)",
+      "return_date": "2026-08-17",
+      "home_region": "서울",
+      "owned_products": [
+        {
+          "product_id": "P003",
+          "name": "Liz 비세토스 리버서블 쇼퍼",
+          "purchased": "2023-05",
+          "condition": {
+            "overall": "fair",
+            "notes": "가죽 핸들 마모 진행. 손이 닿는 중앙부 색이 옅어짐"
+          },
+          "care_history": []
+        }
+      ],
+      "recent_activity": {
+        "type": "매장 착장 후 미구매",
+        "intentional": true,
+        "store": "MCM Haus 1 (도쿄 긴자)",
+        "product_id": "P001",
+        "product_name": "Aren 비세토스 스쿨 토트",
+        "date": "2026-08-14",
+        "note": "QR로 착장 기록 저장. 노트북 수납과 무게를 확인하다가 구매 없이 나감"
+      },
+      "notes": "데모 주인공. 출장 중이며 곧 귀국 예정. 업무용 백을 찾는 중",
+      "demo_role": "히어로 시나리오 — 망설임 해소 → 보유 백 케어 제안 → 서울 픽업",
+      "personalization_hooks": [
+        "귀국 예정일은 return_date 참고 — 도쿄에서 서두르지 않아도 된다는 안심을 줄 수 있음. 다만 이것은 '구매·픽업'을 서울에서 해도 된다는 뜻이지, '제품 확인'까지 미루라는 뜻이 아님. 고객은 지금 긴자 매장 근처에 있으므로 실물 확인이 필요하면 긴자를 안내할 것",
+        "Liz 쇼퍼를 3년 넘게 사용 중이고 핸들 마모가 진행 중 — 대화가 자연스러워진 시점에 케어를 제안할 것. 단, 첫 답변부터 꺼내지는 말 것",
+        "Liz 쇼퍼(가로 36cm)와 Aren 토트(가로 39cm)는 크기가 비슷 — 용도가 다르다는 점(업무용)이 분명할 때만 권할 것"
+      ]
+    },
+
+    {
+      "customer_id": "C002",
+      "name": "민준",
+      "age": 31,
+      "nationality": "한국",
+      "languages": ["ko"],
+      "current_location": "서울",
+      "return_date": null,
+      "owned_products": [],
+      "recent_activity": {
+        "type": "온라인 장바구니 이탈",
+        "intentional": true,
+        "store": "MCM 온라인 (한국)",
+        "product_id": "P001",
+        "product_name": "Aren 비세토스 스쿨 토트",
+        "date": "2026-08-13",
+        "note": "제품 상세 페이지에서 치수 정보를 반복 조회. 장바구니 담고 결제 없이 이탈"
+      },
+      "notes": "MCM 첫 구매 검토 중. 16인치 노트북 사용. 보유 제품 없음",
+      "demo_role": "fit 망설임 검증 — 개인화할 보유 이력이 없는 신규 고객"
+    },
+
+    {
+      "customer_id": "C003",
+      "name": "서연",
+      "age": 26,
+      "nationality": "한국",
+      "languages": ["ko", "en"],
+      "current_location": "서울",
+      "return_date": null,
+      "owned_products": [],
+      "recent_activity": {
+        "type": "매장 착장 후 미구매",
+        "intentional": true,
+        "store": "MCM 롯데백화점 본점",
+        "product_id": "P006",
+        "product_name": "Pina 비세토스 스터드 장식 토트",
+        "date": "2026-08-12",
+        "note": "가격표를 두 번 확인한 뒤 보류"
+      },
+      "notes": "첫 럭셔리 백 구매를 고민 중. 가격 대비 가치를 확신하지 못하는 상태",
+      "demo_role": "price 망설임 검증 — 헤리티지 스토리텔링 대상"
+    },
+
+    {
+      "customer_id": "C004",
+      "name": "하윤",
+      "age": 34,
+      "nationality": "한국",
+      "languages": ["ko", "en", "ja"],
+      "current_location": "도쿄 (여행 중)",
+      "return_date": "2026-08-15",
+      "home_region": "서울",
+      "owned_products": [
+        {
+          "product_id": "P005",
+          "name": "Tracy 비세토스 레더 믹스 크로스바디",
+          "purchased": "2025-11",
+          "condition": {
+            "overall": "excellent",
+            "notes": "구매 9개월. 사용감 거의 없음"
+          },
+          "care_history": []
+        }
+      ],
+      "recent_activity": {
+        "type": "매장 재고 문의",
+        "intentional": true,
+        "store": "MCM Haus 1 (도쿄 긴자)",
+        "product_id": "P004",
+        "product_name": "Stark 비세토스 사이드 스터드 백팩",
+        "date": "2026-08-14",
+        "note": "원하는 컬러가 매장에 없었음. 곧 귀국 예정"
+      },
+      "notes": "곧 귀국. 지금 사야 할지, 한국에서 살지 고민 중",
+      "demo_role": "timing 망설임 검증 — 옴니채널 실행 제안 대상"
+    },
+
+    {
+      "customer_id": "C005",
+      "name": "도영",
+      "age": 29,
+      "nationality": "한국",
+      "languages": ["ko", "en"],
+      "current_location": "서울",
+      "return_date": null,
+      "owned_products": [
+        {
+          "product_id": "P004",
+          "name": "Stark 비세토스 사이드 스터드 백팩",
+          "purchased": "2024-09",
+          "condition": {
+            "overall": "good",
+            "notes": "약 2년 사용. 바닥 모서리에 가벼운 마찰 흔적"
+          },
+          "care_history": []
+        }
+      ],
+      "recent_activity": {
+        "type": "온라인 반복 조회",
+        "intentional": false,
+        "store": "MCM 온라인 (한국)",
+        "product_id": "P002",
+        "product_name": "Aren 노바 모노그램 ECONYL 백팩",
+        "date": "2026-08-13",
+        "note": "타 브랜드 제품 페이지와 번갈아 조회한 기록"
+      },
+      "notes": "다른 브랜드 백팩과 비교 검토 중. 지속가능 소재에 관심을 보임",
+      "demo_role": "comparison 망설임 검증 — 비하 없이 MCM 고유 가치 제시"
+    },
+
+    {
+      "customer_id": "C006",
+      "name": "은채",
+      "age": 37,
+      "nationality": "한국",
+      "languages": ["ko"],
+      "current_location": "서울",
+      "return_date": null,
+      "owned_products": [
+        {
+          "product_id": "P006",
+          "name": "Pina 비세토스 스터드 장식 토트",
+          "purchased": "2021-03",
+          "condition": {
+            "overall": "needs_care",
+            "notes": "5년 사용. 가죽 핸들 갈라짐 시작, 바닥 메탈 피트 도금 벗겨짐"
+          },
+          "care_history": [
+            { "date": "2023-08", "type": "핸들 클리닝", "store": "MCM 롯데백화점 본점" }
+          ]
+        },
+        {
+          "product_id": "P001",
+          "name": "Aren 비세토스 스쿨 토트",
+          "purchased": "2024-06",
+          "condition": {
+            "overall": "good",
+            "notes": "2년 사용. 상태 양호"
+          },
+          "care_history": []
+        }
+      ],
+      "recent_activity": {
+        "type": "온라인 조회",
+        "intentional": false,
+        "store": "MCM 온라인 (한국)",
+        "product_id": "P006",
+        "product_name": "Pina 비세토스 스터드 장식 토트",
+        "date": "2026-08-11",
+        "note": "본인이 이미 보유한 것과 같은 모델의 제품 페이지를 조회"
+      },
+      "notes": "장기 고객. 대형 토트를 두 개 보유 중. 케어 이력이 있는 유일한 고객",
+      "demo_role": "케어 우선 원칙의 최대 시험대 — 교체를 권하기 가장 쉬운 상황에서 수선을 권해야 함. 실루엣 겹침 안내 대상",
+      "personalization_hooks": [
+        "2023년 8월 롯데백화점 본점에서 Pina 핸들 클리닝을 받은 이력 있음 — 처음 만나는 사이가 아니다. 그때 한 번 봐드렸다는 사실을 자연스럽게 드러낼 것",
+        "이미 대형 토트를 두 개(Pina, Aren) 보유 중 — 같은 크기·용도의 토트를 새로 권하지 말 것. 겹친다는 사실을 먼저 알릴 것",
+        "5년 사용한 Pina는 케어 이력이 있는 제품 — 오래 함께한 물건이라는 서사를 쓸 수 있음"
+      ]
+    },
+
+    {
+      "customer_id": "C007",
+      "name": "수민",
+      "age": 41,
+      "nationality": "한국",
+      "languages": ["ko"],
+      "current_location": "부산",
+      "return_date": null,
+      "owned_products": [
+        {
+          "product_id": "P006",
+          "name": "Pina 비세토스 스터드 장식 토트",
+          "purchased": "2022-09",
+          "condition": {
+            "overall": "fair",
+            "notes": "4년 사용. 가죽 핸들 색이 옅어짐"
+          },
+          "care_history": []
+        }
+      ],
+      "recent_activity": {
+        "type": "온라인 케어 문의",
+        "intentional": true,
+        "store": "MCM 온라인 (한국)",
+        "product_id": "P006",
+        "product_name": "Pina 비세토스 스터드 장식 토트",
+        "date": "2026-08-13",
+        "note": "케어 안내 페이지를 조회함"
+      },
+      "notes": "부산 거주. 서울 외 지역 고객이며, 부산 매장 한 곳을 확인해 데이터에 넣었다",
+      "demo_role": "지역 다양성 + 정직성 대비 검증. 한 고객에게서 두 장면을 본다. (1) 아는 것 — 서울 매장을 임의로 안내하지 않고 롯데백화점 부산본점 이름을 대며 케어 접수를 안내하는가. (2) 모르는 것 — 제주처럼 우리 데이터에 없는 도시를 물으면 지어내지도 없다고 하지도 않고 확인을 인수하는가. 아는 것은 이름을 대고 모르는 것은 확인을 인수하는 대비가 한 대화 안에서 드러나는 것이 이 고객의 존재 이유다"
+    },
+
+    {
+      "customer_id": "C008",
+      "name": "지원",
+      "age": 33,
+      "nationality": "한국",
+      "languages": ["en", "ko"],
+      "current_location": "싱가포르 (거주)",
+      "return_date": null,
+      "owned_products": [
+        {
+          "product_id": "P004",
+          "name": "Stark 비세토스 사이드 스터드 백팩",
+          "purchased": "2024-03",
+          "condition": {
+            "overall": "good",
+            "notes": "2년 사용. 상태 양호"
+          },
+          "care_history": []
+        }
+      ],
+      "recent_activity": {
+        "type": "온라인 조회",
+        "intentional": false,
+        "store": "MCM 온라인",
+        "product_id": "P001",
+        "product_name": "Aren 비세토스 스쿨 토트",
+        "date": "2026-08-14",
+        "note": "제품 상세와 배송 안내 페이지를 함께 조회"
+      },
+      "notes": "싱가포르 거주 한국인. 영어를 더 편하게 씀. 매출의 90% 이상이 글로벌·면세인 MCM의 주요 고객층",
+      "demo_role": "다국어 응대 검증 — 영어로 물으면 영어로 답하고 톤이 유지되는지. 해외 배송 정책(국가별 사이트 이용) 안내도 함께 본다"
+    },
+
+    {
+      "customer_id": "C009",
+      "name": "태윤",
+      "age": 29,
+      "nationality": "한국",
+      "languages": ["ko"],
+      "current_location": "서울",
+      "return_date": null,
+      "owned_products": [
+        {
+          "product_id": "P002",
+          "name": "Aren 노바 모노그램 ECONYL® 백팩",
+          "purchased": "2026-08",
+          "condition": {
+            "overall": "excellent",
+            "notes": "이번 달 구매. 아직 수령 전"
+          },
+          "care_history": []
+        }
+      ],
+      "recent_activity": {
+        "type": "온라인 구매 완료, 수령 방법 문의",
+        "intentional": true,
+        "store": "MCM 온라인 (한국)",
+        "product_id": "P002",
+        "product_name": "Aren 노바 모노그램 ECONYL® 백팩",
+        "date": "2026-08-14",
+        "note": "결제까지 마쳤고 배송과 매장 픽업 중 어느 쪽으로 받을지 문의"
+      },
+      "notes": "구매 직후 고객. 아직 제품을 받지 않았다",
+      "demo_role": "delivery 액션 검증 — suggested_action 다섯 값 중 유일하게 아직 확인되지 않은 값이다. 구매 후 수령 안내 상황에서 나와야 한다"
+    },
+
+    {
+      "customer_id": "C010",
+      "name": "혜진",
+      "age": 45,
+      "nationality": "한국",
+      "languages": ["ko"],
+      "current_location": "서울",
+      "return_date": null,
+      "owned_products": [
+        {
+          "product_id": "P006",
+          "name": "Pina 비세토스 스터드 장식 토트",
+          "purchased": "2019-11",
+          "condition": {
+            "overall": "needs_care",
+            "notes": "7년 사용. 핸들 갈라짐, 바닥 모서리 마찰 심함"
+          },
+          "care_history": [
+            { "date": "2021-06", "type": "핸들 클리닝", "store": "MCM 롯데백화점 본점" },
+            { "date": "2024-02", "type": "전체 클리닝", "store": "MCM 롯데백화점 본점" }
+          ]
+        },
+        {
+          "product_id": "P001",
+          "name": "Aren 비세토스 스쿨 토트",
+          "purchased": "2023-04",
+          "condition": {
+            "overall": "good",
+            "notes": "3년 사용. 상태 양호"
+          },
+          "care_history": []
+        },
+        {
+          "product_id": "P005",
+          "name": "Tracy 비세토스 레더 믹스 크로스바디",
+          "purchased": "2025-02",
+          "condition": {
+            "overall": "excellent",
+            "notes": "구매 1년 6개월. 사용감 거의 없음"
+          },
+          "care_history": []
+        }
+      ],
+      "recent_activity": {
+        "type": "온라인 조회",
+        "intentional": false,
+        "store": "MCM 온라인 (한국)",
+        "product_id": "P006",
+        "product_name": "Pina 비세토스 스터드 장식 토트",
+        "date": "2026-08-12",
+        "note": "이미 보유한 것과 같은 모델의 제품 페이지를 조회"
+      },
+      "notes": "7년째 이어온 장기 고객. 대형 토트 두 개와 크로스바디 하나를 보유. 케어를 두 번 받은 유일한 고객",
+      "demo_role": "복수 보유 검증 — 실루엣 겹침(대형 토트 2개), 케어 이력 2회 활용, 제품마다 다른 컨디션을 구분해서 말하는지",
+      "personalization_hooks": [
+        "2021년 6월과 2024년 2월, 두 번 케어를 해드린 고객 — 가장 최근 것(2024년 2월 전체 클리닝)을 먼저 떠올릴 것",
+        "대형 토트를 이미 두 개(Pina, Aren) 보유 — 같은 크기·용도의 토트를 새로 권하지 말 것",
+        "제품 세 개의 상태가 각각 다름 — 뭉뚱그리지 말고 필요한 하나만 골라 말할 것"
+      ]
+    }
+  ]
+}

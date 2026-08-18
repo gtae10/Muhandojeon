@@ -1,0 +1,83 @@
+{
+  "_meta": {
+    "description": "MCM 매장 목록. 고객이 있는 지역의 매장만 골라서 프롬프트에 넣는다.",
+    "updated_at": "2026-08-14",
+    "why_separate": "매장이 늘어도 프롬프트가 커지지 않게 하려고 별도 파일로 분리했다. 전체를 넣지 않고 고객 지역에 해당하는 것만 주입한다.",
+    "services": {
+      "repair_intake": "수선·케어 접수. 공식 안내상 전국 백화점 MCM 매장에서 가능",
+      "pickup": "온라인 주문 제품 픽업",
+      "try_on": "실물 확인·착장",
+      "stock_check": "재고 확인 문의",
+      "duty_free": "면세 구매"
+    },
+    "stock_note": "stock 은 **시연용 가정값**이다. 제품·매장 정보와 달리 MCM 공식 자료에서 확인한 값이 아니다. 실서비스에서는 이 자리에 재고 API 가 들어온다. 수량이 아니라 있음/없음으로 둔 이유는 '마지막 한 점' 같은 희소성 압박을 만들지 않기 위해서다.",
+    "rule": "여기 없는 매장을 지어내지 말 것. 고객 지역에 매장이 없으면 어느 지역이 편하신지 여쭐 것.",
+    "name_en_note": "name_en 은 영어로 응대할 때 쓰는 표기다. 공식 영문 간판명이 아니라 한국어 매장명을 옮긴 것이다. 영어 답변에 한국어 매장명이 그대로 섞여 나오는 것을 막으려고 넣었다."
+  },
+
+  "stores": [
+    {
+      "id": "S001",
+      "name": "MCM 하우스 플래그십 스토어",
+      "name_en": "MCM Haus Flagship Store",
+      "region": "서울",
+      "region_en": "Seoul",
+      "address": "서울 강남구 압구정로 412",
+      "address_en": "412 Apgujeong-ro, Gangnam-gu, Seoul",
+      "services": ["pickup", "try_on", "stock_check"],
+      "stock": {"P001": "있음", "P002": "있음", "P003": "있음", "P004": "있음", "P005": "있음", "P006": "없음"},
+      "note": "50주년 전시 〈From Munich to Mars〉 전 층에서 진행 중",
+      "_internal": "백화점 매장이 아니므로 수선 접수 가능 여부는 확인되지 않음. services 에 repair_intake 를 넣지 않은 이유다. note 에 적으면 엉뚱한 턴에서 '수선도 가능합니다' 로 새어 나온다"
+    },
+    {
+      "id": "S002",
+      "name": "MCM 롯데백화점 본점",
+      "name_en": "MCM Lotte Department Store Main Branch",
+      "region": "서울",
+      "region_en": "Seoul",
+      "address": "서울 중구 남대문로 81, 롯데백화점 본점 1F",
+      "address_en": "81 Namdaemun-ro, Jung-gu, Seoul (Lotte Department Store Main Branch, 1F)",
+      "services": ["repair_intake", "pickup", "try_on", "stock_check"],
+      "stock": {"P001": "있음", "P002": "없음", "P003": "있음", "P004": "없음", "P005": "있음", "P006": "있음"},
+      "note": "",
+      "_internal": "백화점 매장이므로 수선 접수 가능. 그 사실은 services 가 전달한다"
+    },
+    {
+      "id": "S003",
+      "name": "MCM 신라면세점 서울점",
+      "name_en": "MCM Shilla Duty Free Seoul",
+      "region": "서울",
+      "region_en": "Seoul",
+      "address": "서울 중구 동호로 249, 호텔신라면세점 1F",
+      "address_en": "249 Dongho-ro, Jung-gu, Seoul (Shilla Duty Free, 1F)",
+      "services": ["duty_free", "try_on"],
+      "note": "면세 구매를 원하거나 출국 예정인 고객용"
+    },
+    {
+      "id": "S004",
+      "name": "MCM 롯데백화점 부산본점",
+      "name_en": "MCM Lotte Department Store Busan Main Branch",
+      "region": "부산",
+      "region_en": "Busan",
+      "address": "부산광역시 부산진구 가야대로 772, 롯데백화점 부산점 본관 1F (47285)",
+      "address_en": "772 Gayadae-ro, Busanjin-gu, Busan (Lotte Department Store Busan, Main Bldg. 1F)",
+      "services": ["repair_intake", "pickup", "try_on", "stock_check"],
+      "stock": {"P001": "없음", "P002": "있음", "P003": "있음", "P004": "없음", "P005": "없음", "P006": "있음"},
+      "note": "",
+      "_internal": "백화점 매장이므로 수선 접수 가능. 부산 센텀시티점은 폐점 확인됨 (2026-08-15 사람이 직접 확인)"
+    },
+    {
+      "id": "S101",
+      "name": "MCM Haus 1",
+      "name_en": "MCM Haus 1",
+      "region": "도쿄",
+      "region_en": "Tokyo",
+      "address": "5-11 Ginza 2-chome, Chuo-ku, Tokyo 104-0061, Japan",
+      "address_en": "5-11 Ginza 2-chome, Chuo-ku, Tokyo 104-0061, Japan",
+      "services": ["pickup", "try_on", "stock_check"],
+      "stock": {"P001": "있음", "P002": "있음", "P003": "없음", "P004": "없음", "P005": "있음", "P006": "있음"},
+      "note": "",
+      "_internal": "긴자. 데모 시나리오의 시작 지점"
+    }
+  ]
+}
