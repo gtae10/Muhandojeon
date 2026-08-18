@@ -12,7 +12,7 @@
 
 ```bash
 git clone <저장소 주소>
-cd mcm-clientelling
+cd ai-clienteling        # 팀 통합 저장소(Muhandojeon)라면 Muhandojeon/ai-clienteling
 ```
 
 ### 2. 라이브러리 설치
@@ -80,16 +80,24 @@ python agent.py --demo    # 시연용 — 내부 표시를 숨긴다
 ## API 서버
 
 ```bash
-uvicorn api:app --reload --port 8000
+uvicorn api:app --reload --port 8102
 ```
 
-문서: <http://localhost:8000/docs>
+문서: <http://localhost:8102/docs> (8102 는 통합 레이어의 포트 배정)
 
 | 엔드포인트 | 용도 |
 |---|---|
 | `POST /chat` | 고객 발화에 응답 (팀 합의 스펙) |
 | `POST /outreach` | 에이전트가 먼저 말 걸기 (**스펙 협의 필요**) |
+| `POST /clienteling/reply` | **통합 레이어 계약 경로.** 한 메종 세계관(18종·16명)으로 응답, `cited_asset_ids`(근거 카드)·`cta` 포함 |
+| `POST /clienteling/outreach` | 통합 세계관에서 먼저 말 걸기 — 계기 없으면 400 |
+| `POST /api/chat` | 통합 레이어 폴백 경로 |
+| `GET /preview` | **개발 확인용 화면** — 시나리오 14종 오프닝 + 자유 대화 + 근거 카드 재현 |
 | `GET /health` | 서버·모델 확인 |
+
+통합 경로의 세계관·인용 규칙·데이터 동기화는 [HANDOFF.md](HANDOFF.md) 12번에
+정리되어 있습니다. 팀 fixtures 를 고치셨다면
+`python scripts/build_integration_data.py` 한 번으로 반영됩니다.
 
 ### 입출력
 
@@ -131,19 +139,25 @@ uvicorn api:app --reload --port 8000
 
 ```
 agent.py            콘솔 대화 (개발·시연용)
-api.py              FastAPI 서버
+api.py              FastAPI 서버 (통합 연동 경로 포함)
 engine.py           응답 생성. 상태를 갖지 않는다
+integration.py      [미사용 폴백] 폐기된 이전 통합 모드 — docstring 에 사유
+preview.html        /preview 개발 확인 화면 (시나리오 캐스트 + 근거 카드 재현)
 prompts/
   system_prompt.py  시스템 프롬프트 + 응대 전략 4종
-  knowledge.py      판단을 코드가 하는 부분 (매장·예산·기간·지역)
+  knowledge.py      판단을 코드가 하는 부분 (매장·예산·기간·지역) + 데이터 오버레이
+scripts/
+  build_integration_data.py  팀 fixtures → 통합 데이터 재생성 (사본 금지)
 data/
-  products.json     제품 6종
+  products.json     제품 6종 (MCM — /chat 데모용, 동결)
   heritage.json     브랜드 헤리티지 9절
   services.json     케어·수선·배송 정책
   customers.json    더미 고객 10명
   stores.json       매장 5곳 (서울 3, 부산 1, 도쿄 1)
   regions.json      국가·도시 매핑
-tests/              회귀 테스트 11종
+  integration_*.json  통합 경로 데이터 4종 — 스크립트 산출물, 직접 수정 금지
+                      (카탈로그 18종 · 고객 16명 · 확장 재고 · 고객별 자산)
+tests/              회귀 테스트 13종
 ```
 
 ---
@@ -151,9 +165,11 @@ tests/              회귀 테스트 11종
 ## 테스트
 
 ```bash
-python tests/test_rehearsal.py   # 발표용 네 대화를 이어서 돌린다
-python tests/test_privacy.py     # 출처 추궁 — 절대 깨지면 안 되는 장면
-python tests/test_variants.py    # 응대 전략 4종 비교 (대조군 포함)
+python tests/test_rehearsal.py         # 발표용 네 대화를 이어서 돌린다
+python tests/test_privacy.py           # 출처 추궁 — 절대 깨지면 안 되는 장면
+python tests/test_variants.py          # 응대 전략 4종 비교 (대조군 포함)
+python tests/test_overlay.py           # 통합 오버레이 격리 — /chat 동결 증명 (LLM 호출 0)
+python tests/test_integration_mode.py  # 통합 경로 — 18종 인지·재고·인용 게이트
 ```
 
 프롬프트를 고쳤다면 **반드시** 전체를 다시 돌리세요.
