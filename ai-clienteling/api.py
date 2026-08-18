@@ -11,10 +11,11 @@
 입출력은 CLAUDE.md 의 "입출력 인터페이스 (팀 합의 스펙)"를 그대로 따른다.
 """
 
+import re
 from typing import List, Literal, Optional
 
 from fastapi import FastAPI, HTTPException
-from fastapi.responses import RedirectResponse
+from fastapi.responses import HTMLResponse, RedirectResponse
 from pydantic import BaseModel, Field
 
 import engine
@@ -213,7 +214,14 @@ def _asset_in_text(asset, text, owned_assets):
        — 고객은 "가지고 있는 쇼퍼백" 처럼 종류로 부른다 (엔진의 종류 매칭과 같은 기준)
     """
     name = str(asset.get("product_name") or "").strip()
-    tokens = [t for t in name.split() if len(t) >= 2 and t not in GENERIC_TYPE_WORDS]
+    # 구별 토큰은 라인 이름(Liz·Aren·Stark…)만 — 우리 카탈로그에서 라틴 문자다.
+    # 한글 토큰(비세토스·스쿨·리버서블…)은 여러 제품이 공유하는 서술어라 쓰면 안 된다.
+    # 실제 사고: 사이즈 문의 답변의 "Aren 비세토스 스쿨 토트" 가
+    # Liz 쇼퍼의 "비세토스" 토큰에 걸려 엉뚱한 인용(=카드)이 붙었다.
+    tokens = [
+        t for t in name.split()
+        if len(t) >= 2 and t not in GENERIC_TYPE_WORDS and re.search(r"[A-Za-z]", t)
+    ]
     if name in text or any(t in text for t in tokens):
         return True
     for word in TYPE_WORDS_FOR_CITATION:
@@ -295,6 +303,36 @@ class IntegrationReplyRequest(BaseModel):
     strategy_id: Optional[str] = None
     history: List[dict] = []
 
+    # /docs 의 Try it out 에 이 예시가 미리 채워진다. 버튼만 눌러 확인할 수 있게.
+    model_config = {
+        "json_schema_extra": {
+            "example": {
+                "customer_id": "CU-0007",
+                "hesitation_type": "NONE",
+                "owned_assets": [
+                    {
+                        "asset_id": "AS-0001",
+                        "product_id": "P003",
+                        "product_name": "Liz 비세토스 리버서블 쇼퍼",
+                        "purchased_at": "2023-05-01T00:00:00+09:00",
+                        "condition_score": 71,
+                        "findings": [
+                            {"part": "handle", "severity": "MEDIUM", "note": "핸들 마모 진행"}
+                        ],
+                        "next_service_months": 2,
+                    }
+                ],
+                "strategy_id": "S2",
+                "history": [
+                    {
+                        "role": "customer",
+                        "content": "가지고 있는 쇼퍼백이 요즘 좀 낡은 것 같아서요. 손질을 받을 수 있나요?",
+                    }
+                ],
+            }
+        }
+    }
+
 
 class IntegrationReplyResponse(BaseModel):
     message: str
@@ -332,3 +370,120 @@ def clienteling_reply(req: IntegrationReplyRequest):
         cta=CTA_FROM_ACTION.get(result["suggested_action"], "NONE"),
         reasoning=f"AI2 engine / suggested_action={result['suggested_action']}",
     )
+
+
+# ---------- 개발 확인용 미리보기 ----------
+# 실제 근거 카드는 팀 Frontend(CitationCard.jsx)가 그린다. 이 페이지는
+# "인용이 있으면 카드가 뜨고, 케어 화제가 아니면 안 뜬다"는 시점 게이트를
+# 눈으로 확인하기 위한 것이다. 점수·소견은 자산 데이터에서 오는 것을 재현했다.
+# 여러 턴 대화를 지원한다 — 대화 기록은 브라우저(JS)가 들고 매 요청에 보낸다.
+# 데모 화면이 아니다 — 팀 연동이 끝나면 지워도 된다.
+
+PREVIEW_HTML = """<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<title>자산 카드 미리보기 (개발용)</title>
+<style>
+  body { font-family: 'Malgun Gothic', sans-serif; max-width: 560px; margin: 40px auto; padding: 0 16px; background: #faf9f7; color: #222; }
+  h1 { font-size: 17px; } .note { font-size: 12px; color: #888; margin-bottom: 20px; }
+  .preset { margin: 4px 4px 4px 0; padding: 6px 12px; font-size: 13px; cursor: pointer; }
+  textarea { width: 100%; height: 60px; font-size: 14px; padding: 8px; box-sizing: border-box; }
+  #send { margin-top: 8px; padding: 8px 20px; font-size: 14px; cursor: pointer; }
+  .bubble { background: #fff; border: 1px solid #ddd; border-radius: 12px; padding: 14px; margin-top: 6px; font-size: 14px; line-height: 1.6; white-space: pre-wrap; }
+  .bubble.user { background: #f0e9dc; border-color: #d9cbb2; }
+  #log { margin-bottom: 16px; }
+  .label { font-size: 12px; color: #888; margin-top: 18px; }
+  .card { border: 1px solid #c9a96a; background: #f7f0e3; border-radius: 12px; padding: 12px 14px; margin-top: 6px; }
+  .card .row { display: flex; justify-content: space-between; font-size: 14px; }
+  .card .score { color: #a8813d; font-size: 12px; }
+  .card .finding { color: #777; font-size: 12px; margin-top: 4px; }
+  .card .warn { color: #b3541e; font-size: 12px; margin-top: 4px; }
+  .nocard { color: #999; font-size: 13px; margin-top: 6px; }
+  .meta { font-size: 12px; color: #aaa; margin-top: 12px; }
+</style>
+</head>
+<body>
+<h1>자산 카드 시점 게이트 — 미리보기</h1>
+<p class="note">실제 카드는 팀 Frontend 가 그립니다. 이 페이지는 우리 응답의
+cited_asset_ids 에 따라 카드가 언제 뜨는지만 재현합니다.<br>
+고객 보유 자산(고정): Liz 비세토스 리버서블 쇼퍼 · 컨디션 71점 · 핸들 마모 진행</p>
+
+<button class="preset" onclick="fill('가지고 있는 쇼퍼백이 요즘 좀 낡은 것 같아서요. 손질을 받을 수 있나요?')">케어 질문 (카드 떠야 함)</button>
+<button class="preset" onclick="fill('Aren 스쿨 토트에 노트북이 들어갈까요?')">사이즈 질문 (카드 안 떠야 함)</button>
+<button class="preset" onclick="resetChat()">대화 새로 시작</button>
+
+<div id="log"></div>
+
+<textarea id="msg" placeholder="고객으로서 자유롭게 물어보세요. Enter 로 전송"></textarea>
+<br><button id="send" onclick="send()">보내기</button>
+
+<script>
+const ASSET = {
+  asset_id: "AS-0001", product_id: "P003",
+  product_name: "Liz 비세토스 리버서블 쇼퍼",
+  purchased_at: "2023-05-01T00:00:00+09:00",
+  condition_score: 71,
+  findings: [{part: "handle", severity: "MEDIUM", note: "핸들 마모 진행"}],
+  next_service_months: 2
+};
+let history = [];  // {role: 'customer'|'agent', content} — 매 요청에 통째로 보낸다
+const log = document.getElementById('log');
+const msgBox = document.getElementById('msg');
+function fill(t) { msgBox.value = t; msgBox.focus(); }
+function resetChat() { history = []; log.innerHTML = ''; msgBox.value = ''; }
+function cardHtml(cited) {
+  let h = '<div class="label">인용 근거 (팀 Frontend 의 CitationCard 재현)</div>';
+  if (cited) {
+    h += '<div class="card"><div class="row"><span>' + ASSET.product_name +
+      '</span><span class="score">컨디션 ' + ASSET.condition_score + '점</span></div>' +
+      '<div class="finding">' + ASSET.findings[0].note + '</div>' +
+      '<div class="warn">' + ASSET.next_service_months + '개월 내 케어 권장</div></div>';
+  } else {
+    h += '<div class="nocard">인용 없음 → 카드가 뜨지 않습니다. 케어 화제가 아니면 가립니다.</div>';
+  }
+  return h;
+}
+async function send() {
+  const text = msgBox.value.trim();
+  if (!text) return;
+  msgBox.value = '';
+  history.push({role: 'customer', content: text});
+  log.innerHTML += '<div class="label">고객</div><div class="bubble user">' + text + '</div>';
+  const wait = document.createElement('p');
+  wait.className = 'nocard'; wait.textContent = '답변 생성 중…';
+  log.appendChild(wait);
+  wait.scrollIntoView();
+  try {
+    const res = await fetch('/clienteling/reply', {
+      method: 'POST', headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({
+        customer_id: 'CU-0007', hesitation_type: 'NONE',
+        owned_assets: [ASSET], strategy_id: 'S2', history: history
+      })
+    });
+    const body = await res.json();
+    wait.remove();
+    history.push({role: 'agent', content: body.message});
+    log.innerHTML += '<div class="label">어드바이저</div><div class="bubble">' + body.message + '</div>' +
+      cardHtml((body.cited_asset_ids || []).includes(ASSET.asset_id)) +
+      '<div class="meta">cited_asset_ids: ' + JSON.stringify(body.cited_asset_ids) +
+      ' · cta: ' + body.cta + '</div>';
+  } catch (e) {
+    wait.textContent = '요청 실패 — 서버가 켜져 있는지 확인해 주세요. (' + e + ')';
+    history.pop();  // 실패한 발화는 기록에서 되돌린다
+  }
+  log.lastElementChild.scrollIntoView();
+}
+msgBox.addEventListener('keydown', e => {
+  if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); send(); }
+});
+</script>
+</body>
+</html>"""
+
+
+@app.get("/preview", include_in_schema=False)
+def preview():
+    """개발 확인용 — 자산 카드 시점 게이트를 브라우저에서 눈으로 확인한다."""
+    return HTMLResponse(PREVIEW_HTML)

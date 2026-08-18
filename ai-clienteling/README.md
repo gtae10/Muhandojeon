@@ -12,7 +12,7 @@
 
 ```bash
 git clone <저장소 주소>
-cd ai-clienteling
+cd mcm-clientelling
 ```
 
 ### 2. 라이브러리 설치
