@@ -1,5 +1,6 @@
+import { useState } from 'react'
 import { useLocation, useNavigate, Link } from 'react-router-dom'
-import { HESITATION_LABELS, CTA_LABELS } from '../constants.js'
+import { HESITATION_LABELS, CTA_LABELS, CTA_CONFIRMATIONS } from '../constants.js'
 import CitationCard from '../components/CitationCard.jsx'
 import StatusBanner from '../components/StatusBanner.jsx'
 
@@ -8,14 +9,15 @@ export default function AdviseResultScreen() {
   const navigate = useNavigate()
   const advise = state?.advise
   const scenario = state?.scenario
+  const [ctaConfirmed, setCtaConfirmed] = useState(false)
 
   if (!advise) {
     return (
       <div className="space-y-4">
-        <p className="text-sm text-[var(--color-muted)]">
+        <p className="text-base text-[var(--color-muted)]">
           표시할 상담 결과가 없어요. 시나리오를 먼저 재생해주세요.
         </p>
-        <Link to="/" className="text-sm text-[var(--color-accent)]">
+        <Link to="/" className="text-base text-[var(--color-accent)]">
           시나리오로 돌아가기
         </Link>
       </div>
@@ -31,35 +33,35 @@ export default function AdviseResultScreen() {
       <div className="border-l-2 border-[var(--color-accent)] pl-10 flex flex-col gap-9">
         {scenario && (
           <div className="flex gap-5">
-            <span className="w-[26px] shrink-0 text-[10px] tracking-[0.1em] text-[var(--color-accent)] pt-0.5">
+            <span className="w-[26px] shrink-0 text-[11px] tracking-[0.1em] text-[var(--color-accent)] pt-0.5">
               {scenario.id}
             </span>
-            <h1 className="font-display text-[22px] leading-snug text-[var(--color-text)]">
+            <h1 className="font-display font-bold text-pretty text-[24px] leading-snug text-[var(--color-text)]">
               {scenario.title}
             </h1>
           </div>
         )}
 
         <div className="flex gap-5">
-          <span className="w-[26px] shrink-0 text-[10px] tracking-[0.1em] text-[var(--color-accent)] pt-0.5">
+          <span className="w-[26px] shrink-0 text-[11px] tracking-[0.1em] text-[var(--color-accent)] pt-0.5">
             I
           </span>
           <div className="flex-1">
             <div className="flex items-baseline justify-between">
-              <span className="text-[10px] tracking-[0.18em] uppercase text-[var(--color-muted)]">
+              <span className="text-[11px] tracking-[0.18em] uppercase text-[var(--color-muted)]">
                 감지된 망설임
               </span>
-              <span className="text-[11px] text-[var(--color-muted)]">
+              <span className="text-xs text-[var(--color-muted)]">
                 신뢰도 {Math.round(advise.confidence * 100)}%
               </span>
             </div>
-            <p className="font-display text-[17px] mt-2.5 text-[var(--color-text)]">
+            <p className="font-display font-bold text-[19px] mt-2.5 text-[var(--color-text)]">
               {HESITATION_LABELS[advise.hesitation_type] ?? advise.hesitation_type}
             </p>
             {advise.signals?.length > 0 && (
               <ul className="mt-3.5 space-y-1.5">
                 {advise.signals.map((sig, i) => (
-                  <li key={i} className="text-xs text-[var(--color-muted)]">
+                  <li key={i} className="text-sm text-[var(--color-muted)]">
                     {sig.evidence}
                   </li>
                 ))}
@@ -69,30 +71,36 @@ export default function AdviseResultScreen() {
         </div>
 
         <div className="flex gap-5">
-          <span className="w-[26px] shrink-0 text-[10px] tracking-[0.1em] text-[var(--color-accent)] pt-0.5">
+          <span className="w-[26px] shrink-0 text-[11px] tracking-[0.1em] text-[var(--color-accent)] pt-0.5">
             II
           </span>
           <div className="flex-1">
-            <p className="text-[15px] leading-[1.85] text-[var(--color-text)]">{advise.message}</p>
-            {ctaLabel && (
-              <button className="mt-5 border border-[var(--color-accent)] text-[var(--color-accent)] text-[11px] tracking-[0.16em] uppercase px-5 py-3 transition-colors duration-150 hover:bg-[var(--color-accent)] hover:text-[var(--color-bg)]">
+            <p className="text-base leading-[1.85] text-[var(--color-text)]">{advise.message}</p>
+            {ctaLabel && !ctaConfirmed && (
+              <button
+                onClick={() => setCtaConfirmed(true)}
+                className="mt-5 border border-[var(--color-accent)] text-[var(--color-accent)] text-xs tracking-[0.16em] uppercase px-5 py-3 transition-colors duration-150 hover:bg-[var(--color-accent)] hover:text-[var(--color-bg)]"
+              >
                 {ctaLabel}
               </button>
+            )}
+            {ctaLabel && ctaConfirmed && (
+              <p className="mt-5 text-sm text-[var(--color-accent)]">{CTA_CONFIRMATIONS[advise.cta]}</p>
             )}
           </div>
         </div>
 
         <div className="flex gap-5">
-          <span className="w-[26px] shrink-0 text-[10px] tracking-[0.1em] text-[var(--color-accent)] pt-0.5">
+          <span className="w-[26px] shrink-0 text-[11px] tracking-[0.1em] text-[var(--color-accent)] pt-0.5">
             III
           </span>
           <div className="flex-1">
             <div className="flex items-baseline justify-between mb-5">
-              <span className="text-[10px] tracking-[0.18em] uppercase text-[var(--color-muted)]">
+              <span className="text-[11px] tracking-[0.18em] uppercase text-[var(--color-muted)]">
                 인용 근거
               </span>
               <span
-                className={`text-[10px] tracking-[0.08em] ${
+                className={`text-[11px] tracking-[0.08em] ${
                   advise.owned_assets_used ? 'text-[var(--color-accent)]' : 'text-[var(--color-muted)]'
                 }`}
               >
@@ -106,7 +114,7 @@ export default function AdviseResultScreen() {
                 ))}
               </div>
             ) : (
-              <p className="text-xs text-[var(--color-muted)]">인용된 개체가 없어요</p>
+              <p className="text-sm text-[var(--color-muted)]">인용된 개체가 없어요</p>
             )}
           </div>
         </div>
@@ -116,13 +124,13 @@ export default function AdviseResultScreen() {
           <div className="flex-1 flex gap-3">
             <button
               onClick={() => navigate('/')}
-              className="flex-1 text-center py-3.5 border border-[var(--color-border)] text-[11px] tracking-[0.14em] uppercase text-[var(--color-text)] transition-colors duration-150 hover:border-[var(--color-accent)]/40"
+              className="flex-1 text-center py-3.5 border border-[var(--color-border)] text-xs tracking-[0.14em] uppercase text-[var(--color-text)] transition-colors duration-150 hover:border-[var(--color-accent)]/40"
             >
               다른 시나리오
             </button>
             <Link
               to="/consult"
-              className="flex-1 text-center py-3.5 border border-[var(--color-border)] text-[11px] tracking-[0.14em] uppercase text-[var(--color-text)] transition-colors duration-150 hover:border-[var(--color-accent)]/40"
+              className="flex-1 text-center py-3.5 border border-[var(--color-border)] text-xs tracking-[0.14em] uppercase text-[var(--color-text)] transition-colors duration-150 hover:border-[var(--color-accent)]/40"
             >
               직접 상담
             </Link>

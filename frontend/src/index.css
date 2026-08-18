@@ -1,5 +1,26 @@
 @import "tailwindcss";
 
+/* MCM 공식 사이트의 헤드라인 서체(MCMFavorit-BoldExtended)와 같은 결의
+   "확장된 굵은 그로테스크" 무료 대체 서체. Archivo(SIL OFL)를 폭 125%(Expanded)
+   인스턴스로 셀프 호스팅한다 — 발표 당일 네트워크가 끊겨도 로드돼야 하므로
+   CDN을 쓰지 않는다. 라이선스: SIL Open Font License, google/fonts 저장소. */
+@font-face {
+  font-family: 'Archivo Expanded Local';
+  font-style: normal;
+  font-weight: 700;
+  font-stretch: 125%;
+  font-display: swap;
+  src: url('./assets/fonts/ArchivoExpanded-Variable.woff2') format('woff2');
+}
+@font-face {
+  font-family: 'Archivo Expanded Local';
+  font-style: normal;
+  font-weight: 800;
+  font-stretch: 125%;
+  font-display: swap;
+  src: url('./assets/fonts/ArchivoExpanded-Variable.woff2') format('woff2');
+}
+
 /* 다크(느와르 골드) 기본, [data-theme="light"]에서 라이트(에디토리얼 아이보리)로 전환 */
 :root {
   --color-bg: #15110c;
@@ -11,7 +32,7 @@
   --color-warn: #c98263;
   --color-danger: #c15644;
 
-  --font-display: 'Iowan Old Style', 'Palatino Linotype', 'Noto Serif KR', Georgia, 'Times New Roman', serif;
+  --font-display: 'Archivo Expanded Local', 'Pretendard', 'Apple SD Gothic Neo', 'Malgun Gothic', system-ui, sans-serif;
   --font-sans: -apple-system, 'Pretendard', 'Apple SD Gothic Neo', 'Malgun Gothic', system-ui, sans-serif;
 }
 
@@ -43,4 +64,12 @@ body {
 select option {
   background-color: var(--color-bg);
   color: var(--color-text);
+}
+
+/* 기본 파란 포커스 링은 이 팔레트와 부딪혀서, 테마 색으로 맞춘 키보드 포커스 표시를 쓴다. */
+a:focus-visible,
+button:focus-visible,
+select:focus-visible {
+  outline: 1.5px solid var(--color-accent);
+  outline-offset: 2px;
 }

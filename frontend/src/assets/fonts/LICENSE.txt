@@ -1,0 +1,7 @@
+Archivo (Expanded, weights 700/800)
+Source: Google Fonts (fonts.google.com/specimen/Archivo), served via fonts.gstatic.com
+License: SIL Open Font License 1.1 — https://openfontlicense.org
+Repo: https://github.com/Omnibus-Type/Archivo
+
+Self-hosted here (ArchivoExpanded-Variable.woff2) so the app renders correctly
+without network access during the demo. See index.css for @font-face usage.
