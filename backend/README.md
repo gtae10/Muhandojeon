@@ -1,6 +1,11 @@
 # Luxury AI Clienteling — Backend
 
-## 🚀 빠른 시작 (Quick Start)
+> **풀스택 2 (백엔드) 담당 서버**
+> 계약 엔드포인트 구현 + 레거시 호환 유지
+
+---
+
+## 🚀 빠른 시작
 
 ### 1. 환경 변수 설정
 ```bash
@@ -11,28 +16,21 @@ cp .env.example .env
 ### 2. 의존성 설치
 ```bash
 pip install -r requirements.txt
+# OpenCV 포함 (opencv-python-headless)
 ```
 
-### 3. ETL 실행 (CSV 데이터 생성)
+### 3. 서버 실행
 ```bash
-python etl/remap_data.py
-```
+# 신형 앱 (계약 엔드포인트 포함) — 권장
+uvicorn app.main:app --reload --port 8001
 
-### 4. DB 시딩 (CSV → SQLite)
-```bash
-python etl/seed_db.py
-```
-
-### 5. 서버 실행
-```bash
+# 구형 앱 (DB 연동 방식)
 uvicorn main:app --reload --port 8000
-# 또는
-python main.py
 ```
 
-### 6. API 문서 확인
-- Swagger UI: http://localhost:8000/docs
-- ReDoc:      http://localhost:8000/redoc
+### 4. API 문서 확인
+- Swagger UI: http://localhost:8001/docs
+- ReDoc:      http://localhost:8001/redoc
 
 ---
 
@@ -40,59 +38,65 @@ python main.py
 
 ```
 backend/
-├── main.py              # FastAPI 앱 진입점
-├── models.py            # SQLAlchemy ORM 모델 (5개 테이블)
-├── database.py          # 비동기 DB 엔진 / 세션
-├── schemas.py           # Pydantic 스키마 (요청/응답)
-├── ai_service.py        # OpenAI API 연동 + 프롬프트 엔지니어링
-├── requirements.txt
-├── .env.example
-├── routers/
-│   ├── assets.py        # GET  /api/users/{user_id}/assets
-│   ├── events.py        # POST /api/events/log
-│   └── chat.py          # POST /api/chat/consult
-└── etl/
-    ├── remap_data.py    # 럭셔리 데이터 리매핑 (CSV 생성)
-    └── seed_db.py       # CSV → SQLite 로딩
+├── app/                          # 신형 앱 (계약 호환, 픽스처 기반)
+│   ├── main.py                   # FastAPI 진입점 (계약 + 레거시 라우터 등록)
+│   ├── data/
+│   │   └── fixture_provider.py   # fixtures/*.json 읽기 + 캐싱 (단일 데이터 경계)
+│   ├── routers/
+│   │   ├── assets.py             # GET /assets/{customer_id}  ← 계약 담당
+│   │   ├── condition.py          # POST /condition/score      ← 계약 담당
+│   │   ├── fingerprint.py        # POST /fingerprint/match    ← 계약 담당
+│   │   │                         # POST /api/fingerprint      ← 레거시 유지
+│   │   ├── chat.py               # POST /api/chat (cited_asset_ids+cta 포함)
+│   │   └── products.py           # GET /api/products/{id}
+│   ├── services/
+│   │   ├── condition_service.py  # OpenCV 기반 컨디션 분석
+│   │   ├── fingerprint_service.py # ORB 기반 지문 매칭
+│   │   ├── clienteling_service.py # AI2 연동 (OpenAI GPT-4o)
+│   │   └── intent_service.py     # AI1 연동 (목업)
+│   └── schemas/
+│       └── models.py             # 계약 + 레거시 Pydantic 스키마
+│
+├── main.py                       # 구형 앱 (SQLAlchemy DB 방식)
+├── models.py                     # SQLAlchemy ORM 모델
+├── database.py                   # 비동기 DB 엔진
+├── schemas.py                    # 구형 스키마
+├── ai_service.py                 # 구형 AI 서비스
+├── routers/                      # 구형 라우터
+│   ├── assets.py
+│   ├── events.py
+│   └── chat.py
+├── etl/
+│   ├── remap_data.py             # 데이터 리매핑 (CSV 생성)
+│   └── seed_db.py                # CSV → SQLite 로딩
+└── requirements.txt
 ```
 
 ---
 
-## 🗄️ DB 스키마 요약
+## 🔌 계약 엔드포인트 (백엔드 담당)
 
-| 테이블 | 역할 |
-|---|---|
-| `users` | 고객 정보 (이름, 등급: Bronze~Platinum, 국가) |
-| `products` | 럭셔리 상품 카탈로그 (브랜드, 가격, 재질, 출시연도) |
-| `assets` | 고객 소유 자산 + **컨디션 점수(1~100)** + 마모 세부 |
-| `session_events` | 행동 로그 (view → add_to_cart → abandon 등) |
-| `chat_histories` | AI 상담 대화 이력 (role: user/assistant/system) |
+### `GET /assets/{customer_id}`
 
----
+고객 소유 개체 목록 + 컨디션 반환.
 
-## 🔌 API 엔드포인트
+**데이터 소스**: `fixtures/assets.json` + `fixtures/products.json` (픽스처 기반)
+**정렬**: 오케스트레이터가 담당 → 백엔드는 정렬 안 함
 
-### `GET /api/users/{user_id}/assets`
-고객 소유 자산 + 컨디션 데이터 반환 (AI 2 RAG 인풋)
-
-**Response 예시:**
 ```json
 {
-  "user_id": "abc-123",
-  "total": 3,
+  "customer_id": "CU-0001",
+  "tier": "VIP",
   "assets": [
     {
-      "product_name": "Neverfull MM",
-      "brand": "Louis Vuitton",
-      "category": "Bag",
-      "condition_score": 72,
-      "condition_grade": "Good",
-      "wear_details": {
-        "scratches": 4,
-        "cracks": 0,
-        "color_fade": false,
-        "hardware_tarnish": true
-      }
+      "asset_id": "AS-0001",
+      "product_name": "Aurelia Top Handle",
+      "category": "BAG",
+      "condition_score": 71,
+      "findings": [
+        { "part": "handle", "severity": "MEDIUM", "note": "핸들 표면 마모 진행" }
+      ],
+      "next_service_months": 1
     }
   ]
 }
@@ -100,73 +104,102 @@ backend/
 
 ---
 
-### `POST /api/events/log`
-프론트엔드 행동 이벤트 수집 (AI 1 망설임 분류용)
+### `POST /fingerprint/match`
 
-**Request 예시:**
+촬영 이미지를 등록 개체와 대조.
+
+**매칭 방법**: OpenCV ORB 특징점 + BFMatcher(NORM_HAMMING)  
+**등록 이미지 경로**: `data/fingerprints/{asset_id}/{angle}_{index}.jpg`  
+**임계값**: 0.75 (docs/CONTRACTS.md)
+
 ```json
-{
-  "user_id": "abc-123",
-  "session_id": "sess-xyz",
-  "product_id": "prod-456",
-  "event_type": "add_to_cart",
-  "duration_sec": 45.2,
-  "device": "mobile"
-}
-```
+// 요청
+{ "image_path": "data/fingerprints/AS-0001/handle_01.jpg", "customer_id": "CU-0001", "top_k": 3 }
 
-`event_type` 허용값: `view` | `add_to_cart` | `remove_from_cart` | `purchase` | `abandon`
+// 응답
+{ "matched_asset_id": "AS-0001", "similarity": 0.91, "is_match": true, "candidates": [...], "threshold": 0.75 }
+```
 
 ---
 
-### `POST /api/chat/consult`
-AI 럭셔리 상담 (OpenAI GPT-4o 호출)
+### `POST /condition/score`
 
-**Request 예시:**
+개체 컨디션 점수 + 부위별 소견.
+
+**이미지 있음**: OpenCV ORB/Canny 기반 마모도 분석  
+**이미지 없음**: `fixtures/assets.json` 마지막 스캔 결과 반환  
+**케어 임계값**: 70점 (docs/CONTRACTS.md)
+
 ```json
-{
-  "user_id": "abc-123",
-  "session_id": "sess-xyz",
-  "message": "네베풀 MM을 새로 사고 싶은데, 제 기존 가방이랑 너무 겹치지 않을까요?",
-  "product_id": "prod-789",
-  "include_cart": true
-}
+// 요청
+{ "asset_id": "AS-0001", "image_paths": [] }
+
+// 응답
+{ "asset_id": "AS-0001", "score": 71, "findings": [...], "next_service_months": 1, "confidence": 0.8 }
 ```
 
-**Response 예시:**
+---
+
+### `POST /api/chat` (계약 호환 확장)
+
+**변경**: 응답에 `cited_asset_ids` + `cta` 필드 추가 (docs/BACKEND_INTEGRATION.md 필수)
+
 ```json
 {
-  "session_id": "sess-xyz",
-  "reply": "고객님의 기존 네베풀 MM이 현재 Good 등급(72점)으로 하드웨어 변색이 시작되고 있습니다...",
+  "session_id": "s1",
+  "reply": "고객님의 AS-0001 Aurelia Top Handle 핸들 마모...",
   "model_used": "gpt-4o",
-  "latency_ms": 1240,
-  "assets_used": 3
+  "cited_asset_ids": ["AS-0001"],
+  "cta": "CARE_BOOKING"
 }
 ```
 
 ---
 
-## 🤖 AI 프롬프트 아키텍처
+## 🔗 통합 레이어 연결
 
+```bash
+# 자산 조회만 실제 백엔드로
+ASSET_ADAPTER=http ASSET_BASE_URL=http://localhost:8001 make dev
+
+# 컨디션 분석까지
+CONDITION_ADAPTER=http CONDITION_BASE_URL=http://localhost:8001 make dev
+
+# 상담까지 (AI2)
+CLIENTELING_ADAPTER=http CLIENTELING_BASE_URL=http://localhost:8001 make dev
 ```
-[System Prompt]
-  └─ 고객 소유 자산 목록 + 컨디션 요약 (동적 주입)
-  └─ 현재 관심 상품 컨텍스트
-  └─ 럭셔리 어드바이저 페르소나 + 상담 원칙 5가지
 
-[Messages]
-  └─ 이전 대화 이력 (최대 10턴 = 20 메시지)
-  └─ 현재 사용자 메시지
-
-→ gpt-4o 호출 → DB 저장 → Response
+상태 확인:
+```bash
+curl -s localhost:8000/health/detail | jq '.adapters'
+# mode: "http", last_status: "ok" 또는 "ok(legacy-mapped)"
 ```
 
 ---
 
-## 🔧 PostgreSQL 전환 (운영 환경)
+## 📦 레거시 필드 매핑
 
-`.env` 파일에서 `DATABASE_URL`만 변경하면 됩니다:
-```env
-DATABASE_URL=postgresql+asyncpg://user:password@host:5432/luxury_clienteling
+| 계약 필드 | 백엔드 레거시 필드 | 변환 |
+|---|---|---|
+| `customer_id` | `user_id` | 동일 처리 |
+| `purchased_at` | `purchase_date` | ISO 형식 그대로 |
+| `last_scanned_at` | `last_assessed` | ISO 형식 그대로 |
+| `tier` | (없음) | 개체 수로 추정 (8+→VIP / 3~7→ESTABLISHED / 그 외→NEW) |
+| `next_service_months` | (없음) | 70점 도달까지 연 8점 감소 가정 계산 |
+| `message` | `reply` | 동일 처리 |
+
+---
+
+## 🤖 OpenCV 컨디션 분석
+
+비전 API(LLM)는 사용하지 않는다 (docs/INTEGRATION.md 확정 제약).
+고전 CV 파이프라인:
+
 ```
-`requirements.txt`의 `aiosqlite` → `asyncpg` 로 교체.
+이미지 → ORB 특징점 추출 → 텍스처 복잡도(마모 지표)
+       → Canny 엣지 감지 → 스크래치/균열 밀도
+       → 밝기 표준편차 → 색 바램 지표
+       → 가중 합산 → score(0~100)
+```
+
+`pip install opencv-python-headless` 로 설치. 미설치 시 픽스처 데이터로 폴백.

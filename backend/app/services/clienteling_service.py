@@ -43,11 +43,18 @@ def _build_system_prompt(asset_context: Optional[dict], product_name: Optional[s
         if wd.strap_wear:       wear_items.append("스트랩 마모")
         wear_str = " / ".join(wear_items) if wear_items else "특이사항 없음"
 
+        asset_id = asset_context.get("asset_id", "")
+        asset_id_note = (
+            f"\n- 개체 ID: {asset_id} (상담 응답에서 반드시 이 ID를 명시하세요)"
+            if asset_id else ""
+        )
+
         asset_str = (
             f"[고객 소유 자산]\n"
             f"- 상품: {asset_context.get('product_name', '알 수 없음')}\n"
             f"- 컨디션: {asset_context.get('condition_grade')} ({asset_context.get('condition_score')}점)\n"
             f"- 세부 상태: {wear_str}"
+            f"{asset_id_note}"
         )
 
     cart_str = f"현재 관심 상품: {product_name}" if product_name else "관심 상품 없음."
@@ -64,7 +71,8 @@ def _build_system_prompt(asset_context: Optional[dict], product_name: Optional[s
 2. 업그레이드·보완·유지 중 최선의 선택을 구체적 근거와 함께 제시하세요.
 3. 럭셔리 브랜드에 걸맞은 고품격 어조를 유지하세요. (과도한 세일즈 압박 금지)
 4. 반드시 한국어로, 3~5문장 이내 명료하게 답변하세요.
-5. 투자 가치(리세일 가치, 내구성, 희소성)를 자연스럽게 언급하세요."""
+5. 투자 가치(리세일 가치, 내구성, 희소성)를 자연스럽게 언급하세요.
+6. 고객 소유 자산을 근거로 언급할 때 개체 ID(AS-XXXX)를 답변에 포함시키세요."""
 
 
 # ──────────────────────────────────────────────
