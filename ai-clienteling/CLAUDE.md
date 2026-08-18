@@ -141,7 +141,19 @@ Frontend는 "매장 어드바이저 연결 요청됨" 카드를 띄운다.
        - `POST /chat`     팀 합의 스펙 그대로. suggested_action 5종 전부 반환 확인
        - `POST /outreach` 에이전트가 먼저 말 걸기 (스펙에 없던 것 — 협의 필요)
        - `GET  /health`   서버·모델 확인
-       - 실행: `uvicorn api:app --reload --port 8000` / 문서: `/docs`
+       - `POST /clienteling/reply` · `POST /api/chat` (2026-08-18) 통합 레이어 연동용.
+         저쪽 HttpClientelingAdapter 가 이 두 경로를 순서대로 친다. 계약 변환은
+         api.py 안에서 끝나고 엔진·프롬프트는 건드리지 않았다.
+         condition_score 는 입구에서 버린다(진단서 화법 방지, _clean_owned 와 이중).
+         `cited_asset_ids` 는 모델이 아니라 코드가 문자열 대조로 채운다 — 저쪽
+         AS-\d{6} 정규식은 필드가 차 있으면 실행되지 않으므로 자릿수 문제가 우리
+         경로에서는 사라진다. 인용에는 **시점 게이트**를 걸었다: 고객이 먼저 꺼낸
+         제품이거나 케어 대화(care_booking)일 때만 인용한다. 인용은 Frontend 근거
+         카드(컨디션 점수 표시)를 띄우므로, "케어 화제 전에는 컨디션을 가린다"를
+         화면에도 적용한 것이다. 사이즈 문의에 실루엣으로 언급한 보유 제품까지
+         인용하면 묻지 않은 마모·케어 권장이 카드로 들어간다.
+       - 실행: `uvicorn api:app --reload --port 8102` / 문서: `/docs`
+         (8102 는 통합 레이어 app/config.py 의 clienteling_base_url 포트 배정)
        - engine.py 를 상태 없이 분리함. API 서버는 여러 요청을 동시에 받으므로
          전역 변수에 대화를 쌓으면 고객끼리 섞인다. 대화 기록은 부르는 쪽이 관리한다.
 6. [x] 응대 전략 변형 버전 (Persona Bot Lab 실험용)
@@ -1041,7 +1053,7 @@ edbb2e0  망설임 라벨 계약 5종 정렬 + 위치를 단정하지 않게
 ```
 python agent.py           개발용 — 액션값·개발 메모까지 보인다
 python agent.py --demo    시연용 — 고객이 보는 것만 남긴다
-uvicorn api:app --reload --port 8000    API (문서: /docs)
+uvicorn api:app --reload --port 8102    API (문서: /docs, 8102 = 통합 레이어 포트 배정)
 
 python tests/test_rehearsal.py   발표용 네 대화를 이어서
 python tests/test_privacy.py     출처 추궁 — 절대 깨지면 안 되는 것
