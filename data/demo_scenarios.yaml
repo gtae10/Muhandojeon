@@ -21,6 +21,9 @@ scenarios:
       - 세션 이벤트에서 size_guide 3회가 잡힌다(AI1 라벨 SIZE_UNCERTAIN, 신뢰도 0.95)
       - 상담 문구가 보유 개체(AS-0010)의 구매 연도와 컨디션 81점을 인용한다
       - 같은 last_code 라 치수를 그대로 적용할 수 있다는 것이 근거
+    history:
+      - role: customer
+        content: 이 신발 사이즈가 좀 애매해서요. 38.5랑 39 중에 뭐가 맞을지 모르겠어요.
     expect:
       hesitation_type: SIZE_UNCERTAIN
       owned_assets_used: true
@@ -40,6 +43,9 @@ scenarios:
       - 가격 필터 하향 + 저가 대안 2회 조회가 신호로 잡힌다(AI1 라벨 PRICE_HESITANT)
       - 상담 문구가 보유 개체의 사용 연수와 현재 컨디션을 인용한다
       - 할인 없이 근거로 설득한다는 점이 차별점
+    history:
+      - role: customer
+        content: 가격이 좀 부담스러워서 고민 중이에요. 할인 같은 거 없나요?
     expect:
       hesitation_type: PRICE_HESITANT
       owned_assets_used: true
@@ -59,6 +65,9 @@ scenarios:
       - 재고 조회 2회 + 배송 조회가 신호로 잡힌다(AI1 라벨 STOCK_CONCERN)
       - 컨디션 71점 / 케어 1개월 이내 개체(AS-0001)를 인용한다
       - CTA 는 케어 예약 — 소유 자산 없이는 나올 수 없는 제안
+    history:
+      - role: customer
+        content: 이 제품 재고 있나요? 지금 바로 받아볼 수 있을지 궁금해요.
     expect:
       hesitation_type: STOCK_CONCERN
       owned_assets_used: true

@@ -35,6 +35,7 @@ class Scenario:
     session_id: str
     strategy_id: str
     talking_points: tuple[str, ...]
+    history: tuple[dict[str, str], ...] = field(default_factory=tuple)
     expect: dict[str, Any] = field(default_factory=dict)
 
     def as_dict(self) -> dict[str, Any]:
@@ -47,6 +48,7 @@ class Scenario:
             "session_id": self.session_id,
             "strategy_id": self.strategy_id,
             "talking_points": list(self.talking_points),
+            "history": [dict(h) for h in self.history],
             "expect": self.expect,
         }
 
@@ -61,6 +63,7 @@ def _parse(raw: dict[str, Any]) -> Scenario:
         session_id=str(raw["session_id"]),
         strategy_id=str(raw.get("strategy_id", "S2")),
         talking_points=tuple(str(t) for t in raw.get("talking_points", [])),
+        history=tuple(dict(h) for h in raw.get("history", [])),
         expect=dict(raw.get("expect", {})),
     )
 
@@ -90,7 +93,7 @@ def build_request(scenario: Scenario, store: DataStore | None = None) -> AdviseR
         target_product_id=scenario.target_product_id,
         session_events=events,
         strategy_id=scenario.strategy_id,
-        history=[],
+        history=list(scenario.history),
         scenario_id=scenario.id,
     )
 
