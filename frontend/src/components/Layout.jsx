@@ -120,7 +120,7 @@ export default function Layout() {
         </div>
       </header>
 
-      <main className="flex-1 px-6 py-8 max-w-[620px] mx-auto w-full">
+      <main className="flex-1 px-6 py-12 max-w-[720px] mx-auto w-full">
         <Outlet />
       </main>
 

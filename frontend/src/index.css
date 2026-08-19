@@ -21,28 +21,60 @@
   src: url('./assets/fonts/ArchivoExpanded-Variable.woff2') format('woff2');
 }
 
+/* 헤리티지 세리프 — 로마숫자·라틴 제품명(예: "Aurelia Derby") 같은 라틴 전용
+   포인트에만 쓴다. 한글 헤드라인까지 세리프로 바꾸려면 한글 세리프를 통째로
+   자체 호스팅해야 하는데(수 MB) 발표 네트워크 리스크 대비 원칙과 안 맞아
+   범위를 라틴 액센트로 좁혔다. 라이선스: SIL Open Font License. */
+@font-face {
+  font-family: 'Fraunces Local';
+  font-style: normal;
+  font-weight: 600;
+  font-display: swap;
+  src: url('./assets/fonts/Fraunces-600.woff2') format('woff2');
+}
+@font-face {
+  font-family: 'Fraunces Local';
+  font-style: italic;
+  font-weight: 600;
+  font-display: swap;
+  src: url('./assets/fonts/Fraunces-600-Italic.woff2') format('woff2');
+}
+@font-face {
+  font-family: 'Fraunces Local';
+  font-style: italic;
+  font-weight: 300;
+  font-display: swap;
+  src: url('./assets/fonts/Fraunces-300-Italic.woff2') format('woff2');
+}
+
 /* 다크(느와르 골드) 기본, [data-theme="light"]에서 라이트(에디토리얼 아이보리)로 전환 */
 :root {
   --color-bg: #15110c;
   --color-surface: rgba(239, 231, 216, 0.045);
+  /* 드롭다운처럼 다른 콘텐츠 위에 얹히는 표면이라 반투명이면 아래가 비쳐 보인다 — 불투명 고체색. */
+  --color-surface-raised: #28231d;
   --color-border: rgba(239, 231, 216, 0.16);
   --color-text: #efe7d8;
   --color-muted: #8c8272;
   --color-accent: #cba15b;
+  --color-accent-soft: rgba(203, 161, 91, 0.14);
   --color-warn: #c98263;
   --color-danger: #c15644;
 
   --font-display: 'Archivo Expanded Local', 'Pretendard', 'Apple SD Gothic Neo', 'Malgun Gothic', system-ui, sans-serif;
   --font-sans: -apple-system, 'Pretendard', 'Apple SD Gothic Neo', 'Malgun Gothic', system-ui, sans-serif;
+  --font-serif: 'Fraunces Local', Georgia, 'Times New Roman', serif;
 }
 
 :root[data-theme='light'] {
   --color-bg: #f8f4ec;
   --color-surface: #f1ebdd;
+  --color-surface-raised: #ece3d0;
   --color-border: #ddd3bf;
   --color-text: #2b2319;
   --color-muted: #8a7d68;
   --color-accent: #8a4a2d;
+  --color-accent-soft: rgba(138, 74, 45, 0.1);
   --color-warn: #a24a3a;
   --color-danger: #a23f2f;
 }
@@ -56,6 +88,22 @@ body {
 
 .font-display {
   font-family: var(--font-display);
+}
+
+.font-serif {
+  font-family: var(--font-serif);
+}
+
+/* 커스텀 Select 드롭다운 목록이 열릴 때 쓰는 짧은 fade + slide-down. */
+@keyframes select-in {
+  from {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 /* 네이티브 드롭다운 팝업은 부모 배경을 상속하지 않고 브라우저 기본값(흰 배경)으로

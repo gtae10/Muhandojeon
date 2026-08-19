@@ -11,6 +11,7 @@ import { HESITATION_LABELS, CTA_LABELS, CTA_CONFIRMATIONS } from '../constants.j
 import { FieldSkeleton } from '../components/Skeleton.jsx'
 import ErrorBanner from '../components/ErrorBanner.jsx'
 import CitationCard from '../components/CitationCard.jsx'
+import Select from '../components/Select.jsx'
 
 const SEVERITY_RANK = { HIGH: 2, MEDIUM: 1, LOW: 0 }
 
@@ -35,6 +36,29 @@ function buildCitations(citedAssetIds, ownedAssets) {
       next_service_months: a.next_service_months,
       headline_finding: headlineFinding(a),
     }))
+}
+
+/** 빈 대화 상태를 그냥 비워두지 않고 카드 안의 라인아트 아이콘으로 채운다. */
+function EmptyChatIcon() {
+  return (
+    <svg
+      width="40"
+      height="40"
+      viewBox="0 0 40 40"
+      fill="none"
+      stroke="var(--color-accent)"
+      strokeWidth="1.1"
+      className="opacity-80"
+    >
+      <path
+        d="M8 11h24a2 2 0 0 1 2 2v13a2 2 0 0 1-2 2H17l-7 6v-6H8a2 2 0 0 1-2-2V13a2 2 0 0 1 2-2Z"
+        strokeLinejoin="round"
+      />
+      <circle cx="14.5" cy="19.5" r="1.1" fill="var(--color-accent)" stroke="none" />
+      <circle cx="20" cy="19.5" r="1.1" fill="var(--color-accent)" stroke="none" />
+      <circle cx="25.5" cy="19.5" r="1.1" fill="var(--color-accent)" stroke="none" />
+    </svg>
+  )
 }
 
 export default function FreeChatScreen() {
@@ -170,8 +194,11 @@ export default function FreeChatScreen() {
 
   const header = (
     <div>
-      <h1 className="font-display font-bold text-2xl text-[var(--color-text)]">자유 상담</h1>
-      <p className="text-sm text-[var(--color-muted)] mt-2 text-pretty">
+      <span className="block w-10 h-px bg-[var(--color-accent)] mb-5" />
+      <h1 className="font-display font-bold text-[48px] sm:text-[52px] leading-[0.98] text-[var(--color-text)]">
+        자유 상담
+      </h1>
+      <p className="text-lg text-[var(--color-muted)] mt-4 leading-[1.7] text-pretty max-w-[50ch]">
         고객·상품을 고르면 망설임 유형을 자동으로 감지한 뒤, 자유롭게 대화할 수 있어요
       </p>
     </div>
@@ -181,7 +208,7 @@ export default function FreeChatScreen() {
   if (stage === 'setup' || stage === 'classifying') {
     if (loadStatus === 'loading') {
       return (
-        <div className="space-y-8">
+        <div className="space-y-10">
           {header}
           <FieldSkeleton count={2} />
         </div>
@@ -189,60 +216,55 @@ export default function FreeChatScreen() {
     }
     if (loadStatus === 'error') {
       return (
-        <div className="space-y-8">
+        <div className="space-y-10">
           {header}
           <ErrorBanner message={loadError} onRetry={loadOptions} />
         </div>
       )
     }
 
+    const customerOptions = customers.map((c) => ({
+      value: c.customer_id,
+      label: `${c.display_name} · ${c.tier} · 보유 ${c.asset_count}개`,
+    }))
+    const productOptions = products.map((p) => ({
+      value: p.product_id,
+      label: `${p.name} · ${p.collection}`,
+    }))
+
     return (
-      <div className="space-y-8">
+      <div className="space-y-10">
         {header}
 
-        <div className="space-y-6">
+        <div className="border border-[var(--color-border)] bg-[var(--color-surface)] p-8 sm:p-10 space-y-8">
           <div>
-            <label className="text-[11px] tracking-[0.18em] uppercase text-[var(--color-muted)] block mb-2.5">
+            <label className="text-[11px] tracking-[0.18em] uppercase text-[var(--color-muted)] block mb-3">
               고객
             </label>
-            <select
+            <Select
               value={customerId}
-              onChange={(e) => setCustomerId(e.target.value)}
+              onChange={setCustomerId}
+              options={customerOptions}
               disabled={stage === 'classifying'}
-              className="w-full bg-[var(--color-surface)] border border-[var(--color-border)] px-3 py-2.5 text-base text-[var(--color-text)] disabled:opacity-50"
-            >
-              <option value="">선택하세요</option>
-              {customers.map((c) => (
-                <option key={c.customer_id} value={c.customer_id}>
-                  {c.display_name} · {c.tier} · 보유 {c.asset_count}개
-                </option>
-              ))}
-            </select>
+            />
           </div>
 
           <div>
-            <label className="text-[11px] tracking-[0.18em] uppercase text-[var(--color-muted)] block mb-2.5">
+            <label className="text-[11px] tracking-[0.18em] uppercase text-[var(--color-muted)] block mb-3">
               상담 대상 상품
             </label>
-            <select
+            <Select
               value={productId}
-              onChange={(e) => setProductId(e.target.value)}
+              onChange={setProductId}
+              options={productOptions}
               disabled={stage === 'classifying'}
-              className="w-full bg-[var(--color-surface)] border border-[var(--color-border)] px-3 py-2.5 text-base text-[var(--color-text)] disabled:opacity-50"
-            >
-              <option value="">선택하세요</option>
-              {products.map((p) => (
-                <option key={p.product_id} value={p.product_id}>
-                  {p.name} · {p.collection}
-                </option>
-              ))}
-            </select>
+            />
           </div>
 
           {classifyError && <ErrorBanner message={classifyError} onRetry={startSession} />}
 
           {stage === 'classifying' ? (
-            <div className="border border-[var(--color-border)] px-3.5 py-3 flex items-center gap-2.5 animate-pulse">
+            <div className="border border-[var(--color-border)] px-4 py-3.5 flex items-center gap-2.5 animate-pulse">
               <span className="w-1.5 h-1.5 rounded-full bg-[var(--color-accent)] shrink-0" />
               <span className="text-sm text-[var(--color-muted)]">망설임 유형 감지 중…</span>
             </div>
@@ -250,7 +272,7 @@ export default function FreeChatScreen() {
             <button
               onClick={startSession}
               disabled={!customerId || !productId}
-              className="w-full py-3 border border-[var(--color-accent)] text-[var(--color-accent)] text-xs tracking-[0.14em] uppercase transition-colors duration-150 hover:bg-[var(--color-accent)] hover:text-[var(--color-bg)] disabled:opacity-50 disabled:hover:bg-transparent disabled:hover:text-[var(--color-accent)]"
+              className="w-full py-4 bg-[var(--color-accent)] text-[var(--color-bg)] text-xs tracking-[0.14em] uppercase transition-opacity duration-150 hover:opacity-90 disabled:opacity-40"
             >
               상담 시작
             </button>
@@ -266,22 +288,11 @@ export default function FreeChatScreen() {
   }
 
   // ---- 채팅 단계 ----
+  const customerName = customers.find((c) => c.customer_id === customerId)?.display_name ?? ''
+
   return (
     <div className="flex flex-col h-[calc(100vh-160px)]">
-      <div className="pb-5 border-b border-[var(--color-border)] flex items-start justify-between gap-4">
-        <div className="min-w-0">
-          <p className="text-sm text-[var(--color-muted)] truncate">
-            {customers.find((c) => c.customer_id === customerId)?.display_name} · {targetProduct.name}
-          </p>
-          <div className="flex items-baseline gap-2 mt-1.5">
-            <span className="font-display font-semibold text-base text-[var(--color-text)]">
-              {HESITATION_LABELS[hesitation.hesitation_type] ?? hesitation.hesitation_type}
-            </span>
-            <span className="text-xs text-[var(--color-muted)]">
-              신뢰도 {Math.round(hesitation.confidence * 100)}%
-            </span>
-          </div>
-        </div>
+      <div className="flex justify-end mb-3">
         <button
           onClick={resetSession}
           className="shrink-0 text-xs text-[var(--color-muted)] hover:text-[var(--color-accent)] whitespace-nowrap"
@@ -290,55 +301,89 @@ export default function FreeChatScreen() {
         </button>
       </div>
 
-      <div ref={scrollRef} className="flex-1 overflow-y-auto py-6 space-y-6">
-        {messages.length === 0 && (
-          <p className="text-sm text-[var(--color-muted)] text-center py-8">
-            메시지를 보내 상담을 시작해보세요
-          </p>
-        )}
-        {messages.map((m, i) => {
-          const isCustomer = m.role === 'customer'
-          const citations = isCustomer ? [] : buildCitations(m.citedAssetIds, ownedAssets)
-          const ctaLabel = !isCustomer ? CTA_LABELS[m.cta] : null
-          return (
-            <div key={i} className={`flex ${isCustomer ? 'justify-end' : 'justify-start'}`}>
-              <div className={`max-w-[85%] ${isCustomer ? 'items-end' : 'items-start'} flex flex-col gap-3`}>
-                <div
-                  className={
-                    isCustomer
-                      ? 'bg-[var(--color-accent)] text-[var(--color-bg)] px-4 py-2.5 text-sm leading-relaxed'
-                      : 'border border-[var(--color-border)] px-4 py-2.5 text-sm leading-relaxed text-[var(--color-text)]'
-                  }
-                >
-                  {m.content}
-                </div>
-                {citations.length > 0 && (
-                  <div className="w-full space-y-4 pl-1">
-                    {citations.map((c) => (
-                      <CitationCard key={c.asset_id} citation={c} />
-                    ))}
-                  </div>
-                )}
-                {ctaLabel && !ctaConfirmed.has(i) && (
-                  <button
-                    onClick={() => confirmCta(i)}
-                    className="border border-[var(--color-accent)] text-[var(--color-accent)] text-xs tracking-[0.14em] uppercase px-4 py-2.5 transition-colors duration-150 hover:bg-[var(--color-accent)] hover:text-[var(--color-bg)]"
+      <div className="border border-[var(--color-border)] bg-[var(--color-surface)] px-6 py-5 flex items-center justify-between gap-4">
+        <div className="flex items-center gap-4 min-w-0">
+          <div className="w-11 h-11 shrink-0 rounded-full border border-[var(--color-accent)]/40 bg-[var(--color-surface-raised)] flex items-center justify-center font-serif text-lg text-[var(--color-accent)]">
+            {customerName.charAt(0) || '?'}
+          </div>
+          <div className="min-w-0">
+            <p className="text-sm text-[var(--color-text)] font-medium truncate">{customerName}</p>
+            <p className="font-serif italic text-base text-[var(--color-muted)] truncate">
+              {targetProduct.name}
+            </p>
+          </div>
+        </div>
+        <div className="shrink-0 flex flex-col items-end gap-1.5">
+          <span className="inline-flex items-center border border-[var(--color-accent)]/40 text-[var(--color-accent)] text-[11px] tracking-[0.1em] uppercase px-2.5 py-1 whitespace-nowrap">
+            {HESITATION_LABELS[hesitation.hesitation_type] ?? hesitation.hesitation_type}
+          </span>
+          <span className="text-[11px] text-[var(--color-muted)] whitespace-nowrap">
+            신뢰도 {Math.round(hesitation.confidence * 100)}%
+          </span>
+        </div>
+      </div>
+
+      <div ref={scrollRef} className="flex-1 overflow-y-auto py-8">
+        {messages.length === 0 ? (
+          <div className="h-full flex items-center justify-center">
+            <div className="flex flex-col items-center gap-4 text-center px-10 py-12 border border-[var(--color-border)] max-w-md mx-auto">
+              <EmptyChatIcon />
+              <p className="text-sm text-[var(--color-muted)] leading-[1.7]">
+                메시지를 남겨주시면
+                <br />
+                상담을 시작합니다
+              </p>
+            </div>
+          </div>
+        ) : (
+          <div className="space-y-7">
+            {messages.map((m, i) => {
+              const isCustomer = m.role === 'customer'
+              const citations = isCustomer ? [] : buildCitations(m.citedAssetIds, ownedAssets)
+              const ctaLabel = !isCustomer ? CTA_LABELS[m.cta] : null
+              return (
+                <div key={i} className={`flex ${isCustomer ? 'justify-end' : 'justify-start'}`}>
+                  <div
+                    className={`max-w-[92%] sm:max-w-[80%] ${isCustomer ? 'items-end' : 'items-start'} flex flex-col gap-3`}
                   >
-                    {ctaLabel}
-                  </button>
-                )}
-                {ctaLabel && ctaConfirmed.has(i) && (
-                  <p className="text-sm text-[var(--color-accent)]">{CTA_CONFIRMATIONS[m.cta]}</p>
-                )}
+                    <div
+                      className={
+                        isCustomer
+                          ? 'bg-[var(--color-surface)] border border-[var(--color-accent)]/40 px-5 py-4 text-base leading-[1.7] text-[var(--color-text)]'
+                          : 'border border-[var(--color-border)] border-l-[var(--color-accent)]/70 px-5 py-4 text-base leading-[1.7] text-[var(--color-text)]'
+                      }
+                    >
+                      {m.content}
+                    </div>
+                    {citations.length > 0 && (
+                      <div className="w-full space-y-4 pl-1">
+                        {citations.map((c) => (
+                          <CitationCard key={c.asset_id} citation={c} />
+                        ))}
+                      </div>
+                    )}
+                    {ctaLabel && !ctaConfirmed.has(i) && (
+                      <button
+                        onClick={() => confirmCta(i)}
+                        className="bg-[var(--color-accent)] text-[var(--color-bg)] text-xs tracking-[0.14em] uppercase px-4 py-2.5 transition-opacity duration-150 hover:opacity-90"
+                      >
+                        {ctaLabel}
+                      </button>
+                    )}
+                    {ctaLabel && ctaConfirmed.has(i) && (
+                      <p className="text-sm text-[var(--color-accent)]">{CTA_CONFIRMATIONS[m.cta]}</p>
+                    )}
+                  </div>
+                </div>
+              )
+            })}
+            {sending && (
+              <div className="flex justify-start">
+                <div className="border border-[var(--color-border)] px-5 py-4 text-base text-[var(--color-muted)] animate-pulse">
+                  상담 작성 중…
+                </div>
               </div>
-            </div>
-          )
-        })}
-        {sending && (
-          <div className="flex justify-start">
-            <div className="border border-[var(--color-border)] px-4 py-2.5 text-sm text-[var(--color-muted)] animate-pulse">
-              상담 작성 중…
-            </div>
+            )}
           </div>
         )}
       </div>
@@ -361,7 +406,7 @@ export default function FreeChatScreen() {
           }}
           disabled={sending}
           placeholder="메시지를 입력하세요"
-          className="flex-1 bg-[var(--color-surface)] border border-[var(--color-border)] px-3 py-2.5 text-base text-[var(--color-text)] disabled:opacity-50"
+          className="flex-1 min-w-0 bg-[var(--color-surface)] border border-[var(--color-border)] px-3 py-2.5 text-base text-[var(--color-text)] disabled:opacity-50"
         />
         <button
           onClick={handleSend}

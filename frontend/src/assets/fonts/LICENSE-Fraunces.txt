@@ -1,0 +1,4 @@
+Fraunces (weights 600, italic 600)
+Source: Google Fonts (fonts.google.com/specimen/Fraunces), served via fonts.gstatic.com
+License: SIL Open Font License 1.1 — https://openfontlicense.org
+Repo: https://github.com/undercasetype/Fraunces

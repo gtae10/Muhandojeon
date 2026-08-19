@@ -65,9 +65,7 @@ export default function CitationCard({ citation }) {
   return (
     <div className="flex items-start justify-between gap-5">
       <div className="min-w-0">
-        <p className="font-display font-semibold text-lg text-[var(--color-text)]">
-          {citation.product_name}
-        </p>
+        <p className="font-serif text-xl text-[var(--color-text)]">{citation.product_name}</p>
         {citation.headline_finding && (
           <p className="text-sm text-[var(--color-muted)] mt-1.5">{citation.headline_finding}</p>
         )}

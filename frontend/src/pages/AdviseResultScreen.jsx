@@ -4,6 +4,17 @@ import { HESITATION_LABELS, CTA_LABELS, CTA_CONFIRMATIONS } from '../constants.j
 import CitationCard from '../components/CitationCard.jsx'
 import StatusBanner from '../components/StatusBanner.jsx'
 
+function SectionNumeral({ children }) {
+  return (
+    <span
+      aria-hidden="true"
+      className="pointer-events-none select-none absolute left-0 top-1/2 -translate-y-1/2 font-serif italic font-light text-[100px] sm:text-[170px] leading-none text-[var(--color-accent)] opacity-[0.3]"
+    >
+      {children}
+    </span>
+  )
+}
+
 export default function AdviseResultScreen() {
   const { state } = useLocation()
   const navigate = useNavigate()
@@ -30,23 +41,19 @@ export default function AdviseResultScreen() {
     <div className="space-y-8">
       <StatusBanner degraded={advise.degraded} noAssets={advise.no_assets} />
 
-      <div className="border-l-2 border-[var(--color-accent)] pl-10 flex flex-col gap-9">
-        {scenario && (
-          <div className="flex gap-5">
-            <span className="w-[26px] shrink-0 text-[11px] tracking-[0.1em] text-[var(--color-accent)] pt-0.5">
-              {scenario.id}
-            </span>
-            <h1 className="font-display font-bold text-pretty text-[24px] leading-snug text-[var(--color-text)]">
-              {scenario.title}
-            </h1>
-          </div>
-        )}
+      {scenario && (
+        <div>
+          <span className="text-[10px] tracking-[0.12em] text-[var(--color-muted)]">{scenario.id}</span>
+          <h1 className="font-display font-bold text-pretty text-[24px] leading-snug text-[var(--color-text)] mt-1.5">
+            {scenario.title}
+          </h1>
+        </div>
+      )}
 
-        <div className="flex gap-5">
-          <span className="w-[26px] shrink-0 text-[11px] tracking-[0.1em] text-[var(--color-accent)] pt-0.5">
-            I
-          </span>
-          <div className="flex-1">
+      <div>
+        <div className="relative overflow-hidden min-h-[200px] sm:min-h-[240px] flex items-center border-t border-[var(--color-border)] py-14">
+          <SectionNumeral>I</SectionNumeral>
+          <div className="relative z-10 max-w-[520px]">
             <div className="flex items-baseline justify-between">
               <span className="text-[11px] tracking-[0.18em] uppercase text-[var(--color-muted)]">
                 감지된 망설임
@@ -70,16 +77,14 @@ export default function AdviseResultScreen() {
           </div>
         </div>
 
-        <div className="flex gap-5">
-          <span className="w-[26px] shrink-0 text-[11px] tracking-[0.1em] text-[var(--color-accent)] pt-0.5">
-            II
-          </span>
-          <div className="flex-1">
+        <div className="relative overflow-hidden min-h-[200px] sm:min-h-[240px] flex items-center border-t border-[var(--color-border)] py-14">
+          <SectionNumeral>II</SectionNumeral>
+          <div className="relative z-10 max-w-[520px]">
             <p className="text-base leading-[1.85] text-[var(--color-text)]">{advise.message}</p>
             {ctaLabel && !ctaConfirmed && (
               <button
                 onClick={() => setCtaConfirmed(true)}
-                className="mt-5 border border-[var(--color-accent)] text-[var(--color-accent)] text-xs tracking-[0.16em] uppercase px-5 py-3 transition-colors duration-150 hover:bg-[var(--color-accent)] hover:text-[var(--color-bg)]"
+                className="mt-5 bg-[var(--color-accent)] text-[var(--color-bg)] text-xs tracking-[0.16em] uppercase px-5 py-3 transition-opacity duration-150 hover:opacity-90"
               >
                 {ctaLabel}
               </button>
@@ -90,11 +95,9 @@ export default function AdviseResultScreen() {
           </div>
         </div>
 
-        <div className="flex gap-5">
-          <span className="w-[26px] shrink-0 text-[11px] tracking-[0.1em] text-[var(--color-accent)] pt-0.5">
-            III
-          </span>
-          <div className="flex-1">
+        <div className="relative overflow-hidden min-h-[200px] sm:min-h-[240px] flex items-center border-t border-[var(--color-border)] py-14">
+          <SectionNumeral>III</SectionNumeral>
+          <div className="relative z-10 max-w-[520px]">
             <div className="flex items-baseline justify-between mb-5">
               <span className="text-[11px] tracking-[0.18em] uppercase text-[var(--color-muted)]">
                 인용 근거
@@ -119,22 +122,19 @@ export default function AdviseResultScreen() {
           </div>
         </div>
 
-        <div className="flex gap-5">
-          <span className="w-[26px] shrink-0" />
-          <div className="flex-1 flex gap-3">
-            <button
-              onClick={() => navigate('/')}
-              className="flex-1 text-center py-3.5 border border-[var(--color-border)] text-xs tracking-[0.14em] uppercase text-[var(--color-text)] transition-colors duration-150 hover:border-[var(--color-accent)]/40"
-            >
-              다른 시나리오
-            </button>
-            <Link
-              to="/consult"
-              className="flex-1 text-center py-3.5 border border-[var(--color-border)] text-xs tracking-[0.14em] uppercase text-[var(--color-text)] transition-colors duration-150 hover:border-[var(--color-accent)]/40"
-            >
-              직접 상담
-            </Link>
-          </div>
+        <div className="border-t border-[var(--color-border)] pt-8 flex gap-5">
+          <button
+            onClick={() => navigate('/')}
+            className="text-sm text-[var(--color-muted)] transition-colors duration-150 hover:text-[var(--color-accent)]"
+          >
+            다른 시나리오
+          </button>
+          <Link
+            to="/consult"
+            className="text-sm text-[var(--color-muted)] transition-colors duration-150 hover:text-[var(--color-accent)]"
+          >
+            직접 상담
+          </Link>
         </div>
       </div>
     </div>

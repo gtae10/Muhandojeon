@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom'
 import { getCustomers, getCatalog, advise, ApiError } from '../api/client.js'
 import { FieldSkeleton } from '../components/Skeleton.jsx'
 import ErrorBanner from '../components/ErrorBanner.jsx'
+import Select from '../components/Select.jsx'
 
 export default function ConsultScreen() {
   const navigate = useNavigate()
@@ -50,8 +51,11 @@ export default function ConsultScreen() {
 
   const header = (
     <div>
-      <h1 className="font-display font-bold text-2xl text-[var(--color-text)]">직접 상담</h1>
-      <p className="text-sm text-[var(--color-muted)] mt-2 text-pretty">
+      <span className="block w-10 h-px bg-[var(--color-accent)] mb-5" />
+      <h1 className="font-display font-bold text-[48px] sm:text-[52px] leading-[0.98] text-[var(--color-text)]">
+        직접 상담
+      </h1>
+      <p className="text-base text-[var(--color-muted)] mt-4 leading-[1.7] text-pretty max-w-[46ch]">
         세션 이벤트 없이 호출해요 — 일반 제안 모드로 상담이 생성돼요
       </p>
     </div>
@@ -59,7 +63,7 @@ export default function ConsultScreen() {
 
   if (status === 'loading') {
     return (
-      <div className="space-y-8">
+      <div className="space-y-10">
         {header}
         <FieldSkeleton count={2} />
       </div>
@@ -68,52 +72,39 @@ export default function ConsultScreen() {
 
   if (status === 'error') {
     return (
-      <div className="space-y-8">
+      <div className="space-y-10">
         {header}
         <ErrorBanner message={loadError} onRetry={load} />
       </div>
     )
   }
 
+  const customerOptions = customers.map((c) => ({
+    value: c.customer_id,
+    label: `${c.display_name} · ${c.tier} · 보유 ${c.asset_count}개`,
+  }))
+  const productOptions = products.map((p) => ({
+    value: p.product_id,
+    label: `${p.name} · ${p.collection}`,
+  }))
+
   return (
-    <div className="space-y-8">
+    <div className="space-y-10">
       {header}
 
-      <div className="space-y-6">
+      <div className="space-y-8">
         <div>
-          <label className="text-[11px] tracking-[0.18em] uppercase text-[var(--color-muted)] block mb-2.5">
+          <label className="text-[11px] tracking-[0.18em] uppercase text-[var(--color-muted)] block mb-3">
             고객
           </label>
-          <select
-            value={customerId}
-            onChange={(e) => setCustomerId(e.target.value)}
-            className="w-full bg-[var(--color-surface)] border border-[var(--color-border)] px-3 py-2.5 text-base text-[var(--color-text)]"
-          >
-            <option value="">선택하세요</option>
-            {customers.map((c) => (
-              <option key={c.customer_id} value={c.customer_id}>
-                {c.display_name} · {c.tier} · 보유 {c.asset_count}개
-              </option>
-            ))}
-          </select>
+          <Select value={customerId} onChange={setCustomerId} options={customerOptions} />
         </div>
 
         <div>
-          <label className="text-[11px] tracking-[0.18em] uppercase text-[var(--color-muted)] block mb-2.5">
+          <label className="text-[11px] tracking-[0.18em] uppercase text-[var(--color-muted)] block mb-3">
             상담 대상 상품
           </label>
-          <select
-            value={productId}
-            onChange={(e) => setProductId(e.target.value)}
-            className="w-full bg-[var(--color-surface)] border border-[var(--color-border)] px-3 py-2.5 text-base text-[var(--color-text)]"
-          >
-            <option value="">선택하세요</option>
-            {products.map((p) => (
-              <option key={p.product_id} value={p.product_id}>
-                {p.name} · {p.collection}
-              </option>
-            ))}
-          </select>
+          <Select value={productId} onChange={setProductId} options={productOptions} />
         </div>
 
         {submitError && <ErrorBanner message={submitError} onRetry={handleSubmit} />}
@@ -121,7 +112,7 @@ export default function ConsultScreen() {
         <button
           onClick={handleSubmit}
           disabled={!customerId || !productId || submitting}
-          className="w-full py-3 border border-[var(--color-accent)] text-[var(--color-accent)] text-xs tracking-[0.14em] uppercase transition-colors duration-150 hover:bg-[var(--color-accent)] hover:text-[var(--color-bg)] disabled:opacity-50 disabled:hover:bg-transparent disabled:hover:text-[var(--color-accent)]"
+          className="w-full py-4 bg-[var(--color-accent)] text-[var(--color-bg)] text-xs tracking-[0.14em] uppercase transition-opacity duration-150 hover:opacity-90 disabled:opacity-40"
         >
           {submitting ? '상담 생성 중…' : '상담 생성'}
         </button>
