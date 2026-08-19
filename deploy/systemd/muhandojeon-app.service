@@ -1,0 +1,19 @@
+[Unit]
+Description=Muhandojeon 통합 레이어 (app/, FastAPI, :8000)
+After=network.target
+
+[Service]
+Type=simple
+User=muhandojeon
+Group=muhandojeon
+WorkingDirectory=/opt/muhandojeon/main
+EnvironmentFile=/opt/muhandojeon/main/.env
+ExecStart=/opt/muhandojeon/main/.venv/bin/uvicorn app.main:app --host 127.0.0.1 --port 8000 --workers 1
+Restart=on-failure
+RestartSec=3
+MemoryMax=768M
+NoNewPrivileges=true
+PrivateTmp=true
+
+[Install]
+WantedBy=multi-user.target

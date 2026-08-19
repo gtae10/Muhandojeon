@@ -1,0 +1,19 @@
+[Unit]
+Description=Muhandojeon AI2 상담 엔진 (ai-clienteling/, FastAPI, :8102)
+After=network.target
+
+[Service]
+Type=simple
+User=muhandojeon
+Group=muhandojeon
+WorkingDirectory=/opt/muhandojeon/ai-clienteling-src/ai-clienteling
+EnvironmentFile=/opt/muhandojeon/ai-clienteling-src/ai-clienteling/.env
+ExecStart=/opt/muhandojeon/ai-clienteling-src/ai-clienteling/.venv/bin/uvicorn api:app --host 127.0.0.1 --port 8102 --workers 1
+Restart=on-failure
+RestartSec=3
+MemoryMax=512M
+NoNewPrivileges=true
+PrivateTmp=true
+
+[Install]
+WantedBy=multi-user.target
