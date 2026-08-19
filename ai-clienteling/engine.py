@@ -54,6 +54,9 @@ from prompts.knowledge import (
     build_unclear_note,
     CONDITION_TALK_HINTS,
     OWNED_TOPIC_HINTS,
+    SOURCE_CHALLENGE_HINTS,
+    asks_care_judgment,
+    care_thread_open,
 )
 
 load_dotenv()
@@ -699,17 +702,34 @@ def generate_reply(
     )
     hesitation_type = normalize_hesitation(hesitation_type)
 
-    # 고객이 제품 상태나 케어를 언급했을 때만 컨디션 상세를 보여준다.
+    # 고객이 제품 상태를 언급했거나 케어 여부의 **판단을 요청**했을 때만
+    # 컨디션 상세를 보여준다. (판단 요청은 2026-08-19 추가 — "케어를 받는 편이
+    # 좋을까요?" 에 상태 단어가 없어 소견이 가려진 채 회피 답변이 나온 C010
+    # 손 테스트. 요청받은 평가는 케어지 감시가 아니다.)
     # 프롬프트에 있으면 모델은 결국 인용하므로, 자리가 아니면 아예 가린다.
-    talked = " ".join(
-        [m.get("content", "") for m in conversation_history if m.get("role") == "user"]
-        + [message]
-    )
-    allow_condition = any(hint in talked for hint in CONDITION_TALK_HINTS)
+    user_texts = [
+        m.get("content", "") for m in conversation_history if m.get("role") == "user"
+    ] + [message]
+    talked = " ".join(user_texts)
+    allow_condition = any(
+        hint in talked for hint in CONDITION_TALK_HINTS
+    ) or asks_care_judgment(user_texts)
 
     system = build_system_prompt(variant)
     customer = build_customer(customer_id, owned_products)
     if customer:
+        # 케어 상담이 이미 열려 있으면(우리가 보유 제품 케어를 화제로 올린
+        # 어드바이저 턴이 있으면) 고객의 표현과 무관하게 소견을 연다 —
+        # 고객 발화 단어 목록은 변형마다 새고, 다 넣을 수 없다 (2026-08-19).
+        # 단 출처 추궁 턴에는 이 규칙로 열지 않는다 — 경계심을 표한 고객에게
+        # 상태 평가를 얹는 것이 원래 사고다 (추궁 턴 인용 차단과 같은 자리).
+        challenged = any(h in message.lower() for h in SOURCE_CHALLENGE_HINTS)
+        allow_condition = allow_condition or (
+            not challenged
+            and care_thread_open(
+                conversation_history, customer.get("owned_products")
+            )
+        )
         # 보유 제품의 상세(구매 시점·케어 이력)를 보여줄 자리인지 판단한다.
         # 케어 화제이거나 고객이 그 제품을 직접 말했을 때만 보여준다.
         # 그냥 두었더니 재고를 묻는 고객에게 케어를 얹었다.

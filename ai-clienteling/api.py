@@ -23,10 +23,16 @@ from pydantic import BaseModel, Field
 import engine
 from prompts.knowledge import (
     ACCEPT_HINTS,
+    ADVISOR_CARE_WORDS,
     SOURCE_CHALLENGE_HINTS,
     data_overlay,
     pick_products,
 )
+
+# 근거 카드 연속 유지 판정용 케어 어휘 — care_thread_open 어휘에 케어 설명
+# 턴에서 흔한 "관리"·"보습" 을 보탠다. (소견 열림 판정에는 쓰지 않는다 —
+# "관리가 쉬운 소재" 같은 제품 설명까지 열리면 안 되므로 그쪽은 보수적 유지)
+CARE_REPLY_WORDS = ADVISOR_CARE_WORDS + ("관리", "보습")
 
 # 통합 경로("한 메종" 세계관)가 엔진 호출 동안 갈아끼우는 데이터.
 # scripts/build_integration_data.py 가 생성한다 — 직접 수정 금지.
@@ -209,6 +215,13 @@ CTA_FROM_ACTION = {"care_booking": "CARE_BOOKING", "stock_hold": "VIEW_STOCK"}
 # 원칙: 오탐 0 필수·놓침 허용 — 놓치면 현행 NONE 과 같아 잃는 게 없다.
 FITTING_WORDS = (
     "피팅", "실착", "착화", "신어보", "착용해보", "착용해 보", "입어보",
+    # "실측"·"착용감" (2026-08-19 추가): 4o "매장에 실측 확인 요청을
+    # 넣어드릴까요?", "착용감을 확인하실 수 있도록 도와드릴까요?" (각 2회 관측),
+    # mini "매장에서 실측 후 맞는 사이즈를 추천받으실 수 있도록" — 전부 실제
+    # 출력에서 수집. 팀 계약의 BOOK_FITTING 이 "사이즈 상담 예약"이므로 이
+    # 제안들도 이 카드가 맞다. "실물"(제품 확인)과는 다른 단어다.
+    # 여기까지가 조정 2라운드 — 이후의 새 표현은 기록만 하고 쫓지 않는다.
+    "실측", "착용감",
     "fitting", "try on", "try-on",
 )
 # 접수 어휘 — 여쭘형·확정형의 **행동 동사**만. 권유형("추천드립니다",
@@ -293,12 +306,42 @@ def _their_history_to_ours(history):
     return ours
 
 
+def _load_catalog_names():
+    """통합 카탈로그 18종의 제품 이름 전부. 인용 토큰의 소속 판정에 쓴다.
+
+    데이터 재생성(build_integration_data.py) 후에는 서버를 다시 띄워야 반영된다.
+    """
+    try:
+        cat = json.loads(
+            INTEGRATION_DATA["products.json"].read_text(encoding="utf-8"))
+        names = set()
+        for p in cat.get("products", []):
+            for key in ("name_ko", "name_en"):
+                n = str(p.get(key) or "").strip()
+                if n:
+                    names.add(n)
+        return names
+    except Exception:
+        return set()
+
+
+_CATALOG_NAMES = _load_catalog_names()
+
+
 def _asset_in_text(asset, text, owned_assets):
     """이 텍스트가 이 보유 제품을 가리키는가. 모델 판단이 아니라 문자열 대조다.
 
     ① 제품 이름(또는 Liz 같은 구별 토큰)이 나왔다
     ② 종류 단어가 나왔고, 그 종류의 보유가 하나뿐이다
        — 고객은 "가지고 있는 쇼퍼백" 처럼 종류로 부른다 (엔진의 종류 매칭과 같은 기준)
+
+    토큰을 대조하기 전에 **다른 카탈로그 제품의 전체 이름**을 텍스트에서 지운다
+    (2026-08-19). "Aurelia Oxford 38이 맞을까요?" 의 "Aurelia" 가 보유 자산
+    Aurelia Derby 의 구별 토큰에 걸려 마모 카드가 뜬 손 테스트 사고.
+    그 "Aurelia" 는 Oxford 의 것이지 Derby 의 것이 아니다 — 전체 이름이 있는
+    언급은 그 제품이 가져가고, 남은 텍스트로만 토큰을 잡는다.
+    (라인 공유 토큰 사고의 형제 — 그때는 충돌 상대가 보유 자산이었고
+    이번엔 카탈로그의 다른 제품이라 별도 처리가 필요했다)
     """
     name = str(asset.get("product_name") or "").strip()
     # 구별 토큰은 라인 이름(Liz·Aren·Stark…)만 — 우리 카탈로그에서 라틴 문자다.
@@ -318,7 +361,12 @@ def _asset_in_text(asset, text, owned_assets):
         if len(t) >= 2 and t not in GENERIC_TYPE_WORDS
         and re.search(r"[A-Za-z]", t) and t not in other_tokens
     ]
-    if name in text or any(t in text for t in tokens):
+    # 전체 이름 일치는 원문으로, 토큰 일치는 다른 제품 이름을 지운 텍스트로.
+    reduced = text
+    for other_name in sorted(_CATALOG_NAMES, key=len, reverse=True):
+        if other_name != name and other_name not in name and other_name in reduced:
+            reduced = reduced.replace(other_name, " ")
+    if name in text or any(t in reduced for t in tokens):
         return True
     for word, name_keys in TYPE_WORDS_FOR_CITATION.items():
         if word in text and any(k in name for k in name_keys):
@@ -340,10 +388,12 @@ def _cited_asset_ids(reply, message, suggested_action, owned_assets, past_adviso
 
     시점 게이트 — 인용은 Frontend 의 근거 카드(컨디션 점수·소견 표시)를 띄우므로,
     프롬프트의 "케어 화제 전에는 컨디션을 가린다" 를 카드에도 적용한다.
-    · 고객이 먼저 꺼낸 제품 → 인용한다 (자기 물건 이야기에 근거가 보이는 것은 자연스럽다)
-    · 우리가 먼저 꺼낸 제품 → 케어 대화(care_booking)일 때만 인용한다
-      (사이즈 문의에 실루엣으로 언급한 보유 제품까지 인용하면,
-       묻지도 않은 마모·케어 권장이 카드로 고객 화면에 들어간다)
+    · 그 제품이 대화에 나왔고(고객이 꺼냈든 우리가 꺼냈든) 이번 턴이
+      케어 대화(care_booking)다 → 인용한다
+      (2026-08-19 좁힘 전에는 "고객이 꺼냄"만으로 인용했는데, 보유와 같은
+       모델을 새로 사려는 사이즈 문의에도 마모 카드가 떴다. 사이즈 문의에
+       실루엣으로 언급한 보유 제품까지 인용하면 묻지도 않은 마모·케어 권장이
+       카드로 고객 화면에 들어간다 — 어느 쪽이 꺼냈든 마찬가지다)
     · 연속성 — 앞 어드바이저 턴에서 이미 꺼낸 자산을 이번 답도 이어 말하면
       액션과 무관하게 인용을 유지한다. 케어 오프닝("점검해드렸었죠") 다음 턴이
       접수 제안 없이 설명만 하면 카드가 깜빡이며 사라지던 것을 막는다.
@@ -359,12 +409,28 @@ def _cited_asset_ids(reply, message, suggested_action, owned_assets, past_adviso
             continue
         customer_brought_it = _asset_in_text(asset, message, owned_assets)
         we_brought_it = _asset_in_text(asset, reply, owned_assets)
-        continued = we_brought_it and _asset_in_text(
+        # 연속 유지는 **이번 답변이 케어 화제일 때만** (2026-08-19 좁힘).
+        # 케어 오프닝 뒤 고객이 구매로 화제를 돌렸는데, 답변이 "Pina와 Aren은
+        # 이미 보유하고 계시니…" 라고 이름만 이어 말해도 마모 카드가 남아
+        # 있었다 (C006 손 테스트). 케어 설명이 이어지는 턴(케어·관리·보습…)에는
+        # 유지되고 — 깜빡임 방지라는 원래 목적 — 화제가 떠난 턴에는 내려간다.
+        # 판정 재료는 고객 발화가 아니라 우리 답변(유한한 어휘)이다.
+        care_flavored = suggested_action == "care_booking" or any(
+            w in reply for w in CARE_REPLY_WORDS
+        )
+        continued = care_flavored and we_brought_it and _asset_in_text(
             asset, past_advisor_text or "", owned_assets
         )
+        # 2026-08-19 좁힘: "고객이 먼저 꺼냄" 단독 인용을 없앴다.
+        # 보유 제품과 같은 모델을 **새로 사려는** 화제로 이름을 꺼내도
+        # ("Aurelia Derby를 보고 있는데 38이 맞을까요?") 마모 카드가 떴다 —
+        # 손 테스트에서 발견. 발화 규칙("제품 이름 등장은 상태 언급이 아니다")을
+        # 카드에도 적용한 것. 자기 물건의 상태를 꺼낸 고객은 그 턴이 케어
+        # 대화(care_booking)가 되므로 카드는 그대로 뜨고, 케어 화제가 아니면
+        # 카드도 없다. 화제가 케어를 떠나면 다음 턴부터 인용이 비는 것도 동일.
         if (
-            customer_brought_it
-            or (we_brought_it and suggested_action == "care_booking")
+            ((customer_brought_it or we_brought_it)
+             and suggested_action == "care_booking")
             or continued
         ):
             cited.append(asset_id)

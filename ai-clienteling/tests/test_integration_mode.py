@@ -141,6 +141,43 @@ gate_cases = [
 for label, expected, reply, msg, hist in gate_cases:
     results[label] = _book_fitting_cta(reply, msg, hist) == expected
 
+# --- 근거 카드(인용) 게이트 단위 검사 (LLM 0회) — 2026-08-19 손 테스트 사고 2건 ---
+from api import _asset_in_text, _cited_asset_ids  # noqa: E402
+
+DERBY = {"asset_id": "AS-0010", "product_name": "Aurelia Derby"}
+CU3_OWNED = [DERBY, {"asset_id": "AS-0011", "product_name": "Vesper Ankle Boot"}]
+results["c1 Oxford 발화가 보유 Derby 토큰에 안 걸림 (카탈로그 이름 소속)"] = not _asset_in_text(
+    DERBY, "장바구니에 담아둔 Aurelia Oxford, 평소 240을 신는데 38이 맞을까요?", CU3_OWNED)
+results["c2 Derby 전체 이름·단독 토큰은 걸림"] = _asset_in_text(
+    DERBY, "제 Aurelia Derby 앞창이 닳았어요", CU3_OWNED) and _asset_in_text(
+    DERBY, "제 Derby 상태 좀 봐주세요", CU3_OWNED)
+results["c3 새로 사려는 사이즈 문의(비케어)에 인용 없음"] = _cited_asset_ids(
+    "Aurelia Derby는 38 사이즈가 적합할 것입니다.",
+    "Aurelia Derby를 보고 있는데 평소 240을 신어요. 38이 맞을까요?",
+    "staff_connect", CU3_OWNED) == []
+results["c4 같은 자산이라도 케어 턴이면 인용"] = _cited_asset_ids(
+    "Aurelia Derby 앞창 케어 접수를 도와드리겠습니다.",
+    "제 Aurelia Derby 앞창이 닳았는데 봐주실 수 있나요?",
+    "care_booking", CU3_OWNED) == ["AS-0010"]
+results["c5 연속(앞 턴에 꺼낸 자산) 유지"] = _cited_asset_ids(
+    "Aurelia Derby 케어는 보습 위주로 진행됩니다.", "네", "none", CU3_OWNED,
+    past_advisor_text="Aurelia Derby 점검을 도와드릴까요?") == ["AS-0010"]
+results["c6 화제가 케어를 떠난 연속 턴 → 카드 내려감"] = _cited_asset_ids(
+    "Aurelia Derby는 이미 보유하고 계시니, 어떤 용도의 가방을 찾고 계신가요?",
+    "다른 가방을 살까 고민 중이에요", "none", CU3_OWNED,
+    past_advisor_text="Aurelia Derby 점검을 도와드릴까요?") == []
+# 손 테스트 실측 답변 (2026-08-19) — "살펴보시는"(제품 구경)이 케어 어휘
+# "살펴"에 걸려 구매 턴에 카드가 남았던 사고. "살펴드"로 좁혀 해결.
+results["c7 '살펴보시는'(구경)은 케어 어휘 아님 → 카드 내려감"] = _cited_asset_ids(
+    "새로 구매를 고려 중이라면, 다른 라인을 살펴보시는 것도 좋겠습니다. "
+    "이미 가지고 계신 Aurelia Derby는 대형입니다. 어떤 용도를 찾으시나요?",
+    "새로 살까 고민 중이에요", "none", CU3_OWNED,
+    past_advisor_text="Aurelia Derby 점검을 도와드릴까요?") == []
+results["c8 '살펴드릴까요'(케어)는 유지"] = _cited_asset_ids(
+    "Aurelia Derby를 한번 살펴드릴까요? 상태 확인 후 안내드리겠습니다.",
+    "네", "none", CU3_OWNED,
+    past_advisor_text="Aurelia Derby 점검을 도와드릴까요?") == ["AS-0010"]
+
 print("=== 판정 ===")
 failed = 0
 for label, ok in results.items():

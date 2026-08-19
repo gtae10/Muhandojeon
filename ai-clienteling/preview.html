@@ -55,7 +55,7 @@
 <!-- ══════════ 직접 테스트 ══════════ -->
 <div class="pane on" id="live">
   <div>
-    <button class="preset" onclick="fill('Aren 토트 백을 사려고 하는데 짐이 너무 많아서요. 한국에 귀국할 때 살 수 있을까요?')">귀국 픽업 (복원 검증)</button><button class="preset" onclick="fill('liz를 사려고 하는데 서울에 재고가 있나요?')">소문자 재고 (복원 검증)</button><button class="preset" onclick="fill('탑핸들 백 핸들이 좀 닳은 것 같은데 손봐주실 수 있나요?')">케어 요청</button><button class="preset" onclick="fill('네, 접수 부탁드려요.')">짧은 수락</button><button class="preset" onclick="fill('Solène Shoulder는 어떤 가방이에요?')">fixture 제품 문의</button><button class="preset" onclick="fill('노트북이 들어가는 백을 찾고 있어요.')">노트북 문의</button><button class="preset" onclick="fill('세일 언제 해요?')">세일 질문</button><button class="preset" onclick="fill('제가 그 백 얘기를 했었나요? 그걸 어떻게 아세요?')">출처 추궁</button><button class="preset" onclick="fill('CU555')">무의미 입력</button><button class="preset" onclick="resetChat()">대화 새로 시작</button>
+    <button class="preset" onclick="fill('Aren 토트 백을 사려고 하는데 짐이 너무 많아서요. 한국에 귀국할 때 살 수 있을까요?')">귀국 픽업 (복원 검증)</button><button class="preset" onclick="fill('liz를 사려고 하는데 서울에 재고가 있나요?')">소문자 재고 (복원 검증)</button><button class="preset" onclick="fill('탑핸들 백 핸들이 좀 닳은 것 같은데 손봐주실 수 있나요?')">케어 요청</button><button class="preset" onclick="fill('네, 접수 부탁드려요.')">짧은 수락</button><button class="preset" onclick="fill('장바구니에 담아둔 Aurelia Oxford, 평소 240을 신는데 38이 맞을까요?')">피팅 사이즈 문의 (CU-0003)</button><button class="preset" onclick="fill('아니요, 괜찮아요. 다음에 할게요.')">피팅 거절</button><button class="preset" onclick="fill('Solène Shoulder는 어떤 가방이에요?')">fixture 제품 문의</button><button class="preset" onclick="fill('노트북이 들어가는 백을 찾고 있어요.')">노트북 문의</button><button class="preset" onclick="fill('세일 언제 해요?')">세일 질문</button><button class="preset" onclick="fill('제가 그 백 얘기를 했었나요? 그걸 어떻게 아세요?')">출처 추궁</button><button class="preset" onclick="fill('CU555')">무의미 입력</button><button class="preset" onclick="resetChat()">대화 새로 시작</button>
   </div>
   <div class="ctrl">
     시나리오: <select id="custSel"></select>
@@ -101,7 +101,7 @@ const CUSTOMERS = {
   "C010":    {label: "케어 이력 2건 — 교체 요구를 케어로"},
   "CU-0001": {label: "장바구니 이탈 (Solène)"},
   "CU-0002": {label: "컨디션 점검 1개월 경과 (케어)"},
-  "CU-0003": {label: "장바구니 이탈 (Aurelia Oxford)"},
+  "CU-0003": {label: "장바구니 이탈 (Aurelia Oxford 구두) — 피팅 시나리오 (BOOK_FITTING)"},
   "CU-0004": {label: "장바구니 이탈 (Solène)"}
 };
 const custSel = document.getElementById('custSel');
