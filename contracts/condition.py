@@ -22,10 +22,10 @@ class ConditionScoreRequest(BaseModel):
     model_config = ConfigDict(
         json_schema_extra={
             "example": {
-                "asset_id": "AS-000031",
+                "asset_id": "AS-0001",
                 "image_paths": [
-                    "data/fingerprints/AS-000031/handle_01.jpg",
-                    "data/fingerprints/AS-000031/corner_01.jpg",
+                    "data/fingerprints/AS-0001/handle_01.jpg",
+                    "data/fingerprints/AS-0001/corner_01.jpg",
                 ],
             }
         }
@@ -44,17 +44,21 @@ class ConditionScoreResponse(BaseModel):
     model_config = ConfigDict(
         json_schema_extra={
             "example": {
-                "asset_id": "AS-000031",
+                "asset_id": "AS-0001",
                 "score": 71,
                 "findings": [
                     {
-                        "part": "sole",
+                        "part": "handle",
                         "severity": "MEDIUM",
-                        "note": "앞창 마모 진행, 재밑창 시점 근접",
+                        "note": "핸들 표면 마모 진행, 케어 임계 근접",
                     },
-                    {"part": "upper", "severity": "LOW", "note": "볼 부분 주름 자연 발생"},
+                    {
+                        "part": "corner",
+                        "severity": "MEDIUM",
+                        "note": "코너 4곳 마찰, 각 세우기 필요",
+                    },
                 ],
-                "next_service_months": 2,
+                "next_service_months": 1,
                 "confidence": 0.8,
             }
         }

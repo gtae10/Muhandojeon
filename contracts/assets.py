@@ -20,26 +20,26 @@ class CustomerAssetsResponse(BaseModel):
     model_config = ConfigDict(
         json_schema_extra={
             "example": {
-                "customer_id": "CU-0007",
+                "customer_id": "CU-0003",
                 "tier": "ESTABLISHED",
                 "assets": [
                     {
-                        "asset_id": "AS-000031",
-                        "customer_id": "CU-0007",
-                        "product_id": "LX-0004",
-                        "product_name": "Aurelia Oxford",
+                        "asset_id": "AS-0010",
+                        "customer_id": "CU-0003",
+                        "product_id": "LX-0005",
+                        "product_name": "Aurelia Derby",
                         "category": "SHOES",
                         "purchased_at": "2023-04-18T00:00:00+09:00",
-                        "condition_score": 71,
+                        "condition_score": 81,
                         "findings": [
                             {
                                 "part": "sole",
                                 "severity": "MEDIUM",
-                                "note": "앞창 마모 진행, 재밑창 시점 근접",
+                                "note": "앞창 마모 진행",
                             }
                         ],
-                        "next_service_months": 2,
-                        "last_scanned_at": "2026-07-02T14:20:00+09:00",
+                        "next_service_months": 6,
+                        "last_scanned_at": "2026-06-05T14:00:00+09:00",
                     }
                 ],
             }

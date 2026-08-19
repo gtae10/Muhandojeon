@@ -37,22 +37,22 @@ class AdviseRequest(BaseModel):
     model_config = ConfigDict(
         json_schema_extra={
             "example": {
-                "customer_id": "CU-0007",
-                "target_product_id": "LX-0012",
+                "customer_id": "CU-0003",
+                "target_product_id": "LX-0006",
                 "session_events": [
                     {
                         "event_type": "size_guide",
-                        "product_id": "LX-0012",
+                        "product_id": "LX-0006",
                         "timestamp": "2026-08-14T10:03:20+09:00",
                         "dwell_seconds": 88.5,
-                        "meta": {"size": "38"},
+                        "meta": {"size": "38.5"},
                     },
                     {
                         "event_type": "size_guide",
-                        "product_id": "LX-0012",
+                        "product_id": "LX-0006",
                         "timestamp": "2026-08-14T10:05:02+09:00",
                         "dwell_seconds": 61.0,
-                        "meta": {"size": "38.5"},
+                        "meta": {"size": "39"},
                     },
                 ],
                 "strategy_id": "S2",
@@ -103,8 +103,8 @@ class AdviseResponse(BaseModel):
     model_config = ConfigDict(
         json_schema_extra={
             "example": {
-                "request_id": "adv-CU-0007-LX-0012-S2",
-                "customer_id": "CU-0007",
+                "request_id": "adv-CU-0003-LX-0006-S2",
+                "customer_id": "CU-0003",
                 "tier": "ESTABLISHED",
                 "hesitation_type": "SIZE_UNCERTAIN",
                 "confidence": 0.82,
@@ -112,26 +112,26 @@ class AdviseResponse(BaseModel):
                     {
                         "name": "size_guide_repeat",
                         "weight": 0.62,
-                        "evidence": "size_guide 2회 조회 (38, 38.5)",
+                        "evidence": "size_guide 2회 조회 (38.5, 39)",
                     }
                 ],
                 "message": (
-                    "2023년에 함께하신 Aurelia Oxford와 같은 Aurelia 라스트입니다. "
-                    "현재 컨디션 71점(앞창 마모 진행)이라 재밑창과 함께 피팅을 잡아드릴까요?"
+                    "2023년에 함께하신 Aurelia Derby와 같은 LAST-AURELIA 라스트입니다. "
+                    "현재 컨디션 81점(앞창 마모 진행)이라 재밑창과 함께 피팅을 잡아드릴까요?"
                 ),
                 "cta": "BOOK_FITTING",
-                "cited_asset_ids": ["AS-000031"],
+                "cited_asset_ids": ["AS-0010"],
                 "citations": [
                     {
-                        "asset_id": "AS-000031",
-                        "product_name": "Aurelia Oxford",
-                        "condition_score": 71,
-                        "next_service_months": 2,
-                        "headline_finding": "앞창 마모 진행, 재밑창 시점 근접",
+                        "asset_id": "AS-0010",
+                        "product_name": "Aurelia Derby",
+                        "condition_score": 81,
+                        "next_service_months": 6,
+                        "headline_finding": "앞창 마모 진행",
                     }
                 ],
                 "owned_assets_used": True,
-                "ranked_asset_ids": ["AS-000031", "AS-000018"],
+                "ranked_asset_ids": ["AS-0010", "AS-0011"],
                 "strategy_id": "S2",
                 "degraded": False,
                 "reasoning": "동일 라스트 보유 → 사이즈 불확실 해소.",

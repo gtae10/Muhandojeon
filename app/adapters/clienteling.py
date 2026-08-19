@@ -201,7 +201,11 @@ class HttpClientelingAdapter(HttpAdapterBase):
                 legacy_mapper=legacy_clienteling_mapper,
             )
         except UpstreamError:
+            # 백엔드 `ChatRequest` 는 user_id 와 session_id 를 **둘 다** 필수로 받는다
+            # (backend/app/schemas/models.py). 계약 요청에는 세션 id 가 없어 고객 id 를
+            # 양쪽에 넣는다 — 백엔드는 세션 id 를 대화 이력 키로만 쓴다.
             legacy_payload = {
+                "user_id": request.customer_id,
                 "session_id": request.customer_id,
                 "message": request.history[-1].content if request.history else "상담 요청",
                 "product_id": request.target_product.product_id,

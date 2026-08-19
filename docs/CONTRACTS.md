@@ -72,36 +72,36 @@ INTENT_ADAPTER=http make dev          # 인텐트만 실제 서버(INTENT_BASE_U
 
 ```json
 {
-  "customer_id": "CU-0007",
+  "customer_id": "CU-0003",
   "session_events": [
     {
       "event_type": "view_product",
-      "product_id": "LX-0012",
+      "product_id": "LX-0006",
       "timestamp": "2026-08-14T10:02:11+09:00",
       "dwell_seconds": 42.0,
       "meta": {}
     },
     {
       "event_type": "size_guide",
-      "product_id": "LX-0012",
+      "product_id": "LX-0006",
       "timestamp": "2026-08-14T10:03:20+09:00",
       "dwell_seconds": 88.5,
-      "meta": {
-        "size": "38"
-      }
-    },
-    {
-      "event_type": "size_guide",
-      "product_id": "LX-0012",
-      "timestamp": "2026-08-14T10:05:02+09:00",
-      "dwell_seconds": 61.0,
       "meta": {
         "size": "38.5"
       }
     },
     {
+      "event_type": "size_guide",
+      "product_id": "LX-0006",
+      "timestamp": "2026-08-14T10:05:02+09:00",
+      "dwell_seconds": 61.0,
+      "meta": {
+        "size": "39"
+      }
+    },
+    {
       "event_type": "add_to_cart",
-      "product_id": "LX-0012",
+      "product_id": "LX-0006",
       "timestamp": "2026-08-14T10:06:40+09:00",
       "dwell_seconds": 5.0,
       "meta": {}
@@ -131,7 +131,7 @@ INTENT_ADAPTER=http make dev          # 인텐트만 실제 서버(INTENT_BASE_U
     {
       "name": "size_guide_repeat",
       "weight": 0.62,
-      "evidence": "size_guide 2회 조회 (38, 38.5)"
+      "evidence": "size_guide 2회 조회 (38.5, 39)"
     },
     {
       "name": "cart_without_checkout",
@@ -168,50 +168,50 @@ INTENT_ADAPTER=http make dev          # 인텐트만 실제 서버(INTENT_BASE_U
 
 ```json
 {
-  "customer_id": "CU-0007",
+  "customer_id": "CU-0003",
   "hesitation_type": "SIZE_UNCERTAIN",
   "target_product": {
-    "product_id": "LX-0012",
-    "name": "Aurelia Derby",
+    "product_id": "LX-0006",
+    "name": "Aurelia Oxford",
     "category": "SHOES",
     "collection": "Maison Nord",
-    "material": "박스카프 카프스킨 / 굿이어 웰트",
-    "color": "Ebony",
-    "price_krw": 2380000,
-    "size_system": "EU 35-42 / Last: Aurelia",
+    "material": "패티나 카프 / 굿이어 웰트",
+    "color": "Cognac",
+    "price_krw": 2700000,
+    "size_system": "EU 35-42 / Last: LAST-AURELIA",
     "available_sizes": [
-      "38",
       "38.5",
+      "39",
       "40"
     ],
-    "care_notes": "3개월마다 슈트리 사용 및 크림 보습 권장",
-    "image_path": "images/LX-0012.jpg"
+    "care_notes": "패티나 유지 위해 왁스는 3개월 간격. 우천 착화 지양",
+    "image_path": "images/placeholder/LX-0006.jpg"
   },
   "owned_assets": [
     {
-      "asset_id": "AS-000031",
-      "customer_id": "CU-0007",
-      "product_id": "LX-0004",
-      "product_name": "Aurelia Oxford",
+      "asset_id": "AS-0010",
+      "customer_id": "CU-0003",
+      "product_id": "LX-0005",
+      "product_name": "Aurelia Derby",
       "category": "SHOES",
       "purchased_at": "2023-04-18T00:00:00+09:00",
-      "condition_score": 71,
+      "condition_score": 81,
       "findings": [
         {
           "part": "sole",
           "severity": "MEDIUM",
-          "note": "앞창 마모 진행, 재밑창 시점 근접"
+          "note": "앞창 마모 진행"
         }
       ],
-      "next_service_months": 2,
-      "last_scanned_at": "2026-07-02T14:20:00+09:00"
+      "next_service_months": 6,
+      "last_scanned_at": "2026-06-05T14:00:00+09:00"
     }
   ],
   "strategy_id": "S2",
   "history": [
     {
       "role": "customer",
-      "content": "38이 맞을지 38.5가 맞을지 모르겠어요."
+      "content": "38.5가 맞을지 39가 맞을지 모르겠어요."
     }
   ]
 }
@@ -233,12 +233,12 @@ INTENT_ADAPTER=http make dev          # 인텐트만 실제 서버(INTENT_BASE_U
 
 ```json
 {
-  "message": "2023년에 함께하신 Aurelia Oxford와 같은 Aurelia 라스트입니다. 그 오프닝을 38로 신으셨고 현재 컨디션 71점(앞창 마모 진행)이라, 같은 38이 가장 안정적입니다. 재밑창 예약과 함께 피팅을 잡아드릴까요?",
+  "message": "2023년에 함께하신 Aurelia Derby와 같은 LAST-AURELIA 라스트입니다. 그때 38.5로 맞춰 드렸고 현재 컨디션 81점(앞창 마모 진행)이라, 같은 38.5가 가장 안정적입니다. 재밑창 예약과 함께 피팅을 잡아드릴까요?",
   "cited_asset_ids": [
-    "AS-000031"
+    "AS-0010"
   ],
   "cta": "BOOK_FITTING",
-  "reasoning": "동일 라스트 보유 → 사이즈 불확실 해소. 컨디션 71점 → 케어 동시 제안."
+  "reasoning": "동일 라스트 보유 → 사이즈 불확실 해소. 컨디션 81점 → 케어 동시 제안."
 }
 ```
 
@@ -267,26 +267,26 @@ INTENT_ADAPTER=http make dev          # 인텐트만 실제 서버(INTENT_BASE_U
 
 ```json
 {
-  "customer_id": "CU-0007",
+  "customer_id": "CU-0003",
   "tier": "ESTABLISHED",
   "assets": [
     {
-      "asset_id": "AS-000031",
-      "customer_id": "CU-0007",
-      "product_id": "LX-0004",
-      "product_name": "Aurelia Oxford",
+      "asset_id": "AS-0010",
+      "customer_id": "CU-0003",
+      "product_id": "LX-0005",
+      "product_name": "Aurelia Derby",
       "category": "SHOES",
       "purchased_at": "2023-04-18T00:00:00+09:00",
-      "condition_score": 71,
+      "condition_score": 81,
       "findings": [
         {
           "part": "sole",
           "severity": "MEDIUM",
-          "note": "앞창 마모 진행, 재밑창 시점 근접"
+          "note": "앞창 마모 진행"
         }
       ],
-      "next_service_months": 2,
-      "last_scanned_at": "2026-07-02T14:20:00+09:00"
+      "next_service_months": 6,
+      "last_scanned_at": "2026-06-05T14:00:00+09:00"
     }
   ]
 }
@@ -316,9 +316,9 @@ INTENT_ADAPTER=http make dev          # 인텐트만 실제 서버(INTENT_BASE_U
 
 ```json
 {
-  "image_path": "data/fingerprints/AS-000031/handle_01.jpg",
+  "image_path": "data/fingerprints/AS-0001/handle_01.jpg",
   "image_base64": null,
-  "customer_id": "CU-0007",
+  "customer_id": "CU-0001",
   "top_k": 3
 }
 ```
@@ -340,16 +340,16 @@ INTENT_ADAPTER=http make dev          # 인텐트만 실제 서버(INTENT_BASE_U
 
 ```json
 {
-  "matched_asset_id": "AS-000031",
+  "matched_asset_id": "AS-0001",
   "similarity": 0.94,
   "is_match": true,
   "candidates": [
     {
-      "asset_id": "AS-000031",
+      "asset_id": "AS-0001",
       "similarity": 0.94
     },
     {
-      "asset_id": "AS-000012",
+      "asset_id": "AS-0003",
       "similarity": 0.41
     }
   ],
@@ -379,10 +379,10 @@ INTENT_ADAPTER=http make dev          # 인텐트만 실제 서버(INTENT_BASE_U
 
 ```json
 {
-  "asset_id": "AS-000031",
+  "asset_id": "AS-0001",
   "image_paths": [
-    "data/fingerprints/AS-000031/handle_01.jpg",
-    "data/fingerprints/AS-000031/corner_01.jpg"
+    "data/fingerprints/AS-0001/handle_01.jpg",
+    "data/fingerprints/AS-0001/corner_01.jpg"
   ]
 }
 ```
@@ -404,21 +404,21 @@ INTENT_ADAPTER=http make dev          # 인텐트만 실제 서버(INTENT_BASE_U
 
 ```json
 {
-  "asset_id": "AS-000031",
+  "asset_id": "AS-0001",
   "score": 71,
   "findings": [
     {
-      "part": "sole",
+      "part": "handle",
       "severity": "MEDIUM",
-      "note": "앞창 마모 진행, 재밑창 시점 근접"
+      "note": "핸들 표면 마모 진행, 케어 임계 근접"
     },
     {
-      "part": "upper",
-      "severity": "LOW",
-      "note": "볼 부분 주름 자연 발생"
+      "part": "corner",
+      "severity": "MEDIUM",
+      "note": "코너 4곳 마찰, 각 세우기 필요"
     }
   ],
-  "next_service_months": 2,
+  "next_service_months": 1,
   "confidence": 0.8
 }
 ```
@@ -449,25 +449,25 @@ INTENT_ADAPTER=http make dev          # 인텐트만 실제 서버(INTENT_BASE_U
 
 ```json
 {
-  "customer_id": "CU-0007",
-  "target_product_id": "LX-0012",
+  "customer_id": "CU-0003",
+  "target_product_id": "LX-0006",
   "session_events": [
     {
       "event_type": "size_guide",
-      "product_id": "LX-0012",
+      "product_id": "LX-0006",
       "timestamp": "2026-08-14T10:03:20+09:00",
       "dwell_seconds": 88.5,
       "meta": {
-        "size": "38"
+        "size": "38.5"
       }
     },
     {
       "event_type": "size_guide",
-      "product_id": "LX-0012",
+      "product_id": "LX-0006",
       "timestamp": "2026-08-14T10:05:02+09:00",
       "dwell_seconds": 61.0,
       "meta": {
-        "size": "38.5"
+        "size": "39"
       }
     }
   ],
@@ -506,8 +506,8 @@ INTENT_ADAPTER=http make dev          # 인텐트만 실제 서버(INTENT_BASE_U
 
 ```json
 {
-  "request_id": "adv-CU-0007-LX-0012-S2",
-  "customer_id": "CU-0007",
+  "request_id": "adv-CU-0003-LX-0006-S2",
+  "customer_id": "CU-0003",
   "tier": "ESTABLISHED",
   "hesitation_type": "SIZE_UNCERTAIN",
   "confidence": 0.82,
@@ -515,28 +515,28 @@ INTENT_ADAPTER=http make dev          # 인텐트만 실제 서버(INTENT_BASE_U
     {
       "name": "size_guide_repeat",
       "weight": 0.62,
-      "evidence": "size_guide 2회 조회 (38, 38.5)"
+      "evidence": "size_guide 2회 조회 (38.5, 39)"
     }
   ],
-  "message": "2023년에 함께하신 Aurelia Oxford와 같은 Aurelia 라스트입니다. 현재 컨디션 71점(앞창 마모 진행)이라 재밑창과 함께 피팅을 잡아드릴까요?",
+  "message": "2023년에 함께하신 Aurelia Derby와 같은 LAST-AURELIA 라스트입니다. 현재 컨디션 81점(앞창 마모 진행)이라 재밑창과 함께 피팅을 잡아드릴까요?",
   "cta": "BOOK_FITTING",
   "cited_asset_ids": [
-    "AS-000031"
+    "AS-0010"
   ],
   "citations": [
     {
-      "asset_id": "AS-000031",
-      "product_name": "Aurelia Oxford",
-      "condition_score": 71,
-      "next_service_months": 2,
-      "headline_finding": "앞창 마모 진행, 재밑창 시점 근접"
+      "asset_id": "AS-0010",
+      "product_name": "Aurelia Derby",
+      "condition_score": 81,
+      "next_service_months": 6,
+      "headline_finding": "앞창 마모 진행"
     }
   ],
   "owned_assets_used": true,
   "no_assets": false,
   "ranked_asset_ids": [
-    "AS-000031",
-    "AS-000018"
+    "AS-0010",
+    "AS-0011"
   ],
   "strategy_id": "S2",
   "degraded": false,
@@ -637,7 +637,7 @@ INTENT_ADAPTER=http make dev          # 인텐트만 실제 서버(INTENT_BASE_U
 
 | 필드 | 타입 | 기본값 | 제약 | 설명 |
 |---|---|---|---|---|
-| `asset_id` | string | **필수** | - | 개체 id (예: 'AS-000031') |
+| `asset_id` | string | **필수** | - | 개체 id (예: 'AS-0001') |
 | `customer_id` | string | **필수** | - |  |
 | `product_id` | string | **필수** | - |  |
 | `product_name` | string | **필수** | - | 조회 편의를 위한 비정규화 필드 |

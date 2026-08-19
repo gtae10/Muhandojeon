@@ -23,44 +23,44 @@ class ClientelingReplyRequest(BaseModel):
     model_config = ConfigDict(
         json_schema_extra={
             "example": {
-                "customer_id": "CU-0007",
+                "customer_id": "CU-0003",
                 "hesitation_type": "SIZE_UNCERTAIN",
                 "target_product": {
-                    "product_id": "LX-0012",
-                    "name": "Aurelia Derby",
+                    "product_id": "LX-0006",
+                    "name": "Aurelia Oxford",
                     "category": "SHOES",
                     "collection": "Maison Nord",
-                    "material": "박스카프 카프스킨 / 굿이어 웰트",
-                    "color": "Ebony",
-                    "price_krw": 2380000,
-                    "size_system": "EU 35-42 / Last: Aurelia",
-                    "available_sizes": ["38", "38.5", "40"],
-                    "care_notes": "3개월마다 슈트리 사용 및 크림 보습 권장",
-                    "image_path": "images/LX-0012.jpg",
+                    "material": "패티나 카프 / 굿이어 웰트",
+                    "color": "Cognac",
+                    "price_krw": 2700000,
+                    "size_system": "EU 35-42 / Last: LAST-AURELIA",
+                    "available_sizes": ["38.5", "39", "40"],
+                    "care_notes": "패티나 유지 위해 왁스는 3개월 간격. 우천 착화 지양",
+                    "image_path": "images/placeholder/LX-0006.jpg",
                 },
                 "owned_assets": [
                     {
-                        "asset_id": "AS-000031",
-                        "customer_id": "CU-0007",
-                        "product_id": "LX-0004",
-                        "product_name": "Aurelia Oxford",
+                        "asset_id": "AS-0010",
+                        "customer_id": "CU-0003",
+                        "product_id": "LX-0005",
+                        "product_name": "Aurelia Derby",
                         "category": "SHOES",
                         "purchased_at": "2023-04-18T00:00:00+09:00",
-                        "condition_score": 71,
+                        "condition_score": 81,
                         "findings": [
                             {
                                 "part": "sole",
                                 "severity": "MEDIUM",
-                                "note": "앞창 마모 진행, 재밑창 시점 근접",
+                                "note": "앞창 마모 진행",
                             }
                         ],
-                        "next_service_months": 2,
-                        "last_scanned_at": "2026-07-02T14:20:00+09:00",
+                        "next_service_months": 6,
+                        "last_scanned_at": "2026-06-05T14:00:00+09:00",
                     }
                 ],
                 "strategy_id": "S2",
                 "history": [
-                    {"role": "customer", "content": "38이 맞을지 38.5가 맞을지 모르겠어요."}
+                    {"role": "customer", "content": "38.5가 맞을지 39가 맞을지 모르겠어요."}
                 ],
             }
         }
@@ -87,13 +87,13 @@ class ClientelingReplyResponse(BaseModel):
         json_schema_extra={
             "example": {
                 "message": (
-                    "2023년에 함께하신 Aurelia Oxford와 같은 Aurelia 라스트입니다. "
-                    "그 오프닝을 38로 신으셨고 현재 컨디션 71점(앞창 마모 진행)이라, "
-                    "같은 38이 가장 안정적입니다. 재밑창 예약과 함께 피팅을 잡아드릴까요?"
+                    "2023년에 함께하신 Aurelia Derby와 같은 LAST-AURELIA 라스트입니다. "
+                    "그때 38.5로 맞춰 드렸고 현재 컨디션 81점(앞창 마모 진행)이라, "
+                    "같은 38.5가 가장 안정적입니다. 재밑창 예약과 함께 피팅을 잡아드릴까요?"
                 ),
-                "cited_asset_ids": ["AS-000031"],
+                "cited_asset_ids": ["AS-0010"],
                 "cta": "BOOK_FITTING",
-                "reasoning": "동일 라스트 보유 → 사이즈 불확실 해소. 컨디션 71점 → 케어 동시 제안.",
+                "reasoning": "동일 라스트 보유 → 사이즈 불확실 해소. 컨디션 81점 → 케어 동시 제안.",
             }
         }
     )

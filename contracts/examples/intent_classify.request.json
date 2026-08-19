@@ -1,34 +1,34 @@
 {
-  "customer_id": "CU-0007",
+  "customer_id": "CU-0003",
   "session_events": [
     {
       "event_type": "view_product",
-      "product_id": "LX-0012",
+      "product_id": "LX-0006",
       "timestamp": "2026-08-14T10:02:11+09:00",
       "dwell_seconds": 42.0,
       "meta": {}
     },
     {
       "event_type": "size_guide",
-      "product_id": "LX-0012",
+      "product_id": "LX-0006",
       "timestamp": "2026-08-14T10:03:20+09:00",
       "dwell_seconds": 88.5,
-      "meta": {
-        "size": "38"
-      }
-    },
-    {
-      "event_type": "size_guide",
-      "product_id": "LX-0012",
-      "timestamp": "2026-08-14T10:05:02+09:00",
-      "dwell_seconds": 61.0,
       "meta": {
         "size": "38.5"
       }
     },
     {
+      "event_type": "size_guide",
+      "product_id": "LX-0006",
+      "timestamp": "2026-08-14T10:05:02+09:00",
+      "dwell_seconds": 61.0,
+      "meta": {
+        "size": "39"
+      }
+    },
+    {
       "event_type": "add_to_cart",
-      "product_id": "LX-0012",
+      "product_id": "LX-0006",
       "timestamp": "2026-08-14T10:06:40+09:00",
       "dwell_seconds": 5.0,
       "meta": {}

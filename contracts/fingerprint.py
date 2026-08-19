@@ -23,8 +23,8 @@ class FingerprintMatchRequest(BaseModel):
     model_config = ConfigDict(
         json_schema_extra={
             "example": {
-                "image_path": "data/fingerprints/AS-000031/handle_01.jpg",
-                "customer_id": "CU-0007",
+                "image_path": "data/fingerprints/AS-0001/handle_01.jpg",
+                "customer_id": "CU-0001",
                 "top_k": 3,
             }
         }
@@ -59,12 +59,12 @@ class FingerprintMatchResponse(BaseModel):
     model_config = ConfigDict(
         json_schema_extra={
             "example": {
-                "matched_asset_id": "AS-000031",
+                "matched_asset_id": "AS-0001",
                 "similarity": 0.94,
                 "is_match": True,
                 "candidates": [
-                    {"asset_id": "AS-000031", "similarity": 0.94},
-                    {"asset_id": "AS-000012", "similarity": 0.41},
+                    {"asset_id": "AS-0001", "similarity": 0.94},
+                    {"asset_id": "AS-0003", "similarity": 0.41},
                 ],
                 "threshold": 0.75,
             }

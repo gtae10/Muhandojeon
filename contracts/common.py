@@ -183,7 +183,7 @@ class OwnedAsset(BaseModel):
     `cited_asset_ids` 로 인용해야 한다.
     """
 
-    asset_id: str = Field(description="개체 id (예: 'AS-000031')")
+    asset_id: str = Field(description="개체 id (예: 'AS-0001')")
     customer_id: str
     product_id: str
     product_name: str = Field(description="조회 편의를 위한 비정규화 필드")

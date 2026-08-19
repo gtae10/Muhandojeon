@@ -1,6 +1,6 @@
 {
-  "request_id": "adv-CU-0007-LX-0012-S2",
-  "customer_id": "CU-0007",
+  "request_id": "adv-CU-0003-LX-0006-S2",
+  "customer_id": "CU-0003",
   "tier": "ESTABLISHED",
   "hesitation_type": "SIZE_UNCERTAIN",
   "confidence": 0.82,
@@ -8,28 +8,28 @@
     {
       "name": "size_guide_repeat",
       "weight": 0.62,
-      "evidence": "size_guide 2회 조회 (38, 38.5)"
+      "evidence": "size_guide 2회 조회 (38.5, 39)"
     }
   ],
-  "message": "2023년에 함께하신 Aurelia Oxford와 같은 Aurelia 라스트입니다. 현재 컨디션 71점(앞창 마모 진행)이라 재밑창과 함께 피팅을 잡아드릴까요?",
+  "message": "2023년에 함께하신 Aurelia Derby와 같은 LAST-AURELIA 라스트입니다. 현재 컨디션 81점(앞창 마모 진행)이라 재밑창과 함께 피팅을 잡아드릴까요?",
   "cta": "BOOK_FITTING",
   "cited_asset_ids": [
-    "AS-000031"
+    "AS-0010"
   ],
   "citations": [
     {
-      "asset_id": "AS-000031",
-      "product_name": "Aurelia Oxford",
-      "condition_score": 71,
-      "next_service_months": 2,
-      "headline_finding": "앞창 마모 진행, 재밑창 시점 근접"
+      "asset_id": "AS-0010",
+      "product_name": "Aurelia Derby",
+      "condition_score": 81,
+      "next_service_months": 6,
+      "headline_finding": "앞창 마모 진행"
     }
   ],
   "owned_assets_used": true,
   "no_assets": false,
   "ranked_asset_ids": [
-    "AS-000031",
-    "AS-000018"
+    "AS-0010",
+    "AS-0011"
   ],
   "strategy_id": "S2",
   "degraded": false,
