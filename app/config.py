@@ -70,9 +70,10 @@ class Settings(BaseSettings):
 
     intent_base_url: str = "http://localhost:8101"
     clienteling_base_url: str = "http://localhost:8102"
-    asset_base_url: str = "http://localhost:8103"
-    fingerprint_base_url: str = "http://localhost:8104"
-    condition_base_url: str = "http://localhost:8105"
+    # asset/fingerprint/condition 은 백엔드 한 프로세스가 :8001 에서 셋 다 서빙한다.
+    asset_base_url: str = "http://localhost:8001"
+    fingerprint_base_url: str = "http://localhost:8001"
+    condition_base_url: str = "http://localhost:8001"
 
     # ── 시드 데이터 ────────────────────────────────────────────
     # 외부 데이터셋 미확정 → 손으로 쓴 픽스처가 기본. 데이터셋 확정 시 dataset 으로 전환한다.

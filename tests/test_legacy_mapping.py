@@ -20,13 +20,13 @@ from contracts.intent import IntentClassifyResponse
 
 def test_assets_legacy_shape():
     raw = {
-        "user_id": "CU-0007",
+        "user_id": "CU-0001",
         "total": 1,
         "assets": [
             {
-                "asset_id": "AS-000031",
-                "product_id": "LX-0004",
-                "product_name": "Aurelia Oxford",
+                "asset_id": "AS-0001",
+                "product_id": "LX-0001",
+                "product_name": "Aurelia Top Handle",
                 "brand": "Maison",
                 "category": "bag",
                 "purchase_date": "2023-04-18T00:00:00+09:00",
@@ -40,7 +40,7 @@ def test_assets_legacy_shape():
         ],
     }
     mapped = CustomerAssetsResponse.model_validate(legacy_assets_mapper(raw))
-    assert mapped.customer_id == "CU-0007"
+    assert mapped.customer_id == "CU-0001"
     assert mapped.tier.value == "NEW"  # 개체 1개 → NEW 로 추정
     asset = mapped.assets[0]
     assert asset.condition_score == 71
@@ -51,7 +51,7 @@ def test_assets_legacy_shape():
 
 
 def test_condition_legacy_grade_only():
-    raw = {"asset_id": "AS-000031", "condition_grade": "Fair", "wear_detail": {"cracks": 1}}
+    raw = {"asset_id": "AS-0001", "condition_grade": "Fair", "wear_detail": {"cracks": 1}}
     mapped = ConditionScoreResponse.model_validate(legacy_condition_mapper(raw))
     assert mapped.score == 62
     assert mapped.next_service_months == 0  # 70 이하 → 즉시 케어
@@ -61,26 +61,27 @@ def test_condition_legacy_grade_only():
 def test_clienteling_legacy_reply_recovers_asset_ids():
     raw = {
         "session_id": "s1",
-        "reply": "2023년 AS-000031 개체의 컨디션이 71점입니다. 케어를 권합니다.",
+        "reply": "2022년 AS-0001 개체의 컨디션이 71점입니다. 케어를 권합니다.",
         "model_used": "gpt-4o",
     }
     mapped = ClientelingReplyResponse.model_validate(legacy_clienteling_mapper(raw))
-    assert mapped.message.startswith("2023년")
+    assert mapped.message.startswith("2022년")
     # cited_asset_ids 가 없는 응답에서 본문의 개체 id 를 회수한다.
-    assert mapped.cited_asset_ids == ["AS-000031"]
+    # 시드 id 는 4자리다 — 정규식이 6자리만 받으면 실물에서 한 건도 회수하지 못한다.
+    assert mapped.cited_asset_ids == ["AS-0001"]
     assert mapped.cta.value == "NONE"
 
 
 def test_fingerprint_legacy_new_registration_is_not_match():
-    raw = {"asset_id": "AS-000031", "condition_score": 88, "is_new_registration": True}
+    raw = {"asset_id": "AS-0001", "condition_score": 88, "is_new_registration": True}
     mapped = FingerprintMatchResponse.model_validate(legacy_fingerprint_mapper(raw))
     assert mapped.is_match is False
     assert mapped.matched_asset_id is None
 
-    raw2 = {"asset_id": "AS-000031", "condition_score": 88, "is_new_registration": False}
+    raw2 = {"asset_id": "AS-0001", "condition_score": 88, "is_new_registration": False}
     mapped2 = FingerprintMatchResponse.model_validate(legacy_fingerprint_mapper(raw2))
     assert mapped2.is_match is True
-    assert mapped2.matched_asset_id == "AS-000031"
+    assert mapped2.matched_asset_id == "AS-0001"
     assert mapped2.similarity >= 0.75
 
 

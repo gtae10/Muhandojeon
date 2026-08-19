@@ -11,13 +11,14 @@
 
 ```
 data/fingerprints/{asset_id}/{angle}_{index}.jpg
-예) data/fingerprints/AS-000031/handle_01.jpg
-    data/fingerprints/AS-000031/handle_02.jpg
-    data/fingerprints/AS-000031/stitching_01.jpg
+예) data/fingerprints/AS-0001/handle_01.jpg
+    data/fingerprints/AS-0001/handle_02.jpg
+    data/fingerprints/AS-0001/stitching_01.jpg
 ```
 
-- `asset_id` 는 DB의 개체 id 다. `data/processed/customers.json` 또는
-  `sqlite3 data/app.db "select asset_id, product_name from assets limit 20"` 로 확인한다.
+- `asset_id` 는 **시드의 개체 id 그대로**다(`fixtures/assets.json`, `AS-0001`~`AS-0018`).
+  `GET /assets/{customer_id}` 응답이나 `make fixtures` 출력으로 확인한다.
+  자릿수를 바꿔 적으면 매칭이 등록 이미지를 못 찾아 항상 유사도 0 이 된다.
 - `angle` 은 아래 부위 표의 값을 소문자로 쓴다. `index` 는 2자리(01, 02, ...).
 - 확장자는 `jpg` / `jpeg` / `png`. 규약을 어기면 등록 CLI 가 파일명 위반으로 걸러낸다.
 
@@ -65,23 +66,26 @@ data/fingerprints/{asset_id}/{angle}_{index}.jpg
 ## 5. 등록 절차
 
 ```bash
+# 등록 CLI 는 외부 데이터셋 보류와 함께 scripts/_deferred/ 로 빠져 있다(실행 경로 밖).
+# 되살릴 때는 scripts/ 로 옮기고 아래처럼 쓴다.
+
 # 0) 규약을 눈으로 확인 (샘플 이미지 8장 생성)
-python -m scripts.register_fingerprint --make-sample AS-000001
+python -m scripts.register_fingerprint --make-sample AS-0001
 
 # 1) 실제 촬영본을 data/fingerprints/{asset_id}/ 에 넣는다
 
 # 2) 검증만 먼저 (DB 에 쓰지 않음)
-python -m scripts.register_fingerprint data/fingerprints/AS-000031 --dry-run
+python -m scripts.register_fingerprint data/fingerprints/AS-0001 --dry-run
 
 # 3) 등록
-python -m scripts.register_fingerprint data/fingerprints/AS-000031
+python -m scripts.register_fingerprint data/fingerprints/AS-0001
 python -m scripts.register_fingerprint --all      # 전체 개체 일괄
 ```
 
 출력 예시
 
 ```
-  [AS-000001] Nocturne Shoulder (BAG) — 이미지 11장
+  [AS-0001] Aurelia Top Handle (BAG) — 이미지 11장
     ! badname.jpg: 파일명 규약 위반 ({angle}_{index}.jpg 형식)
     ok   handle_01.jpg      1200x1200 blur=24369.6 bright=129.0±36.7
     재촬영 handle_09.jpg    1200x1200 blur=   1.8 bright=129.5± 2.4

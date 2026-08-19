@@ -61,7 +61,7 @@
   로 표시하고 경고 로그를 남긴다.
 - Persona Bot Lab 의 전략 S2(소유 자산 연계형)는 인용 여부로 평가되므로, 이 필드가 없으면
   S2 의 효과를 0으로 측정한다.
-- 임시 방편으로 어댑터가 **본문에서 `AS-\d{6}` 패턴을 회수**하지만, 문장이 "2023년의 오프닝"
+- 임시 방편으로 어댑터가 **본문에서 `AS-\d{4,6}` 패턴을 회수**하지만, 문장이 "2023년의 오프닝"
   처럼 id 없이 자연어로만 인용하면 잡히지 않는다.
 
 따라서 AI2/백엔드 담당은 응답에 다음 두 필드를 추가해 주면 된다.
@@ -70,7 +70,7 @@
 {
   "session_id": "...",
   "reply": "...",
-  "cited_asset_ids": ["AS-000031"],
+  "cited_asset_ids": ["AS-0010"],
   "cta": "BOOK_FITTING"
 }
 ```
@@ -82,11 +82,11 @@
 모듈별로 하나씩 켠다(전역 `ADAPTER_MODE=http` 는 전부 켜므로 마지막에).
 
 ```bash
-# 자산 조회만 실제 백엔드로
-ASSET_ADAPTER=http ASSET_BASE_URL=http://localhost:8000 make dev
+# 자산 조회만 실제 백엔드로 (백엔드는 :8001 — asset/fingerprint/condition 을 한 프로세스가 서빙)
+ASSET_ADAPTER=http ASSET_BASE_URL=http://localhost:8001 make dev
 
-# 상담까지 실제 AI2 로
-ASSET_ADAPTER=http CLIENTELING_ADAPTER=http CLIENTELING_BASE_URL=http://localhost:8000 make dev
+# 상담까지 실제 AI2 로 (AI2 는 :8102)
+ASSET_ADAPTER=http CLIENTELING_ADAPTER=http CLIENTELING_BASE_URL=http://localhost:8102 make dev
 ```
 
 확인:

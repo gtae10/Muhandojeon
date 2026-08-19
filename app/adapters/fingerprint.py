@@ -27,7 +27,8 @@ from contracts.fingerprint import (
 )
 
 MATCH_THRESHOLD = 0.75
-ASSET_ID_RE = re.compile(r"(AS-\d{6})")
+# 경로 규약의 개체 id. 시드는 4자리(AS-0001), 데이터셋 계열 예시는 6자리다.
+ASSET_ID_RE = re.compile(r"(AS-\d{4,6})")
 
 
 class MockFingerprintAdapter(AdapterBase):

@@ -24,7 +24,8 @@ from app.strategies import Strategy, get_strategy
 from contracts.clienteling import ClientelingReplyRequest, ClientelingReplyResponse
 from contracts.common import CTA
 
-ASSET_ID_RE = re.compile(r"AS-\d{6}")
+# 시드 개체 id 는 4자리(AS-0001), 데이터셋 계열 문서 예시는 6자리다. 둘 다 회수한다.
+ASSET_ID_RE = re.compile(r"AS-\d{4,6}")
 
 SYSTEM_PROMPT = """당신은 럭셔리 메종의 시니어 클라이언텔링 어드바이저다.
 고객의 구매 망설임을 해소하는 짧은 상담 문구를 만든다.
@@ -162,7 +163,7 @@ def legacy_clienteling_mapper(raw: Any) -> dict[str, Any]:
     """팀 백엔드의 `POST /api/chat` 응답을 계약으로 옮긴다.
 
     그 응답에는 `cited_asset_ids` / `cta` 가 없다(= 우리 차별점을 측정할 수 없다).
-    문장 안의 `AS-xxxxxx` 패턴만 최선으로 회수하고, 나머지는 비운 채 넘긴다.
+    문장 안의 `AS-xxxx` 패턴만 최선으로 회수하고, 나머지는 비운 채 넘긴다.
     백엔드가 채워야 할 항목은 `docs/BACKEND_INTEGRATION.md` 에 정리해 두었다.
     """
     if not isinstance(raw, dict):
