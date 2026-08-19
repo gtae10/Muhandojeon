@@ -21,7 +21,12 @@ from fastapi.responses import HTMLResponse, RedirectResponse
 from pydantic import BaseModel, Field
 
 import engine
-from prompts.knowledge import SOURCE_CHALLENGE_HINTS, data_overlay, pick_products
+from prompts.knowledge import (
+    ACCEPT_HINTS,
+    SOURCE_CHALLENGE_HINTS,
+    data_overlay,
+    pick_products,
+)
 
 # 통합 경로("한 메종" 세계관)가 엔진 호출 동안 갈아끼우는 데이터.
 # scripts/build_integration_data.py 가 생성한다 — 직접 수정 금지.
@@ -190,6 +195,88 @@ TYPE_WORDS_FOR_CITATION = {
 # suggested_action → 통합 레이어의 CTA enum (BOOK_FITTING|VIEW_STOCK|CARE_BOOKING|NONE).
 # delivery·staff_connect 에 해당하는 CTA 가 저쪽에 없어 NONE 으로 흘린다.
 CTA_FROM_ACTION = {"care_booking": "CARE_BOOKING", "stock_hold": "VIEW_STOCK"}
+
+# ---------- BOOK_FITTING 승격 (2026-08-19) ----------
+# 엔진에는 피팅에 해당하는 액션이 없어 BOOK_FITTING 이 반환되는 경우가 없었다.
+# 엔진·/chat 은 동결 유지 — 이 후처리가 NONE 으로 흐를 턴에서만, 답변이 실제로
+# 피팅 접수를 제안·확정했을 때 승격한다 (fix_delivery_action 과 같은 계열:
+# 코드가 판정만 하고 모델을 다시 부르지 않는다).
+# 어휘는 상상이 아니라 프로브(mini·4o × 장면 2 × 3회)에서 수집한 실제 문장 기준.
+#   · "피팅 예약을 진행하겠습니다" (4o 수락 턴 3/3)
+#   · "매장에서 실착 경험을 도와드릴까요?" (4o 첫 턴)
+#   · "매장에 확인 요청을 넣어드릴까요?" — 재고 확인이지 피팅이 아니다.
+#     같은 문장 안에 피팅 어휘가 없으므로 안 걸린다 (같은 문장 규칙의 이유).
+# 원칙: 오탐 0 필수·놓침 허용 — 놓치면 현행 NONE 과 같아 잃는 게 없다.
+FITTING_WORDS = (
+    "피팅", "실착", "착화", "신어보", "착용해보", "착용해 보", "입어보",
+    "fitting", "try on", "try-on",
+)
+# 접수 어휘 — 여쭘형·확정형의 **행동 동사**만. 권유형("추천드립니다",
+# "권장합니다")은 조언이지 접수가 아니고, 명사("예약", "접수")를 단독으로 넣으면
+# "피팅 예약이 가능합니다" 같은 정보 문장까지 걸린다. 정보 동사("알려드릴까요",
+# "보여드릴까요")도 접수가 아니라 넣지 않는다.
+BOOKING_WORDS = (
+    "도와드릴까요", "넣어드릴까요", "예약해드릴까요", "예약해 드릴까요",
+    "잡아드릴까요", "진행해드릴까요", "접수해드릴까요",
+    "도와드리겠습니다", "넣어드리겠습니다", "진행하겠습니다",
+    "예약하겠습니다", "접수하겠습니다", "잡아드리겠습니다", "진행해드리겠습니다",
+)
+# 거절 차단 — 고객이 거절한 턴에는 답변 내용과 무관하게 승격하지 않는다.
+# "원하시면 언제든 피팅 예약을 도와드리겠습니다" 가 규칙에 걸려
+# 거절 직후에 카드가 뜨는 오탐 방지. 넓게 잡아도 안전하다 —
+# 잘못 차단하면 현행 NONE 과 같을 뿐이다. (추궁 턴 인용 차단과 같은 자리)
+REFUSAL_HINTS = (
+    "아니요", "아니오", "아뇨", "괜찮아요", "괜찮습니다", "다음에", "나중에",
+    "안 할", "않을게", "됐어요", "필요 없", "no thanks", "not now", "maybe later",
+)
+
+
+def _fitting_offer_in(text):
+    """같은 문장 안에 피팅 어휘와 접수 어휘가 함께 있는가.
+
+    문장 단위로 보는 이유: "착용해보시는 것이 좋습니다. 매장에 확인 요청을
+    넣어드릴까요?" 는 피팅 조언 + 재고 확인이지 피팅 접수가 아니다.
+    문장을 합쳐서 보면 이런 턴이 전부 오탐이 된다.
+    """
+    for sentence in re.split(r"[.!?\n]", text or ""):
+        if any(f in sentence for f in FITTING_WORDS) and any(
+            b in sentence for b in BOOKING_WORDS
+        ):
+            return True
+    return False
+
+
+def _book_fitting_cta(reply, message, history):
+    """이 턴의 cta 를 BOOK_FITTING 으로 승격할지 판정한다. (NONE 턴에서만 호출)
+
+    게이트 3종:
+      1. 답변이 같은 문장 안에서 피팅 접수를 제안·확정했다
+      2. 직전 어드바이저 발화의 마지막 문장이 피팅 여쭘이고, 이번 발화가
+         짧은 수락이다 — 수락 턴의 답변에는 피팅 단어가 빠질 수 있다
+         ("접수를 넣어드리겠습니다"). 동의한 턴에 카드가 사라지면 안 된다.
+         (근거 카드 연속성 게이트와 같은 패턴 — 대상은 직전 발화에 있다)
+      3. 고객 발화가 거절이면 전부 차단
+    """
+    msg = (message or "").strip()
+    if any(h in msg.lower() for h in REFUSAL_HINTS):
+        return False
+    if _fitting_offer_in(reply):
+        return True
+    # 수락 연속 승격 — 짧은 수락 판정은 build_continuity_note 와 같은 기준.
+    if len(msg) <= 20 and any(h in msg.lower() for h in ACCEPT_HINTS):
+        last = ""
+        for turn in reversed(history or []):
+            if isinstance(turn, dict) and turn.get("role") == "assistant":
+                last = str(turn.get("content") or "")
+                break
+        sentences = [s for s in re.split(r"[.!?\n]", last) if s.strip()]
+        if sentences:
+            final = sentences[-1]
+            # 마지막 문장이 여쭘형("~까요")일 때만 — 이미 확정한 뒤의 "네"는
+            # 앞 턴에서 카드가 이미 나갔으므로 다시 붙이지 않는다.
+            if "까요" in final and _fitting_offer_in(final):
+                return True
+    return False
 
 
 def _their_history_to_ours(history):
@@ -450,6 +537,11 @@ def clienteling_reply(req: IntegrationReplyRequest):
     # 띄우는데, "그걸 어떻게 아세요?" 라고 물은 고객에게 마모·케어 권장 카드를
     # 보여주는 것은 경계심에 상태 평가를 얹는 원래 사고의 화면판이다.
     challenged = any(h in message.lower() for h in SOURCE_CHALLENGE_HINTS)
+    # BOOK_FITTING 승격은 NONE 으로 흐를 턴에서만 — care_booking·stock_hold 가
+    # 고른 카드를 밀어내지 않는다 (카드 충돌 방지).
+    cta = CTA_FROM_ACTION.get(result["suggested_action"], "NONE")
+    if cta == "NONE" and _book_fitting_cta(result["reply"], message, history):
+        cta = "BOOK_FITTING"
     return IntegrationReplyResponse(
         message=result["reply"],
         cited_asset_ids=[] if challenged else _cited_asset_ids(
@@ -459,7 +551,7 @@ def clienteling_reply(req: IntegrationReplyRequest):
                 if isinstance(t, dict) and t.get("role") == "assistant"
             ),
         ),
-        cta=CTA_FROM_ACTION.get(result["suggested_action"], "NONE"),
+        cta=cta,
         reasoning=f"AI2 engine / suggested_action={result['suggested_action']}",
     )
 

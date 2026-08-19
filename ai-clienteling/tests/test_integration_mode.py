@@ -1,4 +1,4 @@
-# 통합 경로(/clienteling/reply) 테스트 — "한 메종" 세계관 (LLM 6회)
+# 통합 경로(/clienteling/reply) 테스트 — "한 메종" 세계관 (LLM 8회)
 #
 # 2026-08-18 전면 개정: 통합 경로가 기존 MCM 엔진 + 데이터 오버레이(18종 카탈로그·
 # 16명 고객·확장 재고)로 재설계됐다. 어드바이저는 전 제품·매장·재고·배송을 안다.
@@ -10,6 +10,9 @@
 #   4. 보유 LX 자산을 예산 대안으로 출처 없이 권하지 않는다
 #   5. 출처 추궁 턴에는 인용(카드)이 비고 통제권 문장이 있다
 #   6. 케어 화제가 아니면 인용이 빈다 (카드 시점 게이트)
+#   7. 피팅 여쭘에 수락하면 cta 가 붙는다 (BOOK_FITTING 승격 — 2026-08-19)
+#   8. 거절 턴에는 BOOK_FITTING 이 절대 안 붙는다 (오탐 0 원칙)
+#   +. 승격 게이트 단위 검사 (LLM 0회 — 프로브 실측 문장 기준)
 #
 # 실행: python tests/test_integration_mode.py
 import json
@@ -87,6 +90,56 @@ print("[5]", m, "\n")
 b = call([turn("노트북이 들어가는 백을 찾고 있어요.")])
 results["6 케어 화제 아님 → 인용 없음 (카드 게이트)"] = b["cited_asset_ids"] == []
 print("[6]", b["message"], "\n")
+
+# --- BOOK_FITTING 승격 (2026-08-19) ---
+# 피팅 여쭘 뒤 수락 → 카드가 붙어야 한다. 엔진이 care_booking 으로 분류하는
+# 실행도 있어(주로 mini) CARE_BOOKING 도 정합으로 본다 — NONE 만 실패다.
+FITTING_ASK = {
+    "role": "agent",
+    "content": "평소 240을 신으신다면 38이 가장 가깝지만, 더비는 발볼에 따라 "
+               "착화감이 달라 매장에서 직접 신어보시는 것이 정확합니다. "
+               "피팅 예약을 도와드릴까요?",
+}
+size_q = turn("Aurelia Derby를 보고 있는데 평소 240을 신어요. 38이 맞을까요?")
+
+b = call([size_q, FITTING_ASK, turn("네, 그렇게 해주세요.")], hesitation="SIZE_UNCERTAIN")
+results["7 피팅 여쭘 수락 → 카드 (BOOK_FITTING/CARE_BOOKING)"] = b["cta"] in {
+    "BOOK_FITTING", "CARE_BOOKING"}
+print("[7]", f"cta={b['cta']}", b["message"], "\n")
+
+b = call([size_q, FITTING_ASK, turn("아니요, 괜찮아요. 다음에 할게요.")],
+         hesitation="SIZE_UNCERTAIN")
+results["8 피팅 거절 → BOOK_FITTING 없음 (오탐 0)"] = b["cta"] != "BOOK_FITTING"
+print("[8]", f"cta={b['cta']}", b["message"], "\n")
+
+# --- 승격 게이트 단위 검사 (LLM 0회) ---
+# 프로브(mini·4o × 장면 2 × 3회)에서 수집한 실제 문장이 기준이다.
+from api import _book_fitting_cta  # noqa: E402
+
+HIST_ASK = [{"role": "assistant", "content": FITTING_ASK["content"]}]
+gate_cases = [
+    ("g1 확정형 (피팅 예약을 진행하겠습니다)", True,
+     "Aurelia Derby의 피팅 예약을 진행하겠습니다.", "네, 그렇게 해주세요.", HIST_ASK),
+    ("g2 여쭘형 (실착 경험을 도와드릴까요)", True,
+     "38이 적합할 가능성이 큽니다. 매장에서 실착 경험을 도와드릴까요?", "38이 맞을까요?", []),
+    ("g3 수락 연속 (답변에 피팅 단어 없음)", True,
+     "접수를 넣어드리겠습니다. 매장에서 확인 후 연락드리겠습니다.",
+     "네, 그렇게 해주세요.", HIST_ASK),
+    ("g4 권유형은 제외 (신어보시는 것을 권장합니다)", False,
+     "가까운 매장에서 직접 신어보시는 것을 권장합니다. 그 지역 매장은 제가 확인해드릴까요?",
+     "38이 맞을까요?", []),
+    ("g5 문장 분리 (착용 권유 + 재고 확인 여쭘)", False,
+     "매장에서 직접 착용해보시고 편한 사이즈를 선택하시는 것이 가장 좋습니다. "
+     "매장에 확인 요청을 넣어드릴까요?", "38이 맞을까요?", []),
+    ("g6 거절 차단 (거절 후 상시 제안)", False,
+     "알겠습니다. 원하시면 언제든 피팅 예약을 도와드리겠습니다.",
+     "아니요, 다음에 할게요.", HIST_ASK),
+    ("g7 수선 접수는 피팅 아님", False,
+     "핸들 마모는 보습 관리를 권해드립니다. 수선 접수를 도와드릴까요?",
+     "관리 어떻게 해요?", []),
+]
+for label, expected, reply, msg, hist in gate_cases:
+    results[label] = _book_fitting_cta(reply, msg, hist) == expected
 
 print("=== 판정 ===")
 failed = 0
