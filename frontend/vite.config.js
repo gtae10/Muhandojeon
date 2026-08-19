@@ -6,6 +6,11 @@ import tailwindcss from '@tailwindcss/vite'
 // 백엔드가 꺼져 있으면 src/api/client.js가 자동으로 목업 데이터로 폴백한다.
 export default defineConfig({
   plugins: [react(), tailwindcss()],
+  build: {
+    // 기본값 'assets'는 nginx의 API 프록시 경로(/assets -> backend)와 충돌한다.
+    // 빌드 산출물 폴더 이름만 바꿔서 경로 충돌을 피한다.
+    assetsDir: 'static-files',
+  },
   server: {
     port: 5173,
     proxy: {
