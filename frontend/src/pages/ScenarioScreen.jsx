@@ -50,6 +50,9 @@ export default function ScenarioScreen() {
     <div className="space-y-8">
       <div>
         <h1 className="font-display font-bold text-2xl text-[var(--color-text)]">데모 시나리오</h1>
+        <p className="text-sm text-[var(--color-accent)] mt-2.5">
+          고객을 아는 AI가 아니라, 고객의 물건을 아는 AI
+        </p>
         <p className="text-sm text-[var(--color-muted)] mt-2 text-pretty">
           고정된 고객·상품·세션으로 상담을 재생해요
         </p>

@@ -21,6 +21,10 @@ export default defineConfig({
       '/demo': 'http://localhost:8000',
       '/health': 'http://localhost:8000',
       '/static': 'http://localhost:8000',
+      // 자유 상담(/chat)이 직접 부르는 계약 엔드포인트.
+      '/assets': 'http://localhost:8000',
+      '/intent': 'http://localhost:8000',
+      '/clienteling': 'http://localhost:8000',
     },
   },
 })

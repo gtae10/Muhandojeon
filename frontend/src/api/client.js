@@ -5,6 +5,9 @@ import {
   MOCK_SCENARIOS,
   mockRunScenario,
   mockAdvise,
+  mockCustomerAssets,
+  mockClassifyIntent,
+  mockClientelingReply,
 } from './mockData.js'
 
 const TIMEOUT_MS = 2500
@@ -143,4 +146,36 @@ export function advise(payload) {
 
 export function getHealth() {
   return withFallback(() => request('/health'), MOCK_HEALTH)
+}
+
+// ---- 자유 상담(/chat) — 계약 엔드포인트 직접 호출 ----
+
+/** GET /assets/{customer_id} — CustomerAssetsResponse { customer_id, tier, assets[] } */
+export function getCustomerAssets(customerId) {
+  return withFallback(
+    () => request(`/assets/${customerId}`),
+    () => mockCustomerAssets(customerId),
+  )
+}
+
+/**
+ * POST /intent/classify — IntentClassifyRequest -> IntentClassifyResponse
+ * @param {object} payload { customer_id, session_events }
+ */
+export function classifyIntent(payload) {
+  return withFallback(
+    () => request('/intent/classify', { method: 'POST', body: JSON.stringify(payload) }),
+    () => mockClassifyIntent(),
+  )
+}
+
+/**
+ * POST /clienteling/reply — ClientelingReplyRequest -> ClientelingReplyResponse
+ * @param {object} payload { customer_id, hesitation_type, target_product, owned_assets, strategy_id, history }
+ */
+export function clientelingReply(payload) {
+  return withFallback(
+    () => request('/clienteling/reply', { method: 'POST', body: JSON.stringify(payload) }),
+    () => mockClientelingReply(),
+  )
 }

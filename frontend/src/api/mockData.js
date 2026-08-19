@@ -52,7 +52,7 @@ export const MOCK_SCENARIOS = {
       id: 'D1',
       title: '사이즈 불확실 — 같은 라스트 보유 고객',
       narrative:
-        '사이즈표를 세 번 열고 38.5와 39를 왕복한 뒤 이탈한 고객(CU-0003). 같은 라스트 신발(AS-0010)을 이미 갖고 있어 "그때 맞춰 드린 치수"를 근거로 쓴다.',
+        '신발 사이즈를 정하지 못해 망설이던 고객에게, AI가 예전에 구매하신 같은 라스트 신발 기록을 근거로 정확한 사이즈를 안내해요.',
       customer_id: 'CU-0003',
       target_product_id: 'LX-0006',
     },
@@ -60,7 +60,7 @@ export const MOCK_SCENARIOS = {
       id: 'D2',
       title: '가격 망설임 — 보유 자산의 수명으로 답한다',
       narrative:
-        '가격 상한을 낮추고 저가 대안을 조회한 뒤 장바구니에서 뺀 고객(CU-0004). 할인 대신 "N년 쓴 개체가 아직 몇 점"이라는 실제 컨디션 기록으로 답한다.',
+        '가격이 부담돼서 망설이던 고객에게, AI가 할인 대신 이미 갖고 계신 제품이 몇 년째 얼마나 잘 관리되고 있는지 보여주며 설득해요.',
       customer_id: 'CU-0004',
       target_product_id: 'LX-0001',
     },
@@ -68,7 +68,7 @@ export const MOCK_SCENARIOS = {
       id: 'D3',
       title: '재고 확인 — 케어 시점이 임박한 VIP',
       narrative:
-        '재고와 배송을 확인한 장기 VIP(CU-0001). 컨디션 71점(핸들 마모 임계 근접) 개체가 있어 재고 안내와 케어 예약을 함께 제안한다.',
+        '재고가 있는지 확인하던 고객에게, AI가 원하시는 상품의 재고를 안내하면서 예전에 구매하신 제품도 관리가 필요한 시점이라는 걸 함께 짚어드려요.',
       customer_id: 'CU-0001',
       target_product_id: 'LX-0002',
     },
@@ -149,5 +149,56 @@ export function mockAdvise() {
     owned_assets_used: false,
     no_assets: true,
     degraded: false,
+  }
+}
+
+// ---- 자유 상담(/chat) 오프라인 목업 — 서버 자체에 연결할 수 없을 때만 쓴다 ----
+// (서버가 mock 어댑터로 응답하는 것과는 다르다: 그건 이미 'live' 다.)
+
+const MOCK_ASSETS_BY_CUSTOMER = {
+  'CU-0001': [
+    {
+      asset_id: 'AS-0001', customer_id: 'CU-0001', product_id: 'LX-0002', product_name: 'Solène Shoulder',
+      category: 'BAG', purchased_at: '2018-05-02T00:00:00+09:00', condition_score: 71,
+      findings: [{ part: 'handle', severity: 'HIGH', note: '핸들 마모 임계 근접' }],
+      next_service_months: 0, last_scanned_at: '2026-07-01T10:00:00+09:00',
+    },
+  ],
+  'CU-0003': [
+    {
+      asset_id: 'AS-0010', customer_id: 'CU-0003', product_id: 'LX-0006', product_name: 'Aurelia Derby',
+      category: 'SHOES', purchased_at: '2022-03-10T00:00:00+09:00', condition_score: 81,
+      findings: [], next_service_months: 8, last_scanned_at: '2026-06-15T10:00:00+09:00',
+    },
+  ],
+  'CU-0004': [
+    {
+      asset_id: 'AS-0013', customer_id: 'CU-0004', product_id: 'LX-0010', product_name: 'Lisière Card Holder',
+      category: 'SLG', purchased_at: '2023-01-20T00:00:00+09:00', condition_score: 82,
+      findings: [{ part: 'edge_coat', severity: 'LOW', note: '엣지 코트 상태 양호' }],
+      next_service_months: 6, last_scanned_at: '2026-07-10T10:00:00+09:00',
+    },
+  ],
+}
+
+export function mockCustomerAssets(customerId) {
+  const customer = MOCK_CUSTOMERS.items.find((c) => c.customer_id === customerId)
+  return {
+    customer_id: customerId,
+    tier: customer?.tier ?? 'NEW',
+    assets: MOCK_ASSETS_BY_CUSTOMER[customerId] ?? [],
+  }
+}
+
+export function mockClassifyIntent() {
+  return { hesitation_type: 'NONE', confidence: 0, signals: [] }
+}
+
+export function mockClientelingReply() {
+  return {
+    message: '(오프라인 목업) 서버에 연결할 수 없어 실제 상담을 생성하지 못했어요. 서버가 켜지면 다시 시도해주세요.',
+    cited_asset_ids: [],
+    cta: 'NONE',
+    reasoning: '',
   }
 }

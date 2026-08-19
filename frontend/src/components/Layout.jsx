@@ -1,6 +1,7 @@
 import { Outlet, Link, useLocation } from 'react-router-dom'
 import { useEffect, useState } from 'react'
 import { getHealth, connectionState } from '../api/client.js'
+import Footer from './Footer.jsx'
 
 const POLL_MS = 5000
 const THEME_KEY = 'luxe-theme'
@@ -67,20 +68,30 @@ export default function Layout() {
       <header className="border-b border-[var(--color-border)] px-4 sm:px-6 py-4 flex items-center justify-between gap-3">
         <Link to="/" className="flex items-center gap-2 sm:gap-2.5 min-w-0">
           <span className="w-[5px] h-[5px] rounded-full bg-[var(--color-accent)] shrink-0" />
-          <span className="tracking-[0.2em] sm:tracking-[0.32em] text-[10px] sm:text-[11px] font-semibold text-[var(--color-text)] whitespace-nowrap">
+          <span className="tracking-[0.16em] sm:tracking-[0.24em] text-sm sm:text-base font-semibold text-[var(--color-text)] whitespace-nowrap">
             LUXE CLIENTELING
           </span>
         </Link>
         <div className="flex items-center gap-3 sm:gap-5 text-xs shrink-0">
           <Link
             to="/consult"
-            className={`whitespace-nowrap text-[11px] sm:text-xs ${
+            className={`font-display font-bold whitespace-nowrap text-sm sm:text-base ${
               location.pathname === '/consult'
                 ? 'text-[var(--color-accent)]'
-                : 'text-[var(--color-muted)]'
+                : 'text-[var(--color-muted)] hover:text-[var(--color-accent)]'
             }`}
           >
             직접 상담
+          </Link>
+          <Link
+            to="/chat"
+            className={`font-display font-bold whitespace-nowrap text-sm sm:text-base ${
+              location.pathname === '/chat'
+                ? 'text-[var(--color-accent)]'
+                : 'text-[var(--color-muted)] hover:text-[var(--color-accent)]'
+            }`}
+          >
+            자유 상담
           </Link>
           <span
             className="flex items-center gap-1.5 text-[var(--color-muted)]"
@@ -112,6 +123,8 @@ export default function Layout() {
       <main className="flex-1 px-6 py-8 max-w-[620px] mx-auto w-full">
         <Outlet />
       </main>
+
+      <Footer />
     </div>
   )
 }
