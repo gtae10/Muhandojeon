@@ -57,7 +57,7 @@ export default function ScenarioScreen() {
           데모 시나리오
         </h1>
         <p className="text-lg text-[var(--color-text)] font-medium mt-4 leading-[1.7]">
-          고객을 아는 AI가 아니라, 고객의 물건을 아는 AI
+          고객이 가진 물건까지 아는 AI
         </p>
         <p className="text-sm text-[var(--color-muted)] mt-2 text-pretty">
           고정된 고객·상품·세션으로 상담을 재생해요
