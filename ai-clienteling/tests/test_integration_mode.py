@@ -9,10 +9,11 @@
 #   3. fixture 제품 재고를 매장 표로 답한다
 #   4. 보유 LX 자산을 예산 대안으로 출처 없이 권하지 않는다
 #   5. 출처 추궁 턴에는 인용(카드)이 비고 통제권 문장이 있다
-#   6. 케어 화제가 아니면 인용이 빈다 (카드 시점 게이트)
+#   6. 케어 시점(care_due) 자산이 있으면 재고 턴에도 카드가 보장된다 (D3)
 #   7. 피팅 여쭘에 수락하면 cta 가 붙는다 (BOOK_FITTING 승격 — 2026-08-19)
 #   8. 거절 턴에는 BOOK_FITTING 이 절대 안 붙는다 (오탐 0 원칙)
-#   +. 승격 게이트 단위 검사 (LLM 0회 — 프로브 실측 문장 기준)
+#   +. 승격 게이트·카드 게이트·노트 단위 검사 (LLM 0회 — 실측 문장 기준)
+#      카드 게이트는 2026-08-19 저녁 "근거 인용"으로 재정의됨 (팀 계약 정렬)
 #
 # 실행: python tests/test_integration_mode.py
 import json
@@ -87,9 +88,14 @@ results["5 추궁: 인용 차단 + 통제권"] = b["cited_asset_ids"] == [] and 
 )
 print("[5]", m, "\n")
 
-b = call([turn("노트북이 들어가는 백을 찾고 있어요.")])
-results["6 케어 화제 아님 → 인용 없음 (카드 게이트)"] = b["cited_asset_ids"] == []
-print("[6]", b["message"], "\n")
+# OWNED 는 next_service_months=1 이라 케어 시점(care_due) 자산이다.
+# 재고 질문에도 답 끝에 케어 시점 한 문장이 붙고(모델이 빠뜨리면 후처리가
+# 붙인다) 카드가 보장된다 — 데모 D3 의 형태 (2026-08-19 저녁).
+b = call([turn("Solène Shoulder 재고가 서울에 있나요?")])
+results["6 케어 시점 자산 → 재고 답 + 카드 보장 (D3 형태)"] = (
+    "AS-0001" in b["cited_asset_ids"] and "Top Handle" in b["message"]
+)
+print("[6]", f"cited={b['cited_asset_ids']}", b["message"], "\n")
 
 # --- BOOK_FITTING 승격 (2026-08-19) ---
 # 피팅 여쭘 뒤 수락 → 카드가 붙어야 한다. 엔진이 care_booking 으로 분류하는
@@ -141,7 +147,16 @@ gate_cases = [
 for label, expected, reply, msg, hist in gate_cases:
     results[label] = _book_fitting_cta(reply, msg, hist) == expected
 
-# --- 근거 카드(인용) 게이트 단위 검사 (LLM 0회) — 2026-08-19 손 테스트 사고 2건 ---
+# --- 근거 카드(인용) 게이트 단위 검사 (LLM 0회) ---
+#
+# 2026-08-19 저녁 **기준 변경** (버그 수정이 아니다): 팀 계약의 하드 요구사항
+# ("owned_assets 가 있으면 인용 최소 1개")과 데모 판정(min_citations)에 맞춰,
+# "케어 화제일 때만" → "우리 답변이 그 자산을 언급했으면 인용"으로 넓혔다.
+# 카드는 컨디션 경고가 아니라 "자산을 근거로 썼다"는 증거다.
+# 계속 차단되는 것: 고객만 언급한 비케어 턴(8/19 마모 카드 사고 원형),
+# 출처 추궁 턴(호출부에서 차단).
+# 이에 따라 옛 c3(같은 모델 구매 문의 비인용)·c6·c7(케어 화제 이탈 시 카드
+# 내려감)은 판정이 뒤집혔다 — 답변이 자산을 언급하면 이제 카드가 뜬다.
 from api import _asset_in_text, _cited_asset_ids  # noqa: E402
 
 DERBY = {"asset_id": "AS-0010", "product_name": "Aurelia Derby"}
@@ -151,32 +166,81 @@ results["c1 Oxford 발화가 보유 Derby 토큰에 안 걸림 (카탈로그 이
 results["c2 Derby 전체 이름·단독 토큰은 걸림"] = _asset_in_text(
     DERBY, "제 Aurelia Derby 앞창이 닳았어요", CU3_OWNED) and _asset_in_text(
     DERBY, "제 Derby 상태 좀 봐주세요", CU3_OWNED)
-results["c3 새로 사려는 사이즈 문의(비케어)에 인용 없음"] = _cited_asset_ids(
-    "Aurelia Derby는 38 사이즈가 적합할 것입니다.",
-    "Aurelia Derby를 보고 있는데 평소 240을 신어요. 38이 맞을까요?",
-    "staff_connect", CU3_OWNED) == []
-results["c4 같은 자산이라도 케어 턴이면 인용"] = _cited_asset_ids(
-    "Aurelia Derby 앞창 케어 접수를 도와드리겠습니다.",
+results["c3 답변이 자산을 근거로 언급(비케어 사이즈 턴) → 인용"] = _cited_asset_ids(
+    "구매 기록을 보니 Aurelia Derby와 같은 라스트라, 같은 사이즈를 권해드립니다.",
+    "이 신발 38.5랑 39 중에 뭐가 맞을까요?", "staff_connect", CU3_OWNED) == ["AS-0010"]
+results["c4 고객이 케어를 청한 턴 — 답변에 이름이 없어도 인용"] = _cited_asset_ids(
+    "네, 살펴드리겠습니다. 접수를 도와드릴까요?",
     "제 Aurelia Derby 앞창이 닳았는데 봐주실 수 있나요?",
     "care_booking", CU3_OWNED) == ["AS-0010"]
-results["c5 연속(앞 턴에 꺼낸 자산) 유지"] = _cited_asset_ids(
-    "Aurelia Derby 케어는 보습 위주로 진행됩니다.", "네", "none", CU3_OWNED,
-    past_advisor_text="Aurelia Derby 점검을 도와드릴까요?") == ["AS-0010"]
-results["c6 화제가 케어를 떠난 연속 턴 → 카드 내려감"] = _cited_asset_ids(
+results["c5 고객만 언급 + 비케어 → 차단 (마모 카드 사고 원형)"] = _cited_asset_ids(
+    "Aurelia Oxford는 38, 38.5, 39 사이즈가 있습니다.",
+    "제 Aurelia Derby랑 비슷한 Oxford를 보고 있어요", "staff_connect", CU3_OWNED) == []
+results["c6 둘 다 언급 없음 → 빈 배열"] = _cited_asset_ids(
+    "서울 매장에 재고가 있습니다.", "재고 있나요?", "stock_hold", CU3_OWNED) == []
+results["c7 답변이 언급하면 화제와 무관하게 인용 (기준 변경 확인)"] = _cited_asset_ids(
     "Aurelia Derby는 이미 보유하고 계시니, 어떤 용도의 가방을 찾고 계신가요?",
-    "다른 가방을 살까 고민 중이에요", "none", CU3_OWNED,
-    past_advisor_text="Aurelia Derby 점검을 도와드릴까요?") == []
-# 손 테스트 실측 답변 (2026-08-19) — "살펴보시는"(제품 구경)이 케어 어휘
-# "살펴"에 걸려 구매 턴에 카드가 남았던 사고. "살펴드"로 좁혀 해결.
-results["c7 '살펴보시는'(구경)은 케어 어휘 아님 → 카드 내려감"] = _cited_asset_ids(
-    "새로 구매를 고려 중이라면, 다른 라인을 살펴보시는 것도 좋겠습니다. "
-    "이미 가지고 계신 Aurelia Derby는 대형입니다. 어떤 용도를 찾으시나요?",
-    "새로 살까 고민 중이에요", "none", CU3_OWNED,
-    past_advisor_text="Aurelia Derby 점검을 도와드릴까요?") == []
-results["c8 '살펴드릴까요'(케어)는 유지"] = _cited_asset_ids(
-    "Aurelia Derby를 한번 살펴드릴까요? 상태 확인 후 안내드리겠습니다.",
-    "네", "none", CU3_OWNED,
-    past_advisor_text="Aurelia Derby 점검을 도와드릴까요?") == ["AS-0010"]
+    "다른 가방을 살까 고민 중이에요", "none", CU3_OWNED) == ["AS-0010"]
+results["c8 케어 설명 연속 턴 인용 유지"] = _cited_asset_ids(
+    "Aurelia Derby 케어는 보습 위주로 진행됩니다.", "네", "none",
+    CU3_OWNED) == ["AS-0010"]
+# 종류 단어 매칭은 고객 발화 전용 (2026-08-20) — 새 지갑을 안내하는 답변의
+# "지갑" 이 보유 카드홀더에 걸려 컨디션 카드가 오점등된 실측 사고.
+CU3_W = CU3_OWNED + [{"asset_id": "AS-0012", "product_name": "Lisière Card Holder"}]
+results["c9 새 지갑 안내 답변의 종류 단어 → 보유 카드 오점등 없음"] = _cited_asset_ids(
+    "지갑을 원하신다면 Lisière Long Wallet을 추천드립니다. 가격은 1,900,000원입니다.",
+    "지갑도 하나 보고 싶어요.", "none", CU3_W) == []
+results["c10 고객이 종류로 케어를 청하면 여전히 인용"] = _cited_asset_ids(
+    "네, 살펴드리겠습니다. 접수를 도와드릴까요?",
+    "가지고 있는 지갑 케어 좀 받고 싶어요", "care_booking", CU3_W) == ["AS-0012"]
+
+# --- 승격·노트·방어 단위 검사 (LLM 0회, 2026-08-19 저녁) ---
+from api import _care_booking_cta, _book_fitting_cta as _bf  # noqa: E402
+from prompts.knowledge import (  # noqa: E402
+    data_overlay as _overlay, pick_products as _pick,
+    build_same_last_note, build_longevity_note, build_care_due_note,
+    owned_catalog_ids,
+)
+from api import INTEGRATION_DATA  # noqa: E402
+
+results["p1 초대 의문형 피팅 여쭘 → BOOK_FITTING (실측 문장)"] = _bf(
+    "매장에서 Aurelia Top Handle을 직접 착용해 보시겠어요?", "할인 없나요?", [])
+results["p2 케어 예약 여쭘 → CARE_BOOKING 승격 (실측 문장)"] = _care_booking_cta(
+    "케어 예약을 함께 잡아드릴까요?", "재고 있나요?")
+results["p3 케어 방법 안내(정보 동사)는 승격 안 함"] = not _care_booking_cta(
+    "케어 방법을 알려드릴까요?", "관리 어떻게 해요?")
+results["p4 거절 턴은 케어 승격 차단"] = not _care_booking_cta(
+    "알겠습니다. 필요하시면 케어 예약을 도와드리겠습니다.", "아니요, 다음에 할게요.")
+
+with _overlay(INTEGRATION_DATA):
+    _cust = {"owned_products": [
+        {"product_id": "LX-0005", "name": "Aurelia Derby", "purchased": "2023-04"}]}
+    _text = "Aurelia Oxford 사이즈가 애매해요"
+    results["n1 같은 라스트 노트 (Oxford 문의 + Derby 보유)"] = "같은 라스트" in (
+        build_same_last_note(_pick(_text, _cust), _cust, _text))
+    _bag_text = "Aurelia Top Handle 가격이 부담돼요"
+    results["n2 가방 문의(형제 구두 동반 pick)에는 라스트 노트 없음"] = build_same_last_note(
+        _pick(_bag_text, _cust), _cust, _bag_text) == ""
+    results["n3 수명 노트 — 1년 이상 사용 자산만"] = (
+        "구매 기록" in build_longevity_note({"owned_products": [
+            {"product_id": "LX-0011", "name": "Lisière Card Holder",
+             "purchased": "2023-09"}]})
+        and build_longevity_note({"owned_products": [
+            {"product_id": "LX-0011", "name": "Lisière Card Holder",
+             "purchased": "2026-01"}]}) == ""
+    )
+    results["n4 케어 시점 노트 — care_due 자산만, 추궁 턴 차단"] = (
+        "정기 케어" in build_care_due_note({"owned_products": [
+            {"product_id": "LX-0001", "name": "Aurelia Top Handle",
+             "purchased": "2022-04", "care_due": True}]})
+        and build_care_due_note({"owned_products": [
+            {"product_id": "LX-0001", "name": "Aurelia Top Handle",
+             "care_due": True}]}, challenged=True) == ""
+    )
+    # 배포 프론트 오프라인 목업의 잘못된 ID(Derby 자산에 Oxford ID) 방어
+    results["d1 이름↔ID 불일치면 이름을 믿는다"] = owned_catalog_ids(
+        {"owned_products": [{"product_id": "LX-0006", "name": "Aurelia Derby"}]}
+    ) == {"LX-0005"}
 
 print("=== 판정 ===")
 failed = 0

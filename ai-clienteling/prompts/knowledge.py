@@ -301,11 +301,24 @@ def owned_catalog_ids(customer: dict = None) -> set:
     found = set()
     for item in owned:
         pid = item.get("product_id")
-        if pid:
-            found.add(pid)
-            continue
-
         name = (item.get("name") or "").strip()
+        if pid:
+            catalog_name = next(
+                (p["name_ko"] for p in products if p["product_id"] == pid), ""
+            )
+            # ID 와 이름이 서로 다른 제품을 가리키면 이름을 믿는다 (2026-08-19).
+            # 배포 프론트의 오프라인 목업에 Derby 자산이 Oxford 의 ID 로 잘못
+            # 묶여 있었다 — ID 를 그대로 믿으면 고객이 **사려는** 제품에
+            # "이미 보유. 권하지 말 것" 표시가 붙는다. ID 가 카탈로그에 있고
+            # 이름이 없거나 이름과 일치할 때만 ID 를 쓴다. 그 외에는 아래
+            # 이름 매칭으로 넘어간다.
+            if catalog_name and (
+                not name or name == catalog_name
+                or name in catalog_name or catalog_name in name
+            ):
+                found.add(pid)
+                continue
+
         if not name:
             continue
 
@@ -585,6 +598,19 @@ def pick_products(text: str, customer: dict = None, include_owned: bool = True):
         line = p["line"].lower()
         if line in lowered or p["name_ko"] in (text or ""):
             picked.add(p["product_id"])
+
+    # 종류 단어 → 카테고리 대조 (2026-08-20). "지갑도 보고 싶어요"에 카탈로그의
+    # 지갑들이 프롬프트에 안 실려, 있는 물건을 두고 "확정해 말씀드리기 어렵다"로
+    # 도피했다 — 붙잡을 재료가 없으면 모델은 도피한다. 판정은 데이터(카테고리)가
+    # 한다. MCM 데모 카탈로그에는 지갑 카테고리가 없어 /chat 은 그대로다.
+    for kind, cat in (
+        ("지갑", "지갑"), ("카드홀더", "카드지갑"), ("카드 홀더", "카드지갑"),
+        ("월렛", "지갑"), ("wallet", "지갑"), ("card holder", "카드지갑"),
+    ):
+        if kind in lowered:
+            for p in products:
+                if cat in str(p.get("category") or ""):
+                    picked.add(p["product_id"])
 
     if customer:
         # 고객이 방금 보고 온 제품과 보유 제품은 언제나 상세히 안다.
@@ -931,8 +957,7 @@ def build_language_note(message: str, customer: dict) -> str:
 영문 표기가 없는 이름은 지어내지 말고, 그 매장을 특정하지 않아도 되는
 표현으로 돌아갑니다.
 
-제품 이름(Aren, Liz, Pina, Stark 등)은 원래 영문이므로 그대로 씁니다.
-라인 이름을 번역하지 않습니다.
+제품·라인 이름은 원래 표기(영문)를 그대로 씁니다. 번역하지 않습니다.
 
 톤은 언어가 바뀌어도 같습니다. 부티크 어드바이저의 한마디입니다.
 할인·푸시 화법을 쓰지 않고, 케어를 교체보다 먼저 제안합니다.
@@ -1952,7 +1977,7 @@ def build_source_challenge_note(message: str, customer: dict = None,
 **밝힌 출처에서 바로 나오는 사실은 말해도 됩니다.**
 구매 시점, 경과 기간처럼 방금 댄 근거의 범위 안에 있는 것은
 오히려 우리가 아는 만큼을 보여주는 것이라 신뢰에 도움이 됩니다.
-  "구매 기록에 2023년에 들이신 Liz 쇼퍼가 있어서" → 좋음
+  구매 기록을 출처로 밝히고, 그 기록에 있는 제품 이름과 구매 시점까지만 → 좋음
   "7년 동안 사용하신 것으로 알고 있습니다"        → 좋음. 같은 기록에서 나오는 기간입니다
 
 **금지되는 것은 종류가 다른 정보입니다.** 컨디션·마모, 다른 제품, 다른 경로.
@@ -2388,6 +2413,140 @@ ACCEPT_HINTS = (
     "yes", "sure", "please", "ok", "okay",
 )
 
+# 고객이 거절한 턴 — 승격·덧붙임 계열이 전부 이 목록으로 차단된다.
+# 고객 발화 목록이지만 **차단 방향**이라 안전하다: 놓치면 현행 그대로일
+# 뿐이고, 과하게 걸려도 카드가 안 뜰 뿐이다. (감지 방향에는 금지)
+# 원래 api.py 의 BOOK_FITTING 승격용이었는데, 케어 시점 노트도 같은
+# 차단이 필요해 2026-08-19 저녁 여기로 옮겨 공유한다.
+REFUSAL_HINTS = (
+    "아니요", "아니오", "아뇨", "괜찮아요", "괜찮습니다", "다음에", "나중에",
+    "안 할", "않을게", "됐어요", "필요 없", "no thanks", "not now", "maybe later",
+)
+
+# 결정을 미루는 표현 — 거절과 마찬가지로 차단 방향에만 쓴다.
+# "조금 더 생각해볼게요"에 배송을 "진행해드리겠습니다"로 확정한 실측 사고
+# (2026-08-20 장턴). 동의를 받기 전에 진행하지 않는다.
+HOLD_HINTS = (
+    "생각해볼", "생각 좀", "고민해볼", "고민 좀", "보류", "미룰게",
+    "천천히 결정", "let me think", "i'll think",
+)
+
+
+def build_decline_note(message: str) -> str:
+    """고객이 방금 거절하거나 결정을 미룬 턴 — 받아들이는 틀을 준다.
+
+    2026-08-20 장턴 실측 사고 둘: "케어는 다음에 받을게요"에 케어 접수
+    안내 + 보유 자산 5개 나열로 되물었고, "조금 더 생각해볼게요"에
+    "배송 요청을 진행해드리겠습니다"로 확정했다. 거절·보류를 받는 장치가
+    아예 없었다 — mini 탓이 아니라 구조 공백. 고객 발화 목록이지만
+    차단 방향이라 안전하다 (놓치면 현행 그대로).
+    """
+    text = (message or "").lower()
+    refused = any(h in text for h in REFUSAL_HINTS)
+    holding = any(h in text for h in HOLD_HINTS)
+    if not refused and not holding:
+        return ""
+    kind = "거절" if refused else "보류"
+    return f"""
+# 고객이 방금 {kind}의 뜻을 밝혔다 (코드 감지)
+
+- {kind}를 그대로 받는다. 방금 {kind}된 제안을 이 턴에 다시 권하지 않는다.
+- 접수·요청·배송·예약을 "진행하겠습니다"로 확정하지 않는다.
+  동의를 받기 전에 진행하지 않는다.
+- {kind}된 화제를 "어떤 제품으로 원하시는지" 같은 되물음으로 이어가지 않고,
+  보유 제품 목록을 늘어놓지 않는다.
+- 다음 걸음을 캐묻지도 않는다 — "언제 받으실지", "어느 매장이 편하신지"는
+  진행을 전제로 한 질문이라 {kind}를 받지 않은 것이 된다.
+  결정의 시간을 드리는 것이 응대다.
+- 이번 발화에 **새 질문이 함께 있으면 그 질문에는 완결되게 답한다.**
+  {kind}는 그 제안에 대한 것이지 대화 전체에 대한 것이 아니다.
+- 맺음은 짧게 — 필요하실 때 다시 찾으실 수 있게 문만 열어둔다.
+"""
+
+
+# 대화를 맺는 인사들 — 차단 방향 전용 (놓치면 현행 그대로).
+CLOSING_HINTS = (
+    "감사합니다", "감사해요", "감사드려요", "고마워요", "고맙습니다",
+    "수고하세요", "안녕히", "들어가세요", "이만",
+    "thank you", "thanks", "bye",
+)
+
+
+def is_closing(message: str) -> bool:
+    """고객이 대화를 맺는 인사를 했는가.
+
+    짧고(20자 이하), 물음표가 없고, 맺는 말이 있을 때만 — "감사합니다.
+    그런데 배송은요?" 처럼 질문이 붙어 있으면 닫는 턴이 아니다.
+    """
+    text = (message or "").strip()
+    if len(text) > 20 or "?" in text:
+        return False
+    return any(h in text.lower() for h in CLOSING_HINTS)
+
+
+def build_closing_note(message: str) -> str:
+    """맺는 인사 턴 — 인사로 맺게 한다 (2026-08-20).
+
+    장턴 실측 사고: "알겠습니다, 고마워요"에 지갑 재권유 + 조건 되물음,
+    "네, 감사합니다"에 이미 넣어둔 보관 요청을 다시 여쭘. 원인의 절반은
+    우리 규칙 — "화제를 닫은 다음 턴"을 보유 제품을 꺼낼 자리로 열어뒀는데,
+    **화제 닫기와 대화 닫기를 구분하지 않았다.** 작별 인사는 꺼낼 자리가 아니다.
+    """
+    if not is_closing(message):
+        return ""
+    return """
+# 고객이 대화를 맺는 인사를 했다 (코드 감지)
+
+- 인사로 짧게 맺는다. **새 제품·제안·권유·되물음을 얹지 않는다.**
+  맺는 인사에 영업을 얹으면 그동안의 응대 전체가 영업으로 기억된다.
+- 진행 중인 요청(보관·피팅·케어 접수)이 있으면 "접수해 두었고 회신이 오면
+  알려드리겠다"는 상태 한 줄까지는 좋다. 이미 접수한 것을 다시 여쭙지 않는다.
+- 다른 규칙의 "화제를 닫은 다음 턴에 보유 제품을 꺼낼 수 있다"는 이 턴에
+  해당하지 않는다 — 그건 대화가 이어질 때의 이야기다.
+- 한두 문장이면 충분하다.
+"""
+
+
+def build_affordable_note(customer) -> str:
+    """가격 부담 턴(예산 숫자 없음)에 비보유 저가 후보를 코드가 골라 준다.
+
+    2026-08-20 장턴 실측 — 예산 숫자가 없으면 예산 분류표가 안 붙고, mini 가
+    "저가 대안"을 카탈로그 최저가에서 찾는데 그것이 이 고객의 보유 소품이었다
+    (보유 중인 Long Wallet·Cadence Belt 를 대안으로 권유, 재요청 1회도 뚫림).
+    후보 선별을 코드가 하면 그 자리가 메워진다 — 판단을 코드로.
+
+    **통합 경로(오버레이 활성) 전용** — /chat 의 가격 턴 프롬프트를 바꾸지
+    않기 위해서다 (수명 노트와 같은 게이트).
+    """
+    if _DATA_OVERRIDE.get() is None:
+        return ""
+    owned_ids = owned_catalog_ids(customer or {})
+    candidates = [
+        p for p in load("products.json")["products"]
+        if p["product_id"] not in owned_ids
+    ]
+    if not candidates:
+        return ""
+    cheap = sorted(candidates, key=lambda p: p["price_krw"])[:3]
+    lines = "\n".join(
+        f"  {p['price_krw']:>10,}원  {p['name_ko']} ({p['category']})"
+        for p in cheap
+    )
+    return f"""
+# 낮은 가격대 후보 (코드가 이 고객의 보유 제품을 제외하고 골랐다)
+
+고객은 예산 금액을 말하지 않았다. 낮은 가격대의 대안이 굳이 필요하면
+아래에서만 고른다. 보유 제품은 이미 제외되어 있으므로, 이 목록 밖에서
+"저렴한 제품"을 따로 찾지 않는다.
+
+{lines}
+
+- 카테고리가 지금 화제의 제품과 크게 다르면(가방을 보시는 분께 구두)
+  화제 전환이므로 권하지 않는다. 그럴 땐 대안 없이 어떤 조건을
+  우선하시는지 여쭙는다.
+- 대안 제시는 의무가 아니다. 수명·만듦새 이야기로 충분하면 생략한다.
+"""
+
 
 def build_no_repeat_note(conversation_history, message: str = "") -> str:
     """직전에 우리가 한 말을 눈앞에 보여주고, 이번 턴은 새 이야기를 하게 한다.
@@ -2503,20 +2662,49 @@ def build_continuity_note(customer: dict, message: str, conversation_history) ->
     # 직전에 우리가 무엇을 제안했는지 찾는다.
     proposed = last.rstrip().endswith(("?", "까요", "까요."))
 
-    target = ""
-    for product in customer.get("owned_products") or []:
-        name = product.get("name", "")
-        if name and name.split()[0] in last:
-            target = name
+    # 후보를 둘 다 모은다 — 보유 제품과, 보유가 아닌 카탈로그 제품.
+    # 종전에는 보유를 먼저 찾고 걸리면 끝이어서, 직전 발화에 둘 다 있으면
+    # (같은 라스트 안내의 보유 신발 + 구매 검토 신발) 무조건 보유로 고정됐다.
+    # 실측 사고 2건: Oxford 피팅 수락이 Derby 피팅으로, Solène 보관 수락이
+    # Top Handle 보관으로 진행 (2026-08-20 장턴).
+    owned_names = [
+        p.get("name", "") for p in customer.get("owned_products") or []
+        if p.get("name")
+    ]
+    owned_cand = next(
+        (n for n in owned_names if n.split()[0] in last), "")
+    catalog_cand = ""
+    for product in load("products.json")["products"]:
+        name = product["name_ko"]
+        if name in owned_names:
+            continue
+        if name in last or " ".join(name.split()[:2]) in last:
+            catalog_cand = name
             break
 
-    # 재고 대화에서는 대상이 보유 제품이 아니다. 카탈로그에서도 찾는다.
-    if not target:
-        for product in load("products.json")["products"]:
-            name = product["name_ko"]
-            if name in last or " ".join(name.split()[:2]) in last:
-                target = name
-                break
+    # 둘 다 있으면 **제안의 종류**가 대상을 정한다 (판정 재료는 우리 발화와
+    # 고객의 수락 문구 — 어드바이저 어휘는 유한하다).
+    #   · 수락 문구에 서비스 단어가 있으면 그것이 최우선 ("네, 보관 요청해주세요")
+    #   · 없으면 직전 발화의 마지막 여쭘 문장의 서비스 단어로
+    # 피팅·보관·재고·사이즈는 구매 검토 제품의 일이고, 케어·수선·점검은
+    # 보유 제품의 일이다.
+    BUY_SIDE = ("피팅", "착용", "신어보", "실착", "보관", "재고", "사이즈")
+    OWN_SIDE = ("케어", "수선", "점검", "클리닝", "살펴")
+    if owned_cand and catalog_cand:
+        def _side(t):
+            if any(w in t for w in BUY_SIDE):
+                return "buy"
+            if any(w in t for w in OWN_SIDE):
+                return "own"
+            return ""
+        side = _side(text)
+        if not side:
+            questions = [s for s in re.split(r"[.!?\n]", last)
+                         if "까요" in s and _side(s)]
+            side = _side(questions[-1]) if questions else ""
+        target = catalog_cand if side == "buy" else owned_cand
+    else:
+        target = owned_cand or catalog_cand
 
     # **매장과 행동까지 코드가 정한다.**
     #
@@ -2783,7 +2971,7 @@ def build_owned_bridge(customer: dict, message: str, conversation_text: str = ""
 
 **위 표현의 앞부분("구매 기록을 보니")은 그대로 씁니다. 줄이지 않습니다.**
 
-"2023년에 구매하신 Liz 쇼퍼" 처럼 줄이면 출처가 사라집니다.
+"구매 기록을 보니"를 떼고 구매 시점만 남기면 출처가 사라집니다.
 구매 시점을 아는 것과 어디서 알았는지 밝히는 것은 다릅니다.
 고객이 "그건 어떻게 아세요?" 하고 되물을 여지를 남기지 않는 것이 목적입니다.
 
@@ -2860,12 +3048,47 @@ UNANSWERABLE_TOPICS = [
 
 
 def build_unanswerable_note(message: str) -> str:
-    """확정해서 답할 수 없는 주제가 나왔으면 응대 틀을 넘긴다."""
+    """확정해서 답할 수 없는 주제가 나왔으면 응대 틀을 넘긴다.
+
+    "답할 수 없다"의 기준은 **지금 로드된 데이터**다 (2026-08-20).
+    통합 카탈로그(18종)에는 지갑·구두·벨트가 있는데도 '가방 외의 제품군'
+    틀이 떠서, 있는 물건을 두고 "확정해 말씀드리기 어렵다"로 도피했다.
+    services 에 할인 정책이 있으면 '가격 조건'도 답할 수 있는 주제다.
+    MCM 데모 데이터에는 둘 다 없으므로 /chat 은 종전 그대로다.
+    """
     lowered = (message or "").lower()
 
     for topic in UNANSWERABLE_TOPICS:
-        if not any(k in lowered for k in topic["keys"]):
+        hit = [k for k in topic["keys"] if k in lowered]
+        if not hit:
             continue
+        if topic["topic"] == "가방 외의 제품군":
+            categories = " ".join(
+                str(p.get("category") or "")
+                for p in load("products.json")["products"]
+            )
+            covered = {"지갑": "지갑", "카드지갑": "지갑",
+                       "벨트": "벨트", "신발": "구두"}
+            hit = [k for k in hit
+                   if not (k in covered and covered[k] in categories)]
+            if not hit:
+                continue
+        if topic["topic"] == "가격 조건":
+            promo = load("services.json").get("promotions")
+            if promo:
+                # 틀을 그냥 끄면 안 된다 (2026-08-20 재발) — 정책이 services
+                # 덤프(답변에서 14,000자 거리)에만 있으면 mini 가 할인 질문에
+                # 답을 건너뛴다. 가까운 블록이 먼 정책을 이긴다 — 답할 수 있는
+                # 주제라는 노트로 바꿔 완성된 답을 답변 가까이에 놓는다.
+                return f"""
+# 할인 문의 — 정책이 있어 답할 수 있는 주제입니다
+
+정책: {promo.get("policy", "")}
+
+- **첫 문장에서 이 사실을 정중히 답합니다.** 할인·프로모션을 운영하지 않는다는
+  답을 건너뛰거나, "안내드릴 수 없다"는 회피로 대신하지 않습니다.
+- 그 다음은 가격이 아니라 만듦새와 수명의 이야기로 잇습니다.
+"""
 
         shape = topic.get("shape") or (
             "1) 확정해드리기 어렵다는 것을 어드바이저의 태도로 말합니다.\n"
@@ -2993,6 +3216,188 @@ def asks_care_judgment(user_texts) -> bool:
     return False
 
 
+def _sourced_owned_expr(product) -> str:
+    """보유 제품을 출처와 함께 부르는 표현을 만든다.
+
+    "구매 기록을 보니 2023년 5월에 들이신 Liz" 형태 — 출처 없이 보유 제품을
+    꺼내지 않는다는 규칙을 노트가 스스로 지키게, 표현까지 코드가 만든다.
+    """
+    name = product.get("name", "제품")
+    purchased = product.get("purchased") or ""
+    parts = purchased.split("-")
+    if len(parts) >= 2:
+        return f"구매 기록을 보니 {int(parts[0])}년 {int(parts[1])}월에 들이신 {name}"
+    return f"구매 기록에 있는 {name}"
+
+
+def build_same_last_note(picked, customer, conversation_text="") -> str:
+    """대화의 제품과 보유 제품이 같은 라스트(구두 골)면, 결론까지 만들어 준다.
+
+    2026-08-19 저녁. 데모 D1(사이즈 불확실)에서 mini 가 "확정해 드리기
+    어렵습니다"로 회피했다 — 카탈로그에 두 신발의 last_code 가 같다는 재료가
+    있었는데, 재료에서 결론(같은 라스트 = 같은 사이즈)을 추론하는 일을
+    모델에게 맡긴 것이다. 4o 는 그 추론을 하고 mini 는 못 한다.
+    숫자 비교·날짜 계산과 같은 계열 — 추론은 코드가 하고 모델은 결과만 받는다.
+
+    last_code 가 "LAST-" 로 시작하는 것만 라스트다. 통합 카탈로그의 가방류에는
+    "BAG-25/30/35" 같은 코드가 들어 있는데, 가방끼리 "같은 라스트"라고 말하면
+    무의미한 문장이 된다. MCM 데모 제품(/chat)에는 last_code 자체가 없어
+    이 노트는 켜지지 않는다 — /chat 프롬프트 불변.
+    """
+    owned = (customer or {}).get("owned_products") or []
+    if not picked or not owned:
+        return ""
+    catalog = {p["product_id"]: p for p in load("products.json")["products"]}
+    owned_ids = {p.get("product_id") for p in owned}
+    for target in picked:
+        last = str(target.get("last_code") or "")
+        # 이미 가진 제품 자체를 문의한 경우는 대상이 아니다 — 사이즈를 이미 안다.
+        if not last.startswith("LAST-") or target["product_id"] in owned_ids:
+            continue
+        # 대화(또는 통합 경로의 target 힌트)에 전체 이름이 실제로 등장한
+        # 제품만 대상이다. pick_products 의 라인 매칭이 같은 라인의 형제
+        # 제품까지 끌어오는데("Aurelia Top Handle" 문의에 Oxford·Derby 동반),
+        # 그 형제를 대상으로 노트를 만들면 고객이 묻지 않은 신발의 사이즈
+        # 이야기가 나간다.
+        if conversation_text and not any(
+            str(target.get(k) or "") and str(target[k]) in conversation_text
+            for k in ("name_ko", "name_en")
+        ):
+            continue
+        for mine in owned:
+            mine_cat = catalog.get(mine.get("product_id"))
+            if not mine_cat or str(mine_cat.get("last_code") or "") != last:
+                continue
+            name = mine.get("name") or mine_cat.get("name_ko", "보유 신발")
+            return f"""
+# 사이즈 근거 — 같은 라스트 (코드가 카탈로그의 last_code 를 대조해 확인한 사실)
+
+문의하신 {target.get('name_ko', '이 제품')}는 이 고객이 보유한 {name}와
+**같은 라스트(구두 골)**로 제작된다. 같은 라스트는 발이 닿는 형태가 같아,
+보유 신발에서 편하셨던 사이즈를 그대로 적용하면 된다.
+이것이 이 사이즈 질문에 대한 완결된 답의 근거다.
+
+답의 순서 (여기서 배울 것은 순서다. 문장을 옮겨 쓰지 않는다)
+1. 첫 문장에서 근거와 함께 답을 준다 — "{_sourced_owned_expr(mine)}" 처럼
+   출처를 밝히고, 같은 라스트이므로 그 신발과 같은 사이즈를 권한다.
+2. 그 신발을 몇 사이즈로 신으시는지는 우리 기록에 없다. 특정 숫자를
+   "편하셨던 사이즈"로 단정하지 않는다 — "{name}와 같은 사이즈로
+   선택하시면 됩니다"까지가 우리가 아는 만큼이다.
+3. "확정하기 어렵다"는 말은 어디에도 넣지 않는다. 위 근거가 있으므로
+   이 질문은 회피할 질문이 아니라 답할 수 있는 질문이다.
+4. 마지막은 "피팅 예약을 도와드릴까요?" 처럼 피팅과 예약 제안이
+   **한 문장 안에** 함께 있는 여쭘으로 맺는다. ("착용해보시는 것을
+   추천드립니다. 도와드릴까요?" 처럼 두 문장으로 가르지 않는다)
+   보유 신발의 컨디션·마모는 말하지 않는다 — 사이즈 화제다.
+"""
+    return ""
+
+
+def build_longevity_note(customer) -> str:
+    """가격 화제에서, 보유 제품의 사용 연수를 근거 문장으로 만들어 준다.
+
+    2026-08-19 저녁. 데모 D2(가격 망설임)에서 mini 가 일반 헤리티지 설명만
+    하고 보유 자산을 쓰지 않았다. "오래 쓰는 물건"이라는 주장을 이 고객은
+    **자기 물건으로 이미 겪고 있다** — 그것이 이 고객에게만 할 수 있는
+    가격 이야기다 (개인화 판별 기준: 다른 고객에게 못 보내는 말).
+    연수 계산은 코드가 한다 (날짜 계산은 모델이 틀리는 영역).
+
+    1년 이상 쓴 제품이 있을 때만 켠다. 산 지 몇 달 된 물건으로
+    "오래 쓰신다"고 말하면 지어내기가 된다.
+
+    **통합 경로(오버레이 활성) 전용.** 같은 라스트(last_code 없음)·케어
+    시점(care_due 없음) 노트는 데이터가 없어 /chat 에서 자연히 꺼지는데,
+    이 노트는 구매 기록만 있으면 켜져서 /chat 의 가격 턴 프롬프트를
+    바꿔버린다 — 동결(바이트 불변) 위반. 오버레이 안에서만 동작한다.
+    """
+    if _DATA_OVERRIDE.get() is None:
+        return ""
+    owned = (customer or {}).get("owned_products") or []
+    best, best_months = None, 0
+    today = date.today()
+    for product in owned:
+        purchased = str(product.get("purchased") or "")
+        parts = purchased.split("-")
+        if len(parts) < 2:
+            continue
+        try:
+            months = (today.year - int(parts[0])) * 12 + (today.month - int(parts[1]))
+        except ValueError:
+            continue
+        if months > best_months:
+            best, best_months = product, months
+    if not best or best_months < 12:
+        return ""
+    years = best_months // 12
+    return f"""
+# 가격 화제에서 쓸 이 고객만의 근거 (코드가 구매 기록에서 계산)
+
+이 고객은 {_sourced_owned_expr(best)}를 {years}년째 사용하고 있다.
+"오래 곁에 두는 물건"이라는 이야기를 이 고객은 자기 물건으로 이미 알고 있다 —
+일반 설명이 아니라 이 사실을 근거로 쓴다.
+
+답의 순서 (순서를 배울 것. 문장을 옮겨 쓰지 않는다)
+1. 지금 질문에 정중히 답한다. (할인이 없으면 없다고)
+2. 위 사실을 출처("구매 기록")와 함께 한 문장으로 언급한다.
+   기간이라는 사실까지만 — 컨디션 점수·마모 같은 상태 평가는 말하지 않는다.
+3. 마지막은 "피팅 예약을 도와드릴까요?" 처럼 피팅과 예약 제안이 **한 문장
+   안에** 함께 있는 여쭘으로 맺는다 — 보고 계신 제품을 매장에서 직접
+   착용해 보시게 잇는 것이다. 가격 고민에 설명을 더 얹는 것보다 낫다.
+
+금지
+- 고객은 예산 금액을 말한 적이 없다. "예산에 맞는 선택지" 같은 말로
+  다른 제품(특히 다른 카테고리)을 대안으로 늘어놓지 않는다.
+- 제품 이름은 카탈로그 표기 그대로 쓴다. 번역하거나 한글로 옮기지 않는다.
+"""
+
+
+def build_care_due_note(customer, challenged=False) -> str:
+    """정기 케어 시점에 들어온 보유 제품이 있으면, 한 문장 제안 틀을 준다.
+
+    2026-08-19 저녁. 데모 D3(재고 확인 — 케어 시점 임박 VIP)용.
+    care_due 는 통합 경로가 자산의 next_service_months 로 판정해 넣는
+    불리언이다 (/chat 의 파일 고객에는 없는 필드 — 노트가 켜지지 않는다).
+    시점(정기 케어 주기)이 근거이므로 마모·컨디션 서술 없이 제안이 성립한다 —
+    "가방이 낡으셨으니"(지적)가 아니라 "시점이 되었으니"(주기)다.
+    """
+    if challenged:
+        return ""
+    owned = (customer or {}).get("owned_products") or []
+    due = next((p for p in owned if p.get("care_due") and p.get("name")), None)
+    if not due:
+        return ""
+    return f"""
+# 보유 제품의 케어 시점 (코드가 케어 주기에서 판정)
+
+{_sourced_owned_expr(due)}가 정기 케어를 권해드릴 시점에 들어와 있다.
+
+쓰는 법
+- 먼저 지금 질문에 완결된 답을 한다. 케어 이야기로 답을 대신하지 않는다.
+- 그 다음 **마지막 한 문장으로만**, 출처를 밝히며 정기 케어 시점이 되었음을
+  알리고 케어 예약을 함께 잡아드릴지 여쭙는다. 이 한 문장은 반드시 넣는다.
+- 다른 규칙에 "케어 화제가 아니면 케어를 먼저 제안하지 않는다"가 있다.
+  이 노트가 있는 턴은 그 규칙의 **정당한 예외**다 — 짐작이 아니라 코드가
+  케어 주기로 판정했고, 출처를 밝히므로 감시가 아니라 케어다.
+- 마모·컨디션 서술은 하지 않는다. 근거는 시점이지 상태가 아니다.
+- 고객이 사양하면 다시 꺼내지 않는다.
+"""
+
+
+def care_due_sentence(product) -> str:
+    """케어 시점 자산을 답변 끝에 덧붙일 완성 문장 (후처리 전용).
+
+    build_care_due_note 가 프롬프트에 있어도 mini 가 케어 문장을 자주
+    떨어뜨렸다 (프롬프트 위치를 옮겨봐도 0~2/3). 데모 판정은 매 실행
+    인용 1개 이상을 요구하므로, 모델이 빠뜨린 실행에서는 코드가 이 문장을
+    붙인다 — "표현을 강제하는 일은 프롬프트가 아니라 후처리가 한다."
+    치환·승격과 같은 계열: 모델을 다시 부르지 않아 어긋날 위험이 없다.
+    """
+    return (
+        f" 참고로, {_sourced_owned_expr(product)}의 정기 케어 시점이"
+        f" 되었습니다. 케어 예약도 함께 도와드릴까요?"
+    )
+
+
 def build_customer_block(
     customer: dict,
     rules: bool = True,
@@ -3020,6 +3425,17 @@ def build_customer_block(
             condition = product.get("condition")
             if isinstance(condition, dict) and "notes" in condition:
                 condition["notes"] = "(고객이 상태를 언급하기 전에는 표시하지 않음)"
+
+    # care_due 는 코드 판정용 플래그다 (build_care_due_note 가 원본을 읽는다).
+    # 프로필에 실리면 모델이 시스템 말투로 인용하므로 눈에서 뺀다.
+    if any(
+        isinstance(p, dict) and "care_due" in p
+        for p in customer.get("owned_products") or []
+    ):
+        if shown is customer:
+            shown = json.loads(json.dumps(customer, ensure_ascii=False))
+        for product in shown.get("owned_products") or []:
+            product.pop("care_due", None)
 
     # 접점의 관측 메모(recent_activity.note)는 **모든 고객에게** 가린다.
     #
@@ -3165,8 +3581,10 @@ def build_customer_block(
    고객이 감시당한다고 느끼는 순간 이 서비스는 실패합니다.
 
    보유 제품을 언급해야 한다면 상태가 아니라 시간이나 함께한 이력으로 말합니다.
-     나쁨: "핸들에 마모가 보이는데, 한번 손봐드릴까요?"
-     좋음: "3년쯤 함께하신 Liz 쇼퍼도 이맘때 한번 살펴보시면 좋을 것 같아요."
+     나쁨: 마모가 "보인다"며 손봐드릴지 묻는 형태 — 관측 사칭 + 묻지 않은 상태 평가
+     좋음: 함께한 기간이나 지난 케어 시점을 근거로 살펴보시도록 열어두는 형태
+           (기간과 이름은 반드시 **이 고객의 기록**에서 가져옵니다. 다른 데서 본
+           제품 이름을 옮겨 쓰면 없는 물건을 지어내는 것이 됩니다)
 
    또 어느 제품인지 분명히 합니다.
    지금 대화 중인 제품과 보유 제품이 다르면 헷갈리지 않게 이름을 밝힙니다.
@@ -3174,7 +3592,7 @@ def build_customer_block(
    **조건 (a)를 정확히 읽습니다.**
    고객이 제품의 *상태*를 말했을 때만 해당합니다.
    제품 *이름*이 고객 발화에 등장한 것만으로는 충족되지 않습니다.
-   고객이 "Liz 쇼퍼요?" 라고 되물은 것은 상태를 말한 것이 아닙니다.
+   고객이 제품 이름을 그대로 되물은 것은 상태를 말한 것이 아닙니다.
 
    **관측하지 않은 것을 관측한 것처럼 말하지 않습니다.**
    "보이네요", "상태를 보니" 는 고객이 사진을 보냈을 때만 쓸 수 있습니다.
@@ -3215,16 +3633,17 @@ def build_customer_block(
 
    답변 중간에 끼워 넣지 않습니다. 답이 끝나기 전에 넣으면 끼어드는 것이 됩니다.
 
-     나쁨: (Aren 케어를 설명하다 중간에)
-           "Liz 쇼퍼도 이맘때 한번 살펴보시면 좋을 것 같아요."
-     나쁨: (Aren 케어만 답하고 끝 — 위 블록이 붙어 있었는데도)
+     나쁨: (지금 화제의 케어를 설명하다 **중간에**) 보유 제품 문장을 끼워 넣음
+     나쁨: (지금 화제만 답하고 끝 — 위 블록이 붙어 있었는데도)
            → 알고 있으면서 안 꺼냈습니다. 개인화의 기회를 버린 것입니다.
      나쁨: (재고나 배송을 묻는데 케어 이야기를 덧붙임)
            → 블록이 없는 턴입니다. 묻지 않은 물건을 끌어온 것입니다.
-     좋음: "Aren은 구입처와 상관없이 전국 백화점 매장에서 접수되고,
-           평균 10일에서 14일 걸립니다. 비용은 상태와 보증 기간에 따라 달라지고요.
-           참, 구매 기록을 보니 2023년에 들이신 Liz 쇼퍼도 같은 서비스 대상이에요.
-           [여기서 이 고객에게 맞는 한 마디로 열어둡니다 — 문구는 매번 다릅니다]"
+     좋음: [지금 질문에 대한 완결된 답] 뒤에
+           "참, 구매 기록을 보니 [이 고객의 보유 제품과 구매 시점]도 같은
+           서비스 대상이에요." 형태로 잇고,
+           [이 고객에게 맞는 한 마디로 열어둡니다 — 문구는 매번 다릅니다]
+           대괄호 자리는 블록이 준 실제 이름·시점으로 채웁니다. 다른 고객의
+           예시 제품을 옮겨 쓰지 않습니다.
 
    위 예시에서 배울 것은 **순서**입니다.
    묻힌 질문에 완전히 답한 뒤 → 출처를 밝히고 → 열어둡니다.

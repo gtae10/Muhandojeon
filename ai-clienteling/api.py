@@ -23,16 +23,13 @@ from pydantic import BaseModel, Field
 import engine
 from prompts.knowledge import (
     ACCEPT_HINTS,
-    ADVISOR_CARE_WORDS,
+    HOLD_HINTS,
+    REFUSAL_HINTS,
     SOURCE_CHALLENGE_HINTS,
     data_overlay,
+    is_closing,
     pick_products,
 )
-
-# 근거 카드 연속 유지 판정용 케어 어휘 — care_thread_open 어휘에 케어 설명
-# 턴에서 흔한 "관리"·"보습" 을 보탠다. (소견 열림 판정에는 쓰지 않는다 —
-# "관리가 쉬운 소재" 같은 제품 설명까지 열리면 안 되므로 그쪽은 보수적 유지)
-CARE_REPLY_WORDS = ADVISOR_CARE_WORDS + ("관리", "보습")
 
 # 통합 경로("한 메종" 세계관)가 엔진 호출 동안 갈아끼우는 데이터.
 # scripts/build_integration_data.py 가 생성한다 — 직접 수정 금지.
@@ -42,6 +39,8 @@ INTEGRATION_DATA = {
     "products.json": _DATA_DIR / "integration_catalog.json",
     "stores.json": _DATA_DIR / "integration_stores.json",
     "customers.json": _DATA_DIR / "integration_customers.json",
+    # 2026-08-20 추가 — MCM 정책 + 할인 정책 한 절 (할인 회피 제거)
+    "services.json": _DATA_DIR / "integration_services.json",
 }
 
 app = FastAPI(
@@ -233,29 +232,54 @@ BOOKING_WORDS = (
     "잡아드릴까요", "진행해드릴까요", "접수해드릴까요",
     "도와드리겠습니다", "넣어드리겠습니다", "진행하겠습니다",
     "예약하겠습니다", "접수하겠습니다", "잡아드리겠습니다", "진행해드리겠습니다",
+    # 초대 의문형 (2026-08-19 저녁 추가 — 50회 측정의 실측 문장들:
+    # "착용해 보시는 것은 어떠실까요?", "직접 착용해 보시겠어요?",
+    # "직접 착용해 보실까요?"). 피팅 어휘와 **같은 문장**에 있을 때만
+    # 걸리는 구조라, "다른 색상은 어떠세요" 는 피팅 단어가 없어 안 걸린다.
+    "어떠실까요", "어떠세요", "어떠신가요", "보시겠어요", "보시겠습니까",
+    "보실까요",
+    # 2차 50회 측정에서 추가 수집 (2026-08-20): "착용해 보시는 것은 어떨까요?",
+    # "착용해 보실 기회를 마련해드릴까요?" — 활용형은 라운드마다 새로 나온다.
+    "어떨까요", "마련해드릴까요",
 )
-# 거절 차단 — 고객이 거절한 턴에는 답변 내용과 무관하게 승격하지 않는다.
-# "원하시면 언제든 피팅 예약을 도와드리겠습니다" 가 규칙에 걸려
-# 거절 직후에 카드가 뜨는 오탐 방지. 넓게 잡아도 안전하다 —
-# 잘못 차단하면 현행 NONE 과 같을 뿐이다. (추궁 턴 인용 차단과 같은 자리)
-REFUSAL_HINTS = (
-    "아니요", "아니오", "아뇨", "괜찮아요", "괜찮습니다", "다음에", "나중에",
-    "안 할", "않을게", "됐어요", "필요 없", "no thanks", "not now", "maybe later",
+# 거절 차단 목록(REFUSAL_HINTS)은 knowledge 로 옮겼다 — 엔진의 케어 시점
+# 노트도 같은 차단을 쓴다. 여기서는 상단 import 로 받는다.
+
+
+# 문장 분리형 승격에서 뒤 문장에 있으면 안 되는 단어 — 피팅이 아닌 다른
+# 서비스의 접수·확인 문장이라는 뜻이다. (g5 실측: "매장에 확인 요청을
+# 넣어드릴까요" 는 재고 확인이지 피팅 접수가 아니다)
+_NON_FITTING_SERVICE_WORDS = (
+    "확인", "재고", "보관", "수선", "케어", "클리닝", "점검", "배송", "접수",
 )
 
 
 def _fitting_offer_in(text):
-    """같은 문장 안에 피팅 어휘와 접수 어휘가 함께 있는가.
+    """피팅 어휘와 접수 어휘가 함께 있는 제안인가.
 
-    문장 단위로 보는 이유: "착용해보시는 것이 좋습니다. 매장에 확인 요청을
-    넣어드릴까요?" 는 피팅 조언 + 재고 확인이지 피팅 접수가 아니다.
-    문장을 합쳐서 보면 이런 턴이 전부 오탐이 된다.
+    ① 같은 문장 안에 둘 다 — 기본 형태.
+       문장 단위로 보는 이유: "착용해보시는 것이 좋습니다. 매장에 확인 요청을
+       넣어드릴까요?" 는 피팅 조언 + 재고 확인이지 피팅 접수가 아니다.
+       문장을 합쳐서 보면 이런 턴이 전부 오탐이 된다.
+    ② 문장 분리형 (2026-08-19 저녁, 50회 측정 실측 — "착용해보시는 것을
+       추천드립니다. 예약을 도와드릴까요?"): 피팅 문장 **바로 다음** 문장이
+       접수 여쭘이고, 그 문장이 "예약" 중심이거나 목적어 없는 짧은
+       여쭘("도와드릴까요?")일 때만. 다른 서비스 단어(확인·재고·케어…)가
+       있으면 그 서비스의 접수이므로 제외 — 오탐 0 우선.
     """
-    for sentence in re.split(r"[.!?\n]", text or ""):
-        if any(f in sentence for f in FITTING_WORDS) and any(
-            b in sentence for b in BOOKING_WORDS
-        ):
+    sentences = re.split(r"[.!?\n]", text or "")
+    for i, sentence in enumerate(sentences):
+        has_fitting = any(f in sentence for f in FITTING_WORDS)
+        if has_fitting and any(b in sentence for b in BOOKING_WORDS):
             return True
+        if has_fitting and i + 1 < len(sentences):
+            nxt = sentences[i + 1].strip()
+            if (
+                any(b in nxt for b in BOOKING_WORDS)
+                and ("예약" in nxt or len(nxt) <= 10)
+                and not any(w in nxt for w in _NON_FITTING_SERVICE_WORDS)
+            ):
+                return True
     return False
 
 
@@ -271,7 +295,10 @@ def _book_fitting_cta(reply, message, history):
       3. 고객 발화가 거절이면 전부 차단
     """
     msg = (message or "").strip()
-    if any(h in msg.lower() for h in REFUSAL_HINTS):
+    # 거절·보류("생각해볼게요")·맺는 인사("고마워요") 전부 차단 —
+    # 결정을 미루거나 대화를 닫는 턴에 접수 카드를 띄우지 않는다
+    # (2026-08-20, 차단 방향이라 안전).
+    if any(h in msg.lower() for h in REFUSAL_HINTS + HOLD_HINTS) or is_closing(msg):
         return False
     if _fitting_offer_in(reply):
         return True
@@ -289,6 +316,32 @@ def _book_fitting_cta(reply, message, history):
             # 앞 턴에서 카드가 이미 나갔으므로 다시 붙이지 않는다.
             if "까요" in final and _fitting_offer_in(final):
                 return True
+    return False
+
+
+# CARE_BOOKING 승격용 케어 어휘 — 접수 어휘(BOOKING_WORDS)와 같은 문장에
+# 있을 때만 본다. "케어 방법을 알려드릴까요"는 정보 동사라 걸리지 않는다.
+CARE_CTA_WORDS = ("케어", "수선", "점검", "클리닝")
+
+
+def _care_booking_cta(reply, message):
+    """이 턴의 cta 를 CARE_BOOKING 으로 승격할지 판정한다. (NONE 턴에서만 호출)
+
+    2026-08-19 저녁, 데모 D3 실측 — 답변이 "케어 예약을 함께 잡아드릴까요?"
+    라고 여쭙는데 엔진 액션이 none 인 실행이 있었다(mini). 말과 액션은 같이
+    가야 한다 — 화면 카드는 액션으로 뜨므로, 케어 접수를 여쭌 답변에는
+    케어 카드가 따라가야 한다. BOOK_FITTING 승격과 같은 구조:
+    같은 문장 안의 케어 어휘 + 접수 어휘, 거절 턴 전면 차단, 오탐 0 우선.
+    """
+    if any(
+        h in (message or "").lower() for h in REFUSAL_HINTS + HOLD_HINTS
+    ) or is_closing(message):
+        return False
+    for sentence in re.split(r"[.!?\n]", reply or ""):
+        if any(c in sentence for c in CARE_CTA_WORDS) and any(
+            b in sentence for b in BOOKING_WORDS
+        ):
+            return True
     return False
 
 
@@ -328,7 +381,7 @@ def _load_catalog_names():
 _CATALOG_NAMES = _load_catalog_names()
 
 
-def _asset_in_text(asset, text, owned_assets):
+def _asset_in_text(asset, text, owned_assets, use_type_words=True):
     """이 텍스트가 이 보유 제품을 가리키는가. 모델 판단이 아니라 문자열 대조다.
 
     ① 제품 이름(또는 Liz 같은 구별 토큰)이 나왔다
@@ -368,6 +421,12 @@ def _asset_in_text(asset, text, owned_assets):
             reduced = reduced.replace(other_name, " ")
     if name in text or any(t in reduced for t in tokens):
         return True
+    # 종류 단어 매칭은 고객 발화 전용 (2026-08-20 좁힘). 답변 쪽에 쓰면
+    # 새 지갑을 안내하는 답변의 "지갑" 이라는 일반 단어가 보유 카드홀더에
+    # 걸려 컨디션 카드가 오점등된다 — 우리가 그 자산을 언급한 게 아니다.
+    # 답변 쪽은 이름·구별 토큰만 본다 (놓치면 카드가 안 뜰 뿐 — 안전한 방향).
+    if not use_type_words:
+        return False
     for word, name_keys in TYPE_WORDS_FOR_CITATION.items():
         if word in text and any(k in name for k in name_keys):
             same_kind = [
@@ -379,26 +438,29 @@ def _asset_in_text(asset, text, owned_assets):
     return False
 
 
-def _cited_asset_ids(reply, message, suggested_action, owned_assets, past_advisor_text=""):
+def _cited_asset_ids(reply, message, suggested_action, owned_assets):
     """답변이 근거로 삼은 보유 제품을 asset_id 로 되돌린다.
 
     저쪽의 AS-\\d{6} 정규식은 모델이 문장에 시스템 ID 를 쓴다는 전제인데,
     우리 화법은 ID 를 문장에 쓰지 않으므로 이 필드를 코드가 채워서 넘긴다.
     (필드가 차 있으면 저쪽 정규식은 실행되지 않는다)
 
-    시점 게이트 — 인용은 Frontend 의 근거 카드(컨디션 점수·소견 표시)를 띄우므로,
-    프롬프트의 "케어 화제 전에는 컨디션을 가린다" 를 카드에도 적용한다.
-    · 그 제품이 대화에 나왔고(고객이 꺼냈든 우리가 꺼냈든) 이번 턴이
-      케어 대화(care_booking)다 → 인용한다
-      (2026-08-19 좁힘 전에는 "고객이 꺼냄"만으로 인용했는데, 보유와 같은
-       모델을 새로 사려는 사이즈 문의에도 마모 카드가 떴다. 사이즈 문의에
-       실루엣으로 언급한 보유 제품까지 인용하면 묻지도 않은 마모·케어 권장이
-       카드로 고객 화면에 들어간다 — 어느 쪽이 꺼냈든 마찬가지다)
-    · 연속성 — 앞 어드바이저 턴에서 이미 꺼낸 자산을 이번 답도 이어 말하면
-      액션과 무관하게 인용을 유지한다. 케어 오프닝("점검해드렸었죠") 다음 턴이
-      접수 제안 없이 설명만 하면 카드가 깜빡이며 사라지던 것을 막는다.
-      (처음 꺼내는 턴은 여전히 care_booking 게이트를 통과해야 하므로,
-       비케어 화제에 카드가 새로 뜨는 일은 없다)
+    ── 근거 인용 게이트 (2026-08-19 저녁 재정의 — 버그 수정이 아니라 기준 변경) ──
+    팀 계약(contracts/clienteling.py)의 하드 요구사항이 "owned_assets 가 있으면
+    인용 최소 1개"이고, 오케스트레이터는 인용이 비면 owned_assets_used=false
+    경고를 찍으며, 데모 시나리오 판정(expect)도 min_citations 1 을 요구한다.
+    종전의 "케어 화제(care_booking)일 때만" 게이트는 이 계약과 어긋나
+    D1(사이즈)·D2(가격)에서 카드가 전멸했다 — 팀 설계에서 카드는 컨디션
+    경고가 아니라 **"AI 가 이 고객의 자산을 근거로 썼다"는 증거**다.
+
+    새 기준: **우리 답변이 그 자산을 언급했으면 인용한다.**
+    답변 발화 자체는 엔진의 출처 규칙(출처 없이 보유 제품을 꺼내지 않는다)이
+    지키고 있으므로, 카드는 고객이 이미 들은 근거를 화면에 비추는 것이 된다.
+    고객이 이름만 꺼내고 우리 답변에는 없는 턴은 계속 차단한다 — 보유와 같은
+    모델을 **새로 사려는** 사이즈 문의에 마모 카드가 뜬 8/19 손 테스트 사고의
+    원형. 그 고객이 자기 물건의 케어를 청한 턴(care_booking)은 답변이
+    이름을 생략해도("네, 살펴드릴게요") 인용한다.
+    출처 추궁 턴의 인용 차단은 호출부에서 이 함수보다 먼저 걸린다.
     """
     cited = []
     for asset in owned_assets or []:
@@ -408,30 +470,11 @@ def _cited_asset_ids(reply, message, suggested_action, owned_assets, past_adviso
         if not asset_id or not str(asset.get("product_name") or "").strip():
             continue
         customer_brought_it = _asset_in_text(asset, message, owned_assets)
-        we_brought_it = _asset_in_text(asset, reply, owned_assets)
-        # 연속 유지는 **이번 답변이 케어 화제일 때만** (2026-08-19 좁힘).
-        # 케어 오프닝 뒤 고객이 구매로 화제를 돌렸는데, 답변이 "Pina와 Aren은
-        # 이미 보유하고 계시니…" 라고 이름만 이어 말해도 마모 카드가 남아
-        # 있었다 (C006 손 테스트). 케어 설명이 이어지는 턴(케어·관리·보습…)에는
-        # 유지되고 — 깜빡임 방지라는 원래 목적 — 화제가 떠난 턴에는 내려간다.
-        # 판정 재료는 고객 발화가 아니라 우리 답변(유한한 어휘)이다.
-        care_flavored = suggested_action == "care_booking" or any(
-            w in reply for w in CARE_REPLY_WORDS
+        we_brought_it = _asset_in_text(
+            asset, reply, owned_assets, use_type_words=False
         )
-        continued = care_flavored and we_brought_it and _asset_in_text(
-            asset, past_advisor_text or "", owned_assets
-        )
-        # 2026-08-19 좁힘: "고객이 먼저 꺼냄" 단독 인용을 없앴다.
-        # 보유 제품과 같은 모델을 **새로 사려는** 화제로 이름을 꺼내도
-        # ("Aurelia Derby를 보고 있는데 38이 맞을까요?") 마모 카드가 떴다 —
-        # 손 테스트에서 발견. 발화 규칙("제품 이름 등장은 상태 언급이 아니다")을
-        # 카드에도 적용한 것. 자기 물건의 상태를 꺼낸 고객은 그 턴이 케어
-        # 대화(care_booking)가 되므로 카드는 그대로 뜨고, 케어 화제가 아니면
-        # 카드도 없다. 화제가 케어를 떠나면 다음 턴부터 인용이 비는 것도 동일.
-        if (
-            ((customer_brought_it or we_brought_it)
-             and suggested_action == "care_booking")
-            or continued
+        if we_brought_it or (
+            customer_brought_it and suggested_action == "care_booking"
         ):
             cited.append(asset_id)
     return cited
@@ -551,6 +594,12 @@ def _assets_to_owned(owned_assets):
         # 이걸 빠뜨리면 "3년 전 봐드렸었죠" 의 근거가 대화 중에 사라진다.
         if isinstance(a.get("care_history"), list) and a["care_history"]:
             product["care_history"] = a["care_history"]
+        # 케어 시점 도래 여부만 불리언으로 옮긴다 (2026-08-19).
+        # 개월 수 원값을 넘기면 프롬프트에 실려 "1개월 남았습니다" 같은
+        # 진단서 화법으로 인용된다 — 판정은 여기서 하고 결과만 준다.
+        months = a.get("next_service_months")
+        if isinstance(months, (int, float)) and months <= 1:
+            product["care_due"] = True
         owned.append(product)
     return owned
 
@@ -596,6 +645,9 @@ def clienteling_reply(req: IntegrationReplyRequest):
                 hesitation_type=req.hesitation_type,
                 owned_products=owned,
                 pick_hint=pick_hint,
+                # 대상 노트·장바구니 가림은 매 턴 필요하다 (pick_hint 와 달리
+                # 조건 없음 — 2026-08-20 장턴에서 수락 대상이 보유로 흘렀다).
+                target_name=target_name,
             )
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"응답 생성 실패: {e}")
@@ -603,19 +655,34 @@ def clienteling_reply(req: IntegrationReplyRequest):
     # 띄우는데, "그걸 어떻게 아세요?" 라고 물은 고객에게 마모·케어 권장 카드를
     # 보여주는 것은 경계심에 상태 평가를 얹는 원래 사고의 화면판이다.
     challenged = any(h in message.lower() for h in SOURCE_CHALLENGE_HINTS)
-    # BOOK_FITTING 승격은 NONE 으로 흐를 턴에서만 — care_booking·stock_hold 가
-    # 고른 카드를 밀어내지 않는다 (카드 충돌 방지).
+    # 관측 표현 치환 (2026-08-20). target 은 세션 조회(수동 관측)에서 오는
+    # 값이라 "지금 보시는/보고 계신" 은 로그를 봤다는 발화가 된다 — 노트로
+    # 금지해도 변형("지금 보시는")이 샜다(1/3). 접두어만 지우면 문장이 그대로
+    # 성립하므로 확정적 치환이 안전하다 (fix_region_condition 과 같은 계열).
+    for watched in ("지금 보시는 ", "지금 보고 계신 ", "오늘 보신 "):
+        result["reply"] = result["reply"].replace(watched, "")
+    # 할인 답변 보장 (2026-08-20). 정책 노트를 답변 곁에 놓아도 mini 가
+    # 1/5 로 답을 건너뛴다. D2 는 데모 고정 시나리오라 매 실행 답이 있어야
+    # 한다 — 없으면 정책 문장(services 의 promotions 와 동일)을 앞에 붙인다.
+    # 케어 문장 덧붙임과 같은 확정적 후처리 계열이다. 한국어 발화에만.
+    if (
+        any(w in message for w in ("할인", "세일", "프로모션", "쿠폰"))
+        and not any(w in result["reply"] for w in ("운영하지 않", "진행되지 않", "진행하지 않"))
+        and re.search(r"[가-힣]", message)
+    ):
+        result["reply"] = "할인이나 프로모션은 운영하지 않고 있습니다. " + result["reply"].lstrip()
+    # BOOK_FITTING·CARE_BOOKING 승격은 NONE 으로 흐를 턴에서만 —
+    # care_booking·stock_hold 가 고른 카드를 밀어내지 않는다 (카드 충돌 방지).
+    # 피팅이 먼저다 — 둘 다 여쭌 답변이면 이번 구매 여정의 카드를 우선한다.
     cta = CTA_FROM_ACTION.get(result["suggested_action"], "NONE")
     if cta == "NONE" and _book_fitting_cta(result["reply"], message, history):
         cta = "BOOK_FITTING"
+    elif cta == "NONE" and _care_booking_cta(result["reply"], message):
+        cta = "CARE_BOOKING"
     return IntegrationReplyResponse(
         message=result["reply"],
         cited_asset_ids=[] if challenged else _cited_asset_ids(
             result["reply"], message, result["suggested_action"], req.owned_assets,
-            past_advisor_text=" ".join(
-                t.get("content", "") for t in history
-                if isinstance(t, dict) and t.get("role") == "assistant"
-            ),
         ),
         cta=cta,
         reasoning=f"AI2 engine / suggested_action={result['suggested_action']}",

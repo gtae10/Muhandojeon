@@ -11,6 +11,7 @@ A 고객의 대화에 B 고객의 말이 섞인다. 그래서 필요한 것을 �
 
 import json
 import os
+import re
 import sys
 import time
 
@@ -57,6 +58,16 @@ from prompts.knowledge import (
     SOURCE_CHALLENGE_HINTS,
     asks_care_judgment,
     care_thread_open,
+    build_same_last_note,
+    build_longevity_note,
+    build_care_due_note,
+    care_due_sentence,
+    build_decline_note,
+    build_affordable_note,
+    build_closing_note,
+    is_closing,
+    ACCEPT_HINTS,
+    REFUSAL_HINTS,
 )
 
 load_dotenv()
@@ -165,7 +176,11 @@ FINAL_CHECK = """
 # 우리가 금지 예시로 적어둔 바로 그 문장이다.
 #
 # 새 필드가 필요해지면 여기에 추가한다. 모르는 필드는 통과시키지 않는다.
-OWNED_PRODUCT_FIELDS = ("product_id", "name", "purchased", "condition", "care_history")
+# care_due 는 통합 경로가 자산의 next_service_months 를 판정해 넣는 불리언이다.
+# 원값(개월 수)이 아니라 결과만 받는다 — 프롬프트에 숫자가 실리면 인용된다.
+OWNED_PRODUCT_FIELDS = (
+    "product_id", "name", "purchased", "condition", "care_history", "care_due",
+)
 CONDITION_FIELDS = ("overall", "notes")
 
 
@@ -668,6 +683,7 @@ def generate_reply(
     owned_products=None,
     variant="default",
     pick_hint="",
+    target_name="",
 ):
     """고객 발화 하나에 대한 답변을 만든다. (팀 합의 스펙의 입력을 그대로 받는다)
 
@@ -678,6 +694,11 @@ def generate_reply(
     이름을 안 불렀어도 그 제품 상세가 잡히게 한다. message 나 대화 기록에
     덧붙이면 고객이 안 한 말이 생기므로(대화 오염) 매칭 입력에만 잇는다.
     기본값 "" — /chat 경로는 아무것도 달라지지 않는다.
+
+    target_name (2026-08-20, 통합 경로용): 이 세션의 구매 검토 대상 제품 이름.
+    pick_hint 와 달리 **매 턴** 온다 — 대상을 못박는 노트와 장바구니 접점
+    가림이 이 값으로 동작한다. 첫 턴에만 줬더니 장턴에서 수락 대상이
+    보유 제품으로 흘렀다 (Oxford 피팅 수락 → Derby 피팅). 기본값 "" — /chat 불변.
     """
 
     # 들어온 값을 여기서 한 번 정리한다.
@@ -717,6 +738,25 @@ def generate_reply(
 
     system = build_system_prompt(variant)
     customer = build_customer(customer_id, owned_products)
+
+    # 통합 경로의 target. 프로필의 장바구니 접점이 **다른 제품**이면
+    # 그 접점의 제품 정보를 가린다 (2026-08-19 저녁, 데모 D2 실측 사고 —
+    # 상담 대상은 Top Handle 인데 장바구니의 Solène 을 "지금 보고 계신"
+    # 것으로 집어 엉뚱한 제품으로 답했다. 접점의 product_id 가 그 제품
+    # 상세까지 프롬프트에 끌어들인다. 규칙로 두 번 막아 실패 —
+    # 없으면 인용할 수 없다). /chat 은 target_name="" 이라 그대로다.
+    _hint = _clean_text(pick_hint)
+    _target = _clean_text(target_name)
+    if customer and _target:
+        activity = customer.get("recent_activity")
+        act_name = str((activity or {}).get("product_name") or "")
+        if act_name and act_name not in _target and _target not in act_name:
+            masked = dict(activity)
+            masked.pop("product_id", None)
+            masked["product_name"] = "(이번 상담 대상과 다른 제품 — 이번 턴에는 화제로 올리지 않음)"
+            customer = dict(customer)
+            customer["recent_activity"] = masked
+
     if customer:
         # 케어 상담이 이미 열려 있으면(우리가 보유 제품 케어를 화제로 올린
         # 어드바이저 턴이 있으면) 고객의 표현과 무관하게 소견을 연다 —
@@ -788,6 +828,7 @@ def generate_reply(
     extras = []
     check_source = False
     continuity = ""
+    care_due_note = ""
 
     if not is_control:
         # 우리가 확정해서 답할 수 없는 주제면 응대 틀을 넘긴다.
@@ -797,23 +838,42 @@ def generate_reply(
 
         # 제품 상세는 이번 대화에 등장한 것만 넣는다. (전부 넣으면 4,400 토큰)
         _text_parts = [m.get("content", "") for m in conversation_history] + [message]
-        _hint = _clean_text(pick_hint)
         if _hint:
             _text_parts.append(_hint)
         conversation_text = " ".join(_text_parts)
         # 추천을 묻는 턴에서는 보유 제품 상세를 뺀다.
         # 보여주면서 "권하지 마라"고 하면 모델이 그 지시를 해설한다.
         # 판단은 이번 발화만 본다 — hides_owned_detail() 의 주석 참고.
-        detail = build_product_detail(
-            pick_products(
-                conversation_text,
-                customer,
-                include_owned=not hides_owned_detail(message),
-            ),
+        picked = pick_products(
+            conversation_text,
             customer,
+            include_owned=not hides_owned_detail(message),
         )
+        detail = build_product_detail(picked, customer)
         if detail:
             extras.append({"role": "system", "content": detail})
+
+        # 통합 경로의 대상 제품 노트 — **매 턴** 붙는다 (2026-08-20 상시화).
+        # 첫 턴에만 붙였더니 장턴에서 수락 대상이 보유 제품으로 흘렀다
+        # (Oxford 피팅 수락 → "Derby 피팅 요청을 넣어드리겠습니다" 2/2).
+        # target 은 세션 조회(수동 관측)에서 오므로 어떻게 아는지는
+        # 말하지 않는다 — 관측으로 판단은 하되 관측했다고 말하지 않는다.
+        if _target:
+            extras.append({"role": "system", "content": (
+                f"\n# 이 세션의 구매 검토 대상 제품 (시스템 전달)\n\n"
+                f"이 고객이 구매를 고민하는 제품은 {_target} 이다. 고객이"
+                f" 이름을 말하지 않았어도 사이즈·피팅·재고·보관·가격 이야기의"
+                f" 대상은 이 제품이다.\n"
+                f"- 짧은 수락(\"네, 해주세요\")의 대상도 같다 — 피팅·보관"
+                f" 요청을 보유 제품 이름으로 접수하지 않는다. 단 케어·수선"
+                f" 제안에 대한 수락의 대상은 보유 제품이 맞다.\n"
+                f"- 고객이 명시적으로 다른 제품·카테고리를 화제로 올리면"
+                f" 그 화제를 따른다. 이 노트가 화제를 되돌리라는 뜻은 아니다.\n"
+                f"- 어떻게 아는지 말하지 않는다. \"지금 보고 계신\" 같은 관측"
+                f" 표현을 쓰지 않는다.\n"
+                f"- 프로필의 장바구니 기록에 다른 제품이 있어도 그 제품을"
+                f" 이번 대화의 대상처럼 부르지 않는다.\n"
+            )})
 
         # 노트북 수납 표는 **고객이** 노트북 이야기를 꺼냈을 때만 붙인다.
         # 대화 전체로 판단했더니, 앞 턴에 에이전트가 스스로 언급한 것 때문에
@@ -868,6 +928,28 @@ def generate_reply(
             customer=customer,
         )
 
+        # 재료에서 결론을 만드는 노트 둘 (2026-08-19 저녁 — 데모 서버가 mini 로
+        # 확정되면서 추가. mini 는 재료에서 결론을 추론하지 못하고 회피한다).
+        # 판정은 전부 데이터가 한다 — last_code 대조, 구매 기록의 연수 계산.
+        # MCM 데모 데이터에는 last_code 가 없어 같은 라스트 노트는 /chat 에서
+        # 켜지지 않는다. 수명 노트는 가격 부담이 이번에 처음 나온 턴에만 —
+        # 매 턴 다시 넣으면 같은 이야기가 반복된다 (전략 반복과 같은 병).
+        if customer:
+            same_last = build_same_last_note(picked, customer, conversation_text)
+            if same_last:
+                extras.append({"role": "system", "content": same_last})
+            if state["concerns"] and not constraint_is_old:
+                longevity = build_longevity_note(customer)
+                if longevity:
+                    extras.append({"role": "system", "content": longevity})
+            # 예산 숫자가 없는 가격 부담 턴 — 비보유 저가 후보를 재료로 준다.
+            # (숫자가 있으면 예산 분류표가 그 역할을 한다. 빌더가 오버레이
+            # 밖에서는 "" 를 돌려주므로 /chat 은 그대로다)
+            if state["concerns"] and not state["budget_max"]:
+                affordable = build_affordable_note(customer)
+                if affordable:
+                    extras.append({"role": "system", "content": affordable})
+
         # 보유 제품과 이어지는 질문이면, 출처가 붙은 표현을 미리 만들어 넘긴다.
         # 고객이 말한 것만 넘긴다(talked). 에이전트가 앞 턴에 꺼낸 제품을
         # "이미 나온 것"으로 치면 출처 표현이 만들어지지 않는다.
@@ -913,6 +995,34 @@ def generate_reply(
                 # 우리가 먼저 꺼내는 턴이다. 이 턴에만 출처를 검사한다.
                 check_source = "어느 제품인지 아직 모릅니다" not in bridge
 
+            # 케어 시점 노트 (2026-08-19 저녁 — 데모 D3, 통합 경로 전용).
+            # care_due 는 통합 경로가 자산 데이터로 판정해 넣는 플래그라
+            # /chat 의 파일 고객에는 없다 — 켜지지 않는다.
+            # 붙이지 않는 턴 네 곳 — 케어 제안이 겹치거나 얹으면 안 되는 자리다.
+            #   · 브릿지가 이미 케어 다리를 놓은 턴
+            #   · 케어 상담이 이미 열린 대화
+            #   · 출처 추궁 턴 (경계심에 케어를 얹는 원래 사고)
+            #   · 거절 턴·짧은 수락 턴 (거절 직후의 다른 영업,
+            #     수락 대상 옆에 묻지 않은 제안 얹기 — 둘 다 기록된 사고 형태)
+            _msg_lower = message.lower()
+            _refused = any(h in _msg_lower for h in REFUSAL_HINTS)
+            _short_accept = len(message) <= 20 and any(
+                h in _msg_lower for h in ACCEPT_HINTS
+            )
+            if (
+                not bridge
+                and not challenged
+                and not _refused
+                and not _short_accept
+                and not is_closing(message)
+                and not care_thread_open(
+                    conversation_history, customer.get("owned_products")
+                )
+            ):
+                care_due_note = build_care_due_note(customer)
+                if care_due_note:
+                    extras.append({"role": "system", "content": care_due_note})
+
             # "7년 썼으면" 처럼 기간을 말하면 어느 제품인지 코드가 지목한다.
             # 경과 기간 표를 줘도 모델이 다른 제품을 골랐다.
             duration = match_by_duration(customer, message)
@@ -947,6 +1057,19 @@ def generate_reply(
             no_repeat = build_no_repeat_note(conversation_history, message)
             if no_repeat:
                 extras.append({"role": "system", "content": no_repeat})
+
+        # 고객이 방금 거절하거나 결정을 미룬 턴 — 받아들이는 틀 (2026-08-20).
+        # "다음에 받을게요"에 접수 안내로 되묻고, "생각해볼게요"에 배송을
+        # 확정한 장턴 실측 사고. 새 질문이 같이 오면 그 질문에는 답하게 한다.
+        decline = build_decline_note(message)
+        if decline:
+            extras.append({"role": "system", "content": decline})
+
+        # 맺는 인사 턴 — 인사로 맺는다 (2026-08-20). "고마워요"에 지갑을
+        # 재권유한 장턴 실측 사고. 화제 닫기와 대화 닫기는 다르다.
+        closing = build_closing_note(message)
+        if closing:
+            extras.append({"role": "system", "content": closing})
 
         # 진짜 맨 뒤 — 응답 언어.
         # 한국어면 빈 문자열이라 아무것도 붙지 않는다.
@@ -1020,8 +1143,15 @@ def generate_reply(
     #
     # 재요청은 답변 전체를 다시 만들게 하므로 대화 틀까지 흔든다.
     # 범위를 좁히지 않으면 고치는 것보다 깨뜨리는 것이 많다.
+    # 짧은 수락 턴은 뺀다 (2026-08-20). 가격 이야기가 앞 턴에 있으면
+    # price_context 가 누적 참이라, 케어 제안에 "네, 봐주세요" 한 턴에도
+    # 재요청이 걸려 수락을 구매 문의로 바꿔 읽었다 — 문서에 기록된 그 사고가
+    # 대화 누적 조건 때문에 재발한 것이다. 수락 턴의 답은 다시 쓰게 하지 않는다.
+    short_accept = len(message) <= 20 and any(
+        h in message.lower() for h in ACCEPT_HINTS
+    )
     price_context = bool(state["budget_max"]) or bool(state["concerns"])
-    if customer and not is_control and price_context:
+    if customer and not is_control and price_context and not short_accept:
         again = _recommended_owned(result.get("reply", ""), customer, talked)
         if again:
             result = _call(messages + [{"role": "system", "content": again}])
@@ -1039,6 +1169,35 @@ def generate_reply(
     # 모델을 다시 부르지 않아 대화가 어긋날 위험도 없다.
     if customer and not is_control:
         result["reply"] = fix_region_condition(result.get("reply", ""), customer)
+
+    # 케어 시점 노트가 있었는데 답변이 그 제품을 아예 언급하지 않았으면,
+    # 코드가 완성 문장을 덧붙인다 (2026-08-19 저녁 — 통합 데모 D3).
+    # 프롬프트 위치를 옮겨봐도 mini 가 0~2/3 로 떨어뜨렸고, 데모 판정은
+    # 매 실행 인용 1개 이상을 요구한다. 모델을 다시 부르지 않는 확정적
+    # 후처리라 재요청처럼 대화가 어긋날 위험이 없다.
+    # 한국어 발화에만 붙인다 — 문장이 한국어라서다 (언어는 코드가 정한다).
+    if care_due_note and isinstance(result.get("reply"), str) and re.search(
+        r"[가-힣]", message
+    ):
+        owned_list = customer.get("owned_products") or []
+        due = next(
+            (p for p in owned_list if p.get("care_due") and p.get("name")), None
+        )
+        if due:
+            # 언급 여부는 이 자산만의 구별 토큰으로 본다. 이름 첫 토큰(라인)은
+            # 다른 보유와 겹칠 수 있다 (Aurelia Top Handle ↔ Aurelia Derby).
+            others = set()
+            for p in owned_list:
+                if p is not due:
+                    others |= set(str(p.get("name") or "").split())
+            tokens = [
+                t for t in due["name"].split() if len(t) >= 2 and t not in others
+            ]
+            mentioned = due["name"] in result["reply"] or any(
+                t in result["reply"] for t in tokens
+            )
+            if not mentioned:
+                result["reply"] = result["reply"].rstrip() + care_due_sentence(due)
 
     return result
 

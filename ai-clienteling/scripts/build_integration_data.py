@@ -329,6 +329,22 @@ def main():
         for a in items:
             assert a.get("asset_id") and a.get("product_name"), f"{cid} 자산 필드 누락: {a}"
 
+    # 서비스 정책: MCM services.json 그대로 + 할인 정책 한 절 (2026-08-20).
+    # 할인이 데이터에 없어서 mini 가 "안내드릴 수 없는 부분"으로 회피했다 —
+    # 모르는 것을 없애는 가장 좋은 방법은 알아내는 것. 한 메종 픽션의
+    # 정책으로 명시한다. /chat 의 services.json 은 건드리지 않는다.
+    services = json.loads((DATA / "services.json").read_text(encoding="utf-8"))
+    services["promotions"] = {
+        "policy": "상시 할인·프로모션·쿠폰을 운영하지 않는다 (시연용 픽션 정책)",
+        "how_to_answer": (
+            "할인 문의에는 '할인이나 프로모션은 운영하지 않고 있습니다'라고 "
+            "사실대로 답한다. '안내드릴 수 없다'는 회피를 쓰지 않는다. "
+            "그 뒤는 가격이 아니라 만듦새와 수명의 이야기로 잇는다."
+        ),
+    }
+    (DATA / "integration_services.json").write_text(
+        json.dumps(services, ensure_ascii=False, indent=2), encoding="utf-8")
+
     (DATA / "integration_assets.json").write_text(
         json.dumps(assets_doc, ensure_ascii=False, indent=2), encoding="utf-8")
     (DATA / "integration_catalog.json").write_text(
