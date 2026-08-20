@@ -4,6 +4,15 @@ import { HESITATION_LABELS, CTA_LABELS, CTA_CONFIRMATIONS } from '../constants.j
 import CitationCard from '../components/CitationCard.jsx'
 import StatusBanner from '../components/StatusBanner.jsx'
 
+/* 오케스트레이터 5단계의 사람 말 라벨 — 응답 trace 의 step 키와 1:1. */
+const TRACE_STEP_LABELS = {
+  intent: '망설임 분류',
+  assets: '소유 자산 조회',
+  rank: '컨디션 우선 정렬',
+  clienteling: '상담 생성',
+  validate: '인용 검증',
+}
+
 function SectionNumeral({ children }) {
   return (
     <span
@@ -21,6 +30,7 @@ export default function AdviseResultScreen() {
   const advise = state?.advise
   const scenario = state?.scenario
   const [ctaConfirmed, setCtaConfirmed] = useState(false)
+  const [traceOpen, setTraceOpen] = useState(false)
 
   if (!advise) {
     return (
@@ -121,6 +131,50 @@ export default function AdviseResultScreen() {
             )}
           </div>
         </div>
+
+        {/* AI 판단 과정 — 응답 trace 그대로. 오프라인 목업에는 trace 가 없어 자동으로 숨는다. */}
+        {advise.trace?.length > 0 && (
+          <div className="border-t border-[var(--color-border)] pt-8">
+            <button
+              onClick={() => setTraceOpen((v) => !v)}
+              aria-expanded={traceOpen}
+              className="text-[11px] tracking-[0.18em] uppercase text-[var(--color-muted)] transition-colors duration-150 hover:text-[var(--color-accent)]"
+            >
+              AI 판단 과정 {traceOpen ? '−' : '+'}
+            </button>
+            {traceOpen && (
+              <ol className="mt-5 space-y-3.5">
+                {advise.trace.map((step, i) => (
+                  <li key={step.step} className="flex items-baseline gap-3">
+                    <span className="font-serif italic text-sm text-[var(--color-accent)] w-4 shrink-0">
+                      {i + 1}
+                    </span>
+                    <div className="min-w-0 flex-1">
+                      <div className="flex items-baseline justify-between gap-3">
+                        <span className="text-sm text-[var(--color-text)]">
+                          {TRACE_STEP_LABELS[step.step] ?? step.step}
+                        </span>
+                        <span className="text-[11px] text-[var(--color-muted)] tabular-nums shrink-0">
+                          {step.mode} · {step.elapsed_ms}ms
+                        </span>
+                      </div>
+                      {step.detail && (
+                        <p
+                          className={`text-xs mt-0.5 ${
+                            step.degraded ? 'text-[var(--color-warn)]' : 'text-[var(--color-muted)]'
+                          }`}
+                        >
+                          {step.degraded ? '폴백 — ' : ''}
+                          {step.detail}
+                        </p>
+                      )}
+                    </div>
+                  </li>
+                ))}
+              </ol>
+            )}
+          </div>
+        )}
 
         <div className="border-t border-[var(--color-border)] pt-8 flex gap-5">
           <button
