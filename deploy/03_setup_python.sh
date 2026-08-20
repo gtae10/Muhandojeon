@@ -33,7 +33,7 @@ cat <<'EOF'
   sudo -u muhandojeon nano /opt/muhandojeon/main/backend/.env
     - OPENAI_API_KEY (필수)
 
-  sudo -u muhandojeon nano /opt/muhandojeon/ai-clienteling-src/ai-clienteling/.env
+  sudo -u muhandojeon nano /opt/muhandojeon/main/ai-clienteling/.env
     - OPENAI_API_KEY (필수, backend와 같은 키 공유하기로 함)
     - OPENAI_MODEL=gpt-4o
 

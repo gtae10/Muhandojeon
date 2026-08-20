@@ -1,7 +1,6 @@
 #!/usr/bin/env bash
 # 2단계: 레포 클론 — public repo라 인증 불필요.
-#   - main 브랜치를 $MAIN_DIR 에 (app/ backend/ frontend/ 용)
-#   - AI-clienteling 브랜치를 $AI_CLIENTELING_SRC_DIR 에 별도 체크아웃 (ai-clienteling/ 용)
+#   main 브랜치 하나로 전부 배포한다 (app/ backend/ frontend/ ai-clienteling/).
 # root 또는 sudo로 실행
 set -euo pipefail
 source "$(dirname "$0")/00_vars.sh"
@@ -20,7 +19,6 @@ clone_or_update() {
 }
 
 clone_or_update "$MAIN_DIR" "main"
-clone_or_update "$AI_CLIENTELING_SRC_DIR" "AI-clienteling"
 
 chown -R "$SERVICE_USER:$SERVICE_USER" "$BASE_DIR"
 

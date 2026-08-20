@@ -12,7 +12,7 @@ SSH 접속 자체는 각자 로컬에서 하고, 접속한 뒤 이 저장소를 
 | `backend/` 포트 | **8103** | 원래 `main.py`에 8000으로 하드코딩돼 있어 `app/`와 충돌 → `.env.example`의 `ASSET_BASE_URL` 관례에 맞춰 8103으로 변경 (아래 참고) |
 | `backend/` 진입점 | **`app.main:app` (신형)** | 구형 `main:app`에는 계약 경로(`/assets/{id}`, `/fingerprint/match`, `/condition/score`)가 없어 http 전환 시 404가 난다. 신형은 계약+레거시 경로를 모두 서빙하고 `backend/README.md`도 신형을 권장 |
 | `ai-clienteling/` 포트 | 8102 | 자체 문서에 이미 명시된 값 |
-| `ai-clienteling/` 소스 | `AI-clienteling` 브랜치를 별도 clone | `main`에는 아직 merge 안 됨 |
+| `ai-clienteling/` 소스 | `main` 단일 체크아웃 (`$MAIN_DIR/ai-clienteling`) | 2026-08-20 main 에 merge 됨 — 별도 브랜치 clone 불필요. 구 배포 전환은 아래 "단일 체크아웃 전환" |
 | 코드 전달 | `git clone` (레포 public) | rsync보다 서버에서 갱신(`git pull`)이 쉬움 |
 | OpenAI 키 | `backend/`와 `ai-clienteling/`가 동일 키 공유 | 사용자 확인 |
 | 외부 노출 | 80/443만 (nginx) | 8000/8102/8103은 firewalld로 차단 + 서비스 자체도 127.0.0.1에만 바인드 (이중 방어) |
@@ -69,15 +69,14 @@ python3.11, nodejs 20.x, nginx, git, firewalld, SELinux 관리 도구(`policycor
 설치한다. 서비스를 root가 아닌 별도 계정(`muhandojeon`, 로그인 불가)으로 돌리기 위해 시스템 계정도
 만든다. 마지막에 `getenforce`로 SELinux 모드를 확인해준다(보통 `Enforcing`).
 
-### 3. 나머지 브랜치 clone (main 재확인 + AI-clienteling 브랜치)
+### 3. 레포 clone/최신화
 
 ```bash
 sudo bash 02_clone.sh
 ```
 
-`main`은 이미 1단계에서 받았으니 최신화만 하고, `ai-clienteling/` 코드가 들어있는
-`AI-clienteling` 브랜치를 `/opt/muhandojeon/ai-clienteling-src`에 별도로 clone한다.
-(브랜치 두 개를 한 워킹트리에 동시에 두는 게 아니라, 완전히 분리된 디렉터리로 각각 체크아웃.)
+`main` 브랜치 하나에 네 파트가 전부 들어 있다 (`app/ backend/ frontend/ ai-clienteling/`).
+과거의 `AI-clienteling` 별도 브랜치 체크아웃은 merge 이후 폐지됐다.
 
 ### 4. 각 FastAPI 서비스 venv + 의존성 설치
 
@@ -92,7 +91,7 @@ sudo bash 03_setup_python.sh
 ```bash
 sudo -u muhandojeon nano /opt/muhandojeon/main/.env
 sudo -u muhandojeon nano /opt/muhandojeon/main/backend/.env               # OPENAI_API_KEY 필수
-sudo -u muhandojeon nano /opt/muhandojeon/ai-clienteling-src/ai-clienteling/.env  # OPENAI_API_KEY 필수 (backend와 동일 키)
+sudo -u muhandojeon nano /opt/muhandojeon/main/ai-clienteling/.env        # OPENAI_API_KEY 필수 (backend와 동일 키)
 ```
 
 ### 5. 프론트엔드 프로덕션 빌드
@@ -232,8 +231,28 @@ curl -s localhost:8000/health/detail | python3 -c "import sys,json; d=json.load(
 
 ```bash
 cd /opt/muhandojeon/main && sudo -u muhandojeon git pull
-cd /opt/muhandojeon/ai-clienteling-src && sudo -u muhandojeon git pull
 sudo systemctl restart muhandojeon-app muhandojeon-backend muhandojeon-ai-clienteling
 sudo bash /opt/muhandojeon/main/deploy/04_build_frontend.sh   # 프론트 변경 시에만
 sudo systemctl reload nginx
+```
+
+`deploy/` 밑의 systemd 유닛·nginx 설정이 바뀐 커밋을 받았다면 `git pull` 만으로는 반영되지
+않는다 — `05_systemd_install.sh`(유닛 복사+재시작), `06_nginx_install.sh`(설정 복사+reload)를
+다시 실행한다.
+
+## 단일 체크아웃 전환 (구 배포에서 1회)
+
+ai-clienteling 이 main 에 merge 되기 전에 배포한 서버는 아직
+`/opt/muhandojeon/ai-clienteling-src` 체크아웃으로 서비스가 돌고 있다. 전환은 1회:
+
+```bash
+cd /opt/muhandojeon/main && sudo -u muhandojeon git pull      # ai-clienteling/ 이 들어온다
+sudo bash /opt/muhandojeon/main/deploy/03_setup_python.sh     # main/ai-clienteling/.venv 생성
+# 기존 .env 를 그대로 가져온다 (키 재입력 불필요)
+sudo -u muhandojeon cp /opt/muhandojeon/ai-clienteling-src/ai-clienteling/.env \
+                       /opt/muhandojeon/main/ai-clienteling/.env
+sudo bash /opt/muhandojeon/main/deploy/05_systemd_install.sh  # 새 경로 유닛 반영 + 재시작
+bash /opt/muhandojeon/main/deploy/08_healthcheck.sh           # :8102 OK 확인
+# 정상 확인 후에만 구 체크아웃 제거 (확인 전엔 지우지 않는다)
+sudo rm -rf /opt/muhandojeon/ai-clienteling-src
 ```
