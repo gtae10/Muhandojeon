@@ -7,6 +7,7 @@
 
 ```bash
 cd <repo>
+git tag -f demo-freeze && git log -1 --oneline demo-freeze   # 롤백 지점 박기
 make check          # ruff + mypy + 픽스처 검증 (여기서 실패하면 나머지가 무의미하다)
 make demo-check     # 시나리오 3종 기대값 + 문구 전문
 make estimate       # 드라이런 비용 추정 (실제 호출 없음)
@@ -109,6 +110,30 @@ curl -s -X POST localhost:8000/demo/scenarios/D3/run \
 | Lab 결과 없음 | `make lab --yes`(약 1초, 규칙 모델) 후 `/lab` 새로고침 |
 | 시나리오 문구가 달라졌다 | `make demo-check` 로 기대값 위반 확인. 픽스처를 고쳤는지 의심 |
 | 포트 충돌 | `make dev PORT=8100` |
+
+## 발표 수치 만들기 — Persona Bot Lab 실측 (선택)
+
+"S2(자산 연계)가 다른 전략보다 낫다"를 수치로 말하려면 **LLM 이 연결된 곳**에서 Lab 을
+1회 돌린다. 키 없이 돌리면 페르소나·심판이 규칙 모델이라 S2 우세가 규칙의 가정을 되읽는
+순환 논증이 된다 — 그 수치는 캐비어트 없이 인용하지 않는다(CLAUDE.md 실측 보고 원칙).
+
+배포 서버(LLM 연결됨)에서:
+
+```bash
+cd /opt/muhandojeon/main
+sudo -u muhandojeon .venv/bin/python -m scripts.run_lab --estimate-only   # 예상 비용 먼저 (약 $0.09/회)
+sudo -u muhandojeon .venv/bin/python -m scripts.run_lab                   # 확인 게이트에 직접 y
+```
+
+끝나면 `http://<서버>/lab` 대시보드에서 전략별 결과를 확인하고 스크린샷을 발표 자료에 쓴다.
+
+**수치를 인용할 때 반드시 함께 말할 것**
+
+- 조건: 5 페르소나 × 3 전략 × N회, **같은 페르소나·같은 시드에서 전략 문구만 다름**(동일 조건 비교)
+- 심판: LLM 심판(모델명 명시). 판정 함수는 전략 id 를 보지 않는다 — 테스트가 시그니처를 고정한다
+- 학습이 없는 시뮬레이션이라 평가셋 누수는 해당 없음. 대신 심판·페르소나가 같은 모델 계열이면
+  그 사실을 명시한다
+- **S2 가 지면 진 대로 보고한다** — 원인을 분석할 수 있어야 한다는 것이 Lab 의 존재 이유다
 
 ## 배포 서버 전체 장애 — 발표 노트북 로컬 폴백
 
