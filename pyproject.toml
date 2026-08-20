@@ -51,11 +51,11 @@ target-version = "py311"
 #  - scripts/_deferred: 데이터셋 확정 전까지 실행 경로에서 분리한 코드(현재 앱 구조와 어긋날 수 있다)
 #  - data: 생성 산출물. 마크다운 안의 코드 블록을 ruff format 이 손대면 재생성 때 되돌아간다
 # 다른 파트의 코드는 각자 규약을 따르므로 이 파트의 린트/타입 검사 대상이 아니다.
-#  - backend/, muhandojeon/: 백엔드·AI·프론트 담당 코드
+#  - backend/, ai-clienteling/, AI/, muhandojeon/: 백엔드·AI·프론트 담당 코드
 #  - scripts/_deferred: 데이터셋 확정 전까지 실행 경로에서 분리한 코드
 #  - data/, fixtures/: 생성·손작성 산출물
 #  - docs/: 문서 안의 예시 코드 블록을 포맷터가 손대면 설명 의도가 깨진다
-extend-exclude = ["backend", "muhandojeon", "scripts/_deferred", "data", "fixtures", "docs"]
+extend-exclude = ["backend", "ai-clienteling", "AI", "muhandojeon", "scripts/_deferred", "data", "fixtures", "docs"]
 
 [tool.ruff.lint]
 select = ["E", "F", "I", "UP", "B", "SIM", "ANN"]
@@ -75,7 +75,7 @@ disallow_untyped_defs = true
 ignore_missing_imports = true
 plugins = ["pydantic.mypy"]
 
-exclude = ["^scripts/_deferred/", "^backend/", "^muhandojeon/"]
+exclude = ["^scripts/_deferred/", "^backend/", "^ai-clienteling/", "^AI/", "^muhandojeon/"]
 
 [[tool.mypy.overrides]]
 module = ["scripts._deferred.*"]
