@@ -324,7 +324,7 @@ def _book_fitting_cta(reply, message, history):
 CARE_CTA_WORDS = ("케어", "수선", "점검", "클리닝")
 
 
-def _care_booking_cta(reply, message):
+def _care_booking_cta(reply, message, care_due=False):
     """이 턴의 cta 를 CARE_BOOKING 으로 승격할지 판정한다. (NONE 턴에서만 호출)
 
     2026-08-19 저녁, 데모 D3 실측 — 답변이 "케어 예약을 함께 잡아드릴까요?"
@@ -332,6 +332,16 @@ def _care_booking_cta(reply, message):
     가야 한다 — 화면 카드는 액션으로 뜨므로, 케어 접수를 여쭌 답변에는
     케어 카드가 따라가야 한다. BOOK_FITTING 승격과 같은 구조:
     같은 문장 안의 케어 어휘 + 접수 어휘, 거절 턴 전면 차단, 오탐 0 우선.
+
+    care_due (2026-08-20, 서버 D3 재테스트에서 "케어 예약도 도와드릴 수
+    있습니다" 라는 능력 진술형이 접수 어휘 목록을 비껴가 NONE 이 나왔다):
+    케어 시점 자산이 있는 고객은 답변에 케어 어휘가 등장하기만 하면 승격한다.
+    접수 어휘를 활용형마다 쫓는 대신 데이터(next_service_months≤1, 코드 판정)로
+    여는 것 — D3 판정은 매 실행 cta 를 요구하므로 여기서는 놓침이 "현행
+    유지"가 아니라 FAIL 이다. 케어 언급 자체는 구조가 보장한다: 모델이
+    빠뜨리면 후처리(care_due_sentence)가 케어 문장을 덧붙인다. 거절·보류·
+    닫는 인사에 더해 출처 추궁 턴도 차단 — 추궁 답변은 출처로 "케어 접수
+    기록"을 대므로, 그 단어에 예약 카드가 뜨면 경계심에 얹는 화면이 된다.
     """
     if any(
         h in (message or "").lower() for h in REFUSAL_HINTS + HOLD_HINTS
@@ -342,6 +352,12 @@ def _care_booking_cta(reply, message):
             b in sentence for b in BOOKING_WORDS
         ):
             return True
+    if (
+        care_due
+        and any(c in (reply or "") for c in CARE_CTA_WORDS)
+        and not any(h in (message or "").lower() for h in SOURCE_CHALLENGE_HINTS)
+    ):
+        return True
     return False
 
 
@@ -677,7 +693,10 @@ def clienteling_reply(req: IntegrationReplyRequest):
     cta = CTA_FROM_ACTION.get(result["suggested_action"], "NONE")
     if cta == "NONE" and _book_fitting_cta(result["reply"], message, history):
         cta = "BOOK_FITTING"
-    elif cta == "NONE" and _care_booking_cta(result["reply"], message):
+    elif cta == "NONE" and _care_booking_cta(
+        result["reply"], message,
+        care_due=any(p.get("care_due") for p in owned or []),
+    ):
         cta = "CARE_BOOKING"
     return IntegrationReplyResponse(
         message=result["reply"],
