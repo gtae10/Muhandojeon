@@ -10,15 +10,17 @@ SSH 접속 자체는 각자 로컬에서 하고, 접속한 뒤 이 저장소를 
 |---|---|---|
 | `app/` 포트 | 8000 | 통합 레이어, 기본값 |
 | `backend/` 포트 | **8103** | 원래 `main.py`에 8000으로 하드코딩돼 있어 `app/`와 충돌 → `.env.example`의 `ASSET_BASE_URL` 관례에 맞춰 8103으로 변경 (아래 참고) |
+| `backend/` 진입점 | **`app.main:app` (신형)** | 구형 `main:app`에는 계약 경로(`/assets/{id}`, `/fingerprint/match`, `/condition/score`)가 없어 http 전환 시 404가 난다. 신형은 계약+레거시 경로를 모두 서빙하고 `backend/README.md`도 신형을 권장 |
 | `ai-clienteling/` 포트 | 8102 | 자체 문서에 이미 명시된 값 |
 | `ai-clienteling/` 소스 | `AI-clienteling` 브랜치를 별도 clone | `main`에는 아직 merge 안 됨 |
 | 코드 전달 | `git clone` (레포 public) | rsync보다 서버에서 갱신(`git pull`)이 쉬움 |
 | OpenAI 키 | `backend/`와 `ai-clienteling/`가 동일 키 공유 | 사용자 확인 |
 | 외부 노출 | 80/443만 (nginx) | 8000/8102/8103은 firewalld로 차단 + 서비스 자체도 127.0.0.1에만 바인드 (이중 방어) |
 
-**주의**: `backend/main.py:73`의 `uvicorn.run(..., port=8000, ...)` 부분은 systemd 유닛에서
-`uvicorn main:app --port 8103` 으로 직접 띄우기 때문에 실제로는 무시된다(그 줄은 `python main.py`로
-직접 실행할 때만 쓰인다). 코드를 고칠 필요는 없다.
+**주의**: 소스에 하드코딩된 포트(구형 `main.py:73`의 8000, 신형 `app/main.py` 문서의 8001)는
+systemd 유닛이 `uvicorn app.main:app --port 8103` 으로 직접 띄우기 때문에 실제로는 무시된다
+(직접 실행할 때만 쓰인다). 코드를 고칠 필요는 없다. 헬스체크 경로는 신형 기준 `/api/health`다
+(구형의 `/health`는 신형에 없다 — `08_healthcheck.sh`가 이미 반영).
 
 ## Rocky Linux 8.10에서 달라지는 부분 (Ubuntu 대비)
 
@@ -192,6 +194,11 @@ CLIENTELING_ADAPTER=http
 CLIENTELING_BASE_URL=http://127.0.0.1:8102
 ASSET_ADAPTER=http
 ASSET_BASE_URL=http://127.0.0.1:8103
+# 지문·컨디션도 같은 백엔드 프로세스가 서빙한다 (신형 app.main:app 기준 — 구형이면 404)
+FINGERPRINT_ADAPTER=http
+FINGERPRINT_BASE_URL=http://127.0.0.1:8103
+CONDITION_ADAPTER=http
+CONDITION_BASE_URL=http://127.0.0.1:8103
 ```
 
 `docs/BACKEND_INTEGRATION.md`에 필드 매핑은 이미 돼 있지만, `cited_asset_ids`가 아직 채워지지

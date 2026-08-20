@@ -21,7 +21,7 @@ systemctl is-active muhandojeon-app muhandojeon-backend muhandojeon-ai-clienteli
 echo
 echo "== 내부 포트 직접 확인 (127.0.0.1) =="
 check "app        :8000" "http://127.0.0.1:8000/health"
-check "backend    :8103" "http://127.0.0.1:8103/health"
+check "backend    :8103" "http://127.0.0.1:8103/api/health"
 check "ai-clienteling :8102" "http://127.0.0.1:8102/health"
 
 echo
