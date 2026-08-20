@@ -13,7 +13,7 @@ import {
   mockClientelingOutreach,
 } from './mockData.js'
 
-const TIMEOUT_MS = 2500
+const TIMEOUT_MS = 15000
 
 /** fetch 자체가 실패한 경우(백엔드 미기동, 타임아웃, CORS) — 이때만 목업으로 조용히 폴백한다. */
 export class NetworkUnavailableError extends Error {
