@@ -16,13 +16,14 @@ check() {
 }
 
 echo "== systemd 서비스 상태 =="
-systemctl is-active muhandojeon-app muhandojeon-backend muhandojeon-ai-clienteling
+systemctl is-active muhandojeon-app muhandojeon-backend muhandojeon-ai-clienteling muhandojeon-ai-intent
 
 echo
 echo "== 내부 포트 직접 확인 (127.0.0.1) =="
 check "app        :8000" "http://127.0.0.1:8000/health"
 check "backend    :8103" "http://127.0.0.1:8103/api/health"
 check "ai-clienteling :8102" "http://127.0.0.1:8102/health"
+check "ai-intent   :8101" "http://127.0.0.1:8101/health"
 
 echo
 echo "== nginx 경유 확인 (외부에서 실제로 타는 경로) =="
@@ -41,7 +42,7 @@ free -h
 
 echo
 echo "== 외부 노출 포트 확인 (80/443만 열려야 정상) =="
-ss -tlnp | grep -E ":80|:443|:8000|:8102|:8103" || true
+ss -tlnp | grep -E ":80|:443|:8000|:8101|:8102|:8103" || true
 
 echo
 echo "== firewalld 규칙 확인 =="

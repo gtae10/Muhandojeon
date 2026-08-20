@@ -1,0 +1,18 @@
+[Unit]
+Description=Muhandojeon AI1 인텐트 분류 (AI/server/, FastAPI, :8101)
+After=network.target
+
+[Service]
+Type=simple
+User=muhandojeon
+Group=muhandojeon
+WorkingDirectory=/opt/muhandojeon/main/AI/server
+ExecStart=/opt/muhandojeon/main/AI/server/.venv/bin/uvicorn api:app --host 127.0.0.1 --port 8101 --workers 1
+Restart=on-failure
+RestartSec=3
+MemoryMax=256M
+NoNewPrivileges=true
+PrivateTmp=true
+
+[Install]
+WantedBy=multi-user.target

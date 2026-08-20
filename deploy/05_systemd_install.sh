@@ -7,11 +7,13 @@ DEPLOY_DIR="$(cd "$(dirname "$0")" && pwd)"
 cp "$DEPLOY_DIR/systemd/muhandojeon-app.service" /etc/systemd/system/
 cp "$DEPLOY_DIR/systemd/muhandojeon-backend.service" /etc/systemd/system/
 cp "$DEPLOY_DIR/systemd/muhandojeon-ai-clienteling.service" /etc/systemd/system/
+cp "$DEPLOY_DIR/systemd/muhandojeon-ai-intent.service" /etc/systemd/system/
 
 systemctl daemon-reload
 systemctl enable --now muhandojeon-app.service
 systemctl enable --now muhandojeon-backend.service
 systemctl enable --now muhandojeon-ai-clienteling.service
+systemctl enable --now muhandojeon-ai-intent.service
 
 sleep 2
-systemctl --no-pager status muhandojeon-app.service muhandojeon-backend.service muhandojeon-ai-clienteling.service
+systemctl --no-pager status muhandojeon-app.service muhandojeon-backend.service muhandojeon-ai-clienteling.service muhandojeon-ai-intent.service

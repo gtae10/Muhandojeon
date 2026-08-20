@@ -12,10 +12,11 @@ SSH 접속 자체는 각자 로컬에서 하고, 접속한 뒤 이 저장소를 
 | `backend/` 포트 | **8103** | 원래 `main.py`에 8000으로 하드코딩돼 있어 `app/`와 충돌 → `.env.example`의 `ASSET_BASE_URL` 관례에 맞춰 8103으로 변경 (아래 참고) |
 | `backend/` 진입점 | **`app.main:app` (신형)** | 구형 `main:app`에는 계약 경로(`/assets/{id}`, `/fingerprint/match`, `/condition/score`)가 없어 http 전환 시 404가 난다. 신형은 계약+레거시 경로를 모두 서빙하고 `backend/README.md`도 신형을 권장 |
 | `ai-clienteling/` 포트 | 8102 | 자체 문서에 이미 명시된 값 |
+| `AI/server/`(AI1 인텐트) 포트 | 8101 | `.env.example` 의 `INTENT_BASE_URL` 기본값과 일치. 노트북 5절을 승격한 규칙 신호 모델(ML 런타임 불필요) |
 | `ai-clienteling/` 소스 | `main` 단일 체크아웃 (`$MAIN_DIR/ai-clienteling`) | 2026-08-20 main 에 merge 됨 — 별도 브랜치 clone 불필요. 구 배포 전환은 아래 "단일 체크아웃 전환" |
 | 코드 전달 | `git clone` (레포 public) | rsync보다 서버에서 갱신(`git pull`)이 쉬움 |
 | OpenAI 키 | `backend/`와 `ai-clienteling/`가 동일 키 공유 | 사용자 확인 |
-| 외부 노출 | 80/443만 (nginx) | 8000/8102/8103은 firewalld로 차단 + 서비스 자체도 127.0.0.1에만 바인드 (이중 방어) |
+| 외부 노출 | 80/443만 (nginx) | 8000/8101/8102/8103은 firewalld로 차단 + 서비스 자체도 127.0.0.1에만 바인드 (이중 방어) |
 
 **주의**: 소스에 하드코딩된 포트(구형 `main.py:73`의 8000, 신형 `app/main.py` 문서의 8001)는
 systemd 유닛이 `uvicorn app.main:app --port 8103` 으로 직접 띄우기 때문에 실제로는 무시된다
@@ -123,7 +124,7 @@ sudo bash 06_nginx_install.sh
 
 `/` 는 `frontend/dist` 정적 파일, `/session /catalog /customers /sessions /demo /health /static
 /lab /ops /intent /clienteling /assets /condition /fingerprint /docs` 는 전부 `app/`(:8000)로
-프록시한다. `backend`(:8103)와 `ai-clienteling`(:8102)은 nginx 블록에 아예 없다 — 지금은 프론트가
+프록시한다. `backend`(:8103)·`ai-clienteling`(:8102)·`ai-intent`(:8101)는 nginx 블록에 아예 없다 — 지금은 프론트가
 `app/`만 호출하고, `app/`은 기본 mock 어댑터 모드로 동작하기 때문에 이 두 서비스를 외부에 노출할
 이유가 없다 (아래 "다음 단계" 참고).
 
@@ -148,7 +149,7 @@ Rocky 특유의 두 가지를 이 단계에서 처리한다:
 sudo bash 07_firewall.sh
 ```
 
-`ssh`, `http`, `https` 서비스만 허용하고 `8000/8102/8103`은 rich rule로 명시적으로 거부한다.
+`ssh`, `http`, `https` 서비스만 허용하고 `8000/8101/8102/8103`은 rich rule로 명시적으로 거부한다.
 **SSH 허용을 방화벽 규칙 중 제일 먼저 넣는다** — 순서를 바꾸면 원격 세션이 끊길 수 있다.
 (firewalld는 기본 zone에서 명시적으로 안 연 포트는 원래 막혀있지만, ufw의 explicit deny와
 동작·가시성을 맞추려고 reject rich rule을 따로 건다.)
@@ -193,6 +194,8 @@ CLIENTELING_ADAPTER=http
 CLIENTELING_BASE_URL=http://127.0.0.1:8102
 ASSET_ADAPTER=http
 ASSET_BASE_URL=http://127.0.0.1:8103
+# AI1 인텐트 (노트북 로직 실서버 — INTENT_BASE_URL 기본값이 이미 :8101)
+INTENT_ADAPTER=http
 # 지문·컨디션도 같은 백엔드 프로세스가 서빙한다 (신형 app.main:app 기준 — 구형이면 404)
 FINGERPRINT_ADAPTER=http
 FINGERPRINT_BASE_URL=http://127.0.0.1:8103
@@ -231,7 +234,7 @@ curl -s localhost:8000/health/detail | python3 -c "import sys,json; d=json.load(
 
 ```bash
 cd /opt/muhandojeon/main && sudo -u muhandojeon git pull
-sudo systemctl restart muhandojeon-app muhandojeon-backend muhandojeon-ai-clienteling
+sudo systemctl restart muhandojeon-app muhandojeon-backend muhandojeon-ai-clienteling muhandojeon-ai-intent
 sudo bash /opt/muhandojeon/main/deploy/04_build_frontend.sh   # 프론트 변경 시에만
 sudo systemctl reload nginx
 ```

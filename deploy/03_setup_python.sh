@@ -3,6 +3,7 @@
 #   app/            -> $MAIN_DIR/.venv
 #   backend/        -> $MAIN_DIR/backend/.venv
 #   ai-clienteling/ -> $AI_CLIENTELING_DIR/.venv
+#   AI/server/      -> $AI_INTENT_DIR/.venv
 # 서비스 계정으로 실행 (경로 소유권을 맞추기 위해 sudo -u 사용)
 set -euo pipefail
 source "$(dirname "$0")/00_vars.sh"
@@ -18,6 +19,9 @@ run_as_service "test -f '$MAIN_DIR/.env' || cp '$MAIN_DIR/.env.example' '$MAIN_D
 echo "== backend/ venv =="
 run_as_service "cd '$MAIN_DIR/backend' && $PYTHON_BIN -m venv .venv && .venv/bin/pip install --quiet --upgrade pip && .venv/bin/pip install --quiet -r requirements.txt"
 run_as_service "test -f '$MAIN_DIR/backend/.env' || cp '$MAIN_DIR/backend/.env.example' '$MAIN_DIR/backend/.env'"
+
+echo "== AI/server (AI1 인텐트) venv — 비밀값 없어 .env 불필요 =="
+run_as_service "cd '$AI_INTENT_DIR' && $PYTHON_BIN -m venv .venv && .venv/bin/pip install --quiet --upgrade pip && .venv/bin/pip install --quiet -r requirements.txt"
 
 echo "== ai-clienteling/ venv =="
 run_as_service "cd '$AI_CLIENTELING_DIR' && $PYTHON_BIN -m venv .venv && .venv/bin/pip install --quiet --upgrade pip && .venv/bin/pip install --quiet -r requirements.txt"
