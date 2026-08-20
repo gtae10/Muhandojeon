@@ -211,6 +211,22 @@ results["p3 케어 방법 안내(정보 동사)는 승격 안 함"] = not _care_
     "케어 방법을 알려드릴까요?", "관리 어떻게 해요?")
 results["p4 거절 턴은 케어 승격 차단"] = not _care_booking_cta(
     "알겠습니다. 필요하시면 케어 예약을 도와드리겠습니다.", "아니요, 다음에 할게요.")
+# care_due 승격 (2026-08-20) — 케어 시점 자산이 있으면 접수 어휘의 활용형과
+# 무관하게, 답변의 케어 언급 자체로 승격한다 (서버 D3 실측: 능력 진술형
+# "도와드릴 수 있습니다" 가 어휘 목록을 비껴가 판정 FAIL).
+results["p5 care_due + 능력 진술형 → 승격 (D3 실측 문장)"] = _care_booking_cta(
+    "정기 케어 시점이 되어 케어 예약도 도와드릴 수 있습니다.",
+    "재고 있나요?", care_due=True)
+results["p6 care_due 없으면 능력 진술형은 승격 안 함"] = not _care_booking_cta(
+    "케어가 필요하시면 언제든 도와드릴 수 있습니다.", "재고 있나요?")
+results["p7 care_due 라도 케어 언급 없는 답변은 승격 안 함"] = not _care_booking_cta(
+    "서울 매장에 재고가 있습니다.", "재고 있나요?", care_due=True)
+results["p8 care_due 라도 거절 턴은 차단"] = not _care_booking_cta(
+    "알겠습니다. 케어는 편하실 때 말씀해 주세요.",
+    "아니요, 케어는 다음에 할게요.", care_due=True)
+results["p9 care_due 라도 출처 추궁 턴은 차단"] = not _care_booking_cta(
+    "제가 먼저 말씀드린 것입니다. 구매 기록과 케어 접수 기록에서 확인했습니다.",
+    "제가 그 가방 얘기를 했었나요?", care_due=True)
 
 with _overlay(INTEGRATION_DATA):
     _cust = {"owned_products": [
