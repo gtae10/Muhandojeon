@@ -12,7 +12,12 @@ from dataclasses import dataclass
 from pydantic import BaseModel
 
 from contracts.assets import CustomerAssetsResponse
-from contracts.clienteling import ClientelingReplyRequest, ClientelingReplyResponse
+from contracts.clienteling import (
+    ClientelingOutreachRequest,
+    ClientelingOutreachResponse,
+    ClientelingReplyRequest,
+    ClientelingReplyResponse,
+)
 from contracts.condition import ConditionScoreRequest, ConditionScoreResponse
 from contracts.fingerprint import FingerprintMatchRequest, FingerprintMatchResponse
 from contracts.intent import IntentClassifyRequest, IntentClassifyResponse
@@ -59,6 +64,20 @@ ENDPOINTS: tuple[EndpointSpec, ...] = (
             "RAG 문서: `exports/catalog_rag.jsonl`, "
             "고객 컨텍스트: `exports/customer_context.json`. "
             "**owned_assets 가 비어 있지 않으면 cited_asset_ids 를 반드시 채운다.**"
+        ),
+    ),
+    EndpointSpec(
+        key="clienteling_outreach",
+        method="POST",
+        path="/clienteling/outreach",
+        owner="AI2 (클라이언텔링 상담)",
+        summary="어드바이저가 먼저 건네는 첫 마디 — 케어 임박 자산 등 계기가 있을 때만",
+        request_model=ClientelingOutreachRequest,
+        response_model=ClientelingOutreachResponse,
+        notes=(
+            "계기가 없으면 `message: null` 로 응답한다 — 화면은 아무것도 띄우지 않는다. "
+            "AI2 실서버는 계기 없음을 400 으로 주며, 통합 레이어 HTTP 어댑터가 "
+            "`message: null` 로 흡수한다(에러 아님)."
         ),
     ),
     EndpointSpec(

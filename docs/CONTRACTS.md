@@ -45,6 +45,7 @@ INTENT_ADAPTER=http make dev          # 인텐트만 실제 서버(INTENT_BASE_U
 |---|---|---|---|
 | POST | `/intent/classify` | AI1 (인텐트/망설임 분류) | 세션 이벤트로 구매 망설임 유형을 분류한다 |
 | POST | `/clienteling/reply` | AI2 (클라이언텔링 상담) | 망설임 유형과 소유 자산을 근거로 상담 문구를 생성한다 |
+| POST | `/clienteling/outreach` | AI2 (클라이언텔링 상담) | 어드바이저가 먼저 건네는 첫 마디 — 케어 임박 자산 등 계기가 있을 때만 |
 | GET | `/assets/{customer_id}` | 백엔드 (개체/자산) | 고객이 소유한 개체 목록과 컨디션을 반환한다 |
 | POST | `/fingerprint/match` | 백엔드 (개체 지문) | 촬영 이미지를 등록 개체와 대조한다 |
 | POST | `/condition/score` | 백엔드 (컨디션) | 개체의 컨디션 점수와 부위별 소견을 반환한다 |
@@ -239,6 +240,83 @@ INTENT_ADAPTER=http make dev          # 인텐트만 실제 서버(INTENT_BASE_U
   ],
   "cta": "BOOK_FITTING",
   "reasoning": "동일 라스트 보유 → 사이즈 불확실 해소. 컨디션 81점 → 케어 동시 제안."
+}
+```
+
+---
+
+### `POST /clienteling/outreach`
+
+- **담당**: AI2 (클라이언텔링 상담)
+- **요약**: 어드바이저가 먼저 건네는 첫 마디 — 케어 임박 자산 등 계기가 있을 때만
+- **비고**: 계기가 없으면 `message: null` 로 응답한다 — 화면은 아무것도 띄우지 않는다. AI2 실서버는 계기 없음을 400 으로 주며, 통합 레이어 HTTP 어댑터가 `message: null` 로 흡수한다(에러 아님).
+
+<a id="clientelingoutreachrequest"></a>
+#### `ClientelingOutreachRequest`
+
+`POST /clienteling/outreach` 요청 — 어드바이저가 먼저 건네는 첫 마디.
+
+고객이 물어야만 답하는 구조는 헬프봇이다. 케어 임박 자산 같은 **계기**가
+있을 때만 열리고, 계기가 없으면 응답 `message` 가 null 이다 — 화면은 그때
+아무것도 띄우지 않는 것이 맞다.
+
+| 필드 | 타입 | 기본값 | 제약 | 설명 |
+|---|---|---|---|---|
+| `customer_id` | string | **필수** | - |  |
+| `owned_assets` | [`OwnedAsset`](#ownedasset)[] | `[]` | - | 고객 소유 개체 목록. 컨디션 우선순위로 정렬되어 전달된다(앞쪽이 더 중요) |
+| `hesitation_type` | [`HesitationType`](#hesitationtype) \| null | `null` | - | 세션에서 이미 분류된 망설임 유형이 있으면 함께 전달 |
+
+요청 예시 — `contracts/examples/clienteling_outreach.request.json`
+
+```json
+{
+  "customer_id": "CU-0001",
+  "owned_assets": [
+    {
+      "asset_id": "AS-0001",
+      "customer_id": "CU-0001",
+      "product_id": "LX-0001",
+      "product_name": "Aurelia Top Handle",
+      "category": "BAG",
+      "purchased_at": "2022-04-16T00:00:00+09:00",
+      "condition_score": 71,
+      "findings": [
+        {
+          "part": "handle",
+          "severity": "MEDIUM",
+          "note": "핸들 표면 마모 진행, 케어 임계 근접"
+        }
+      ],
+      "next_service_months": 1,
+      "last_scanned_at": "2026-07-03T14:20:00+09:00"
+    }
+  ],
+  "hesitation_type": "NONE"
+}
+```
+
+<a id="clientelingoutreachresponse"></a>
+#### `ClientelingOutreachResponse`
+
+`POST /clienteling/outreach` 응답.
+
+| 필드 | 타입 | 기본값 | 제약 | 설명 |
+|---|---|---|---|---|
+| `message` | string \| null | `null` | - | 첫 인사 문구. null 이면 계기 없음 — 오프닝을 띄우지 않는다 (에러가 아니다) |
+| `cited_asset_ids` | string[] | `[]` | - | message 가 실제로 근거로 삼은 개체 id (케어 오프닝일 때 채워진다) |
+| `cta` | [`CTA`](#cta) | `NONE` | - |  |
+| `reasoning` | string | `""` | - | 내부 로그용 판단 근거. 고객에게 노출하지 않는다 |
+
+응답 예시 — `contracts/examples/clienteling_outreach.response.json`
+
+```json
+{
+  "message": "2022년에 함께하신 Aurelia Top Handle, 컨디션 71점으로 약 1개월 뒤가 케어 권장 시점이에요(핸들 표면 마모 진행, 케어 임계 근접). 다음 방문 때 케어 예약을 함께 잡아 드릴까요?",
+  "cited_asset_ids": [
+    "AS-0001"
+  ],
+  "cta": "CARE_BOOKING",
+  "reasoning": "케어 임박 자산 AS-0001(1개월) → 선제 케어 제안"
 }
 ```
 

@@ -10,6 +10,7 @@ import {
   mockClientelingReply,
   MOCK_FINGERPRINT_SAMPLES,
   mockFingerprintMatch,
+  mockClientelingOutreach,
 } from './mockData.js'
 
 const TIMEOUT_MS = 2500
@@ -199,5 +200,17 @@ export function fingerprintMatch(payload) {
         timeoutMs: 8000,
       }),
     () => mockFingerprintMatch(payload),
+  )
+}
+
+/** 선제 오프닝 — 케어 임박 자산 같은 계기가 있을 때만 message 가 온다(없으면 null). */
+export function clientelingOutreach(payload) {
+  return withFallback(
+    () =>
+      request('/clienteling/outreach', {
+        method: 'POST',
+        body: JSON.stringify(payload),
+      }),
+    () => mockClientelingOutreach(payload),
   )
 }

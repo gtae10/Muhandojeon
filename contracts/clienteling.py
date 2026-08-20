@@ -107,3 +107,82 @@ class ClientelingReplyResponse(BaseModel):
     reasoning: str = Field(
         default="", description="내부 로그용 판단 근거. 고객에게 노출하지 않는다"
     )
+
+
+class ClientelingOutreachRequest(BaseModel):
+    """`POST /clienteling/outreach` 요청 — 어드바이저가 먼저 건네는 첫 마디.
+
+    고객이 물어야만 답하는 구조는 헬프봇이다. 케어 임박 자산 같은 **계기**가
+    있을 때만 열리고, 계기가 없으면 응답 `message` 가 null 이다 — 화면은 그때
+    아무것도 띄우지 않는 것이 맞다.
+    """
+
+    model_config = ConfigDict(
+        json_schema_extra={
+            "example": {
+                "customer_id": "CU-0001",
+                "hesitation_type": "NONE",
+                "owned_assets": [
+                    {
+                        "asset_id": "AS-0001",
+                        "customer_id": "CU-0001",
+                        "product_id": "LX-0001",
+                        "product_name": "Aurelia Top Handle",
+                        "category": "BAG",
+                        "purchased_at": "2022-04-16T00:00:00+09:00",
+                        "condition_score": 71,
+                        "findings": [
+                            {
+                                "part": "handle",
+                                "severity": "MEDIUM",
+                                "note": "핸들 표면 마모 진행, 케어 임계 근접",
+                            }
+                        ],
+                        "next_service_months": 1,
+                        "last_scanned_at": "2026-07-03T14:20:00+09:00",
+                    }
+                ],
+            }
+        }
+    )
+
+    customer_id: str
+    owned_assets: list[OwnedAsset] = Field(
+        default_factory=list,
+        description="고객 소유 개체 목록. 컨디션 우선순위로 정렬되어 전달된다(앞쪽이 더 중요)",
+    )
+    hesitation_type: HesitationType | None = Field(
+        default=None, description="세션에서 이미 분류된 망설임 유형이 있으면 함께 전달"
+    )
+
+
+class ClientelingOutreachResponse(BaseModel):
+    """`POST /clienteling/outreach` 응답."""
+
+    model_config = ConfigDict(
+        json_schema_extra={
+            "example": {
+                "message": (
+                    "2022년에 함께하신 Aurelia Top Handle, 컨디션 71점으로 약 1개월 뒤가 "
+                    "케어 권장 시점이에요(핸들 표면 마모 진행, 케어 임계 근접). "
+                    "다음 방문 때 케어 예약을 함께 잡아 드릴까요?"
+                ),
+                "cited_asset_ids": ["AS-0001"],
+                "cta": "CARE_BOOKING",
+                "reasoning": "케어 임박 자산 AS-0001(1개월) → 선제 케어 제안",
+            }
+        }
+    )
+
+    message: str | None = Field(
+        default=None,
+        description="첫 인사 문구. null 이면 계기 없음 — 오프닝을 띄우지 않는다 (에러가 아니다)",
+    )
+    cited_asset_ids: list[str] = Field(
+        default_factory=list,
+        description="message 가 실제로 근거로 삼은 개체 id (케어 오프닝일 때 채워진다)",
+    )
+    cta: CTA = Field(default=CTA.NONE)
+    reasoning: str = Field(
+        default="", description="내부 로그용 판단 근거. 고객에게 노출하지 않는다"
+    )

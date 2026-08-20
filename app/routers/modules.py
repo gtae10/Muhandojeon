@@ -20,8 +20,14 @@ from app.adapters.registry import (
     get_fingerprint_adapter,
     get_intent_adapter,
 )
+from app.clienteling_rules import build_opening
 from contracts.assets import CustomerAssetsResponse
-from contracts.clienteling import ClientelingReplyRequest, ClientelingReplyResponse
+from contracts.clienteling import (
+    ClientelingOutreachRequest,
+    ClientelingOutreachResponse,
+    ClientelingReplyRequest,
+    ClientelingReplyResponse,
+)
 from contracts.condition import ConditionScoreRequest, ConditionScoreResponse
 from contracts.fingerprint import FingerprintMatchRequest, FingerprintMatchResponse
 from contracts.intent import IntentClassifyRequest, IntentClassifyResponse
@@ -57,6 +63,25 @@ def clienteling_reply(
     except UpstreamError:
         _degraded(response, True)
         return fallback_clienteling(request)
+
+
+@router.post(
+    "/clienteling/outreach",
+    response_model=ClientelingOutreachResponse,
+    summary="선제 오프닝 (AI2)",
+)
+def clienteling_outreach(
+    request: ClientelingOutreachRequest, response: Response
+) -> ClientelingOutreachResponse:
+    """어드바이저가 먼저 건네는 첫 마디. 계기가 없으면 `message: null` — 화면은 아무것도
+    띄우지 않는다. 업스트림 실패 시 결정적 템플릿 오프닝으로 대체한다."""
+    try:
+        result = get_clienteling_adapter().outreach(request)
+        _degraded(response, False)
+        return result
+    except UpstreamError:
+        _degraded(response, True)
+        return build_opening(request)
 
 
 @router.get(

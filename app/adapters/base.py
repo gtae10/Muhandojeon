@@ -15,7 +15,12 @@ from dataclasses import dataclass, field
 from typing import Any, Protocol, runtime_checkable
 
 from contracts.assets import CustomerAssetsResponse
-from contracts.clienteling import ClientelingReplyRequest, ClientelingReplyResponse
+from contracts.clienteling import (
+    ClientelingOutreachRequest,
+    ClientelingOutreachResponse,
+    ClientelingReplyRequest,
+    ClientelingReplyResponse,
+)
 from contracts.condition import ConditionScoreRequest, ConditionScoreResponse
 from contracts.fingerprint import FingerprintMatchRequest, FingerprintMatchResponse
 from contracts.intent import IntentClassifyRequest, IntentClassifyResponse
@@ -100,6 +105,8 @@ class ClientelingPort(Protocol):
     status: AdapterStatus
 
     def reply(self, request: ClientelingReplyRequest) -> ClientelingReplyResponse: ...
+
+    def outreach(self, request: ClientelingOutreachRequest) -> ClientelingOutreachResponse: ...
 
 
 @runtime_checkable

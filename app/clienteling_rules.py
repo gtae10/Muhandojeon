@@ -20,7 +20,12 @@ from dataclasses import dataclass
 from app.config import REFERENCE_NOW
 from app.domain import CARE_THRESHOLD, years_between
 from app.strategies import Strategy
-from contracts.clienteling import ClientelingReplyRequest, ClientelingReplyResponse
+from contracts.clienteling import (
+    ClientelingOutreachRequest,
+    ClientelingOutreachResponse,
+    ClientelingReplyRequest,
+    ClientelingReplyResponse,
+)
 from contracts.common import CTA, HesitationType, OwnedAsset, Product, ProductCategory
 
 #: 카테고리별 착용/사용 동사. 가방에 "신어 보고" 라고 쓰면 그 자리에서 신뢰를 잃는다.
@@ -267,4 +272,43 @@ def build_reply(request: ClientelingReplyRequest, strategy: Strategy) -> Cliente
         cited_asset_ids=[c.asset.asset_id for c in citations],
         cta=cta,
         reasoning=" / ".join(reasoning_bits),
+    )
+
+
+# ── 선제 오프닝 (outreach) ───────────────────────────────────────
+
+#: 케어 권장 시점이 이 안이면 어드바이저가 먼저 말을 건다. 아무 때나 말을 걸면
+#: 세일즈 봇이지 클라이언텔링이 아니다 — 계기가 없으면 오프닝을 만들지 않는다.
+OPENING_MONTHS = 3
+
+
+def build_opening(request: ClientelingOutreachRequest) -> ClientelingOutreachResponse:
+    """어드바이저가 먼저 건네는 첫 마디 — 케어 임박 자산이 계기다.
+
+    계기가 없으면 message=None (화면은 아무것도 띄우지 않는다). 결정적 템플릿이라
+    같은 자산 상태에서는 항상 같은 문장이 나온다.
+    """
+    due = [a for a in request.owned_assets if a.next_service_months <= OPENING_MONTHS]
+    if not due:
+        return ClientelingOutreachResponse(
+            message=None,
+            reasoning=f"계기 없음 — {OPENING_MONTHS}개월 내 케어 권장 자산이 없다",
+        )
+    asset = min(due, key=lambda a: (a.next_service_months, a.condition_score))
+    headline = asset.findings[0].note if asset.findings else "특이 소견 없음"
+    when = (
+        "지금이" if asset.next_service_months == 0 else f"약 {asset.next_service_months}개월 뒤가"
+    )
+    message = (
+        f"{asset.purchased_at.year}년에 함께하신 {asset.product_name}, "
+        f"컨디션 {asset.condition_score}점으로 {when} 케어 권장 시점이에요({headline}). "
+        "다음 방문 때 케어 예약을 함께 잡아 드릴까요?"
+    )
+    return ClientelingOutreachResponse(
+        message=message,
+        cited_asset_ids=[asset.asset_id],
+        cta=CTA.CARE_BOOKING,
+        reasoning=(
+            f"케어 임박 자산 {asset.asset_id}({asset.next_service_months}개월) → 선제 케어 제안"
+        ),
     )

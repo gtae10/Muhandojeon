@@ -1,0 +1,24 @@
+{
+  "customer_id": "CU-0001",
+  "owned_assets": [
+    {
+      "asset_id": "AS-0001",
+      "customer_id": "CU-0001",
+      "product_id": "LX-0001",
+      "product_name": "Aurelia Top Handle",
+      "category": "BAG",
+      "purchased_at": "2022-04-16T00:00:00+09:00",
+      "condition_score": 71,
+      "findings": [
+        {
+          "part": "handle",
+          "severity": "MEDIUM",
+          "note": "핸들 표면 마모 진행, 케어 임계 근접"
+        }
+      ],
+      "next_service_months": 1,
+      "last_scanned_at": "2026-07-03T14:20:00+09:00"
+    }
+  ],
+  "hesitation_type": "NONE"
+}

@@ -332,3 +332,26 @@ export function mockFingerprintMatch(payload = {}) {
   return { matched_asset_id: null, similarity: 0.31, is_match: false, candidates: [], threshold: 0.75 }
 }
 
+/** 서버 build_opening 과 같은 원칙의 오프라인 목업: 케어 임박(3개월 이내) 자산이
+ * 계기일 때만 먼저 말을 건다. 없으면 message=null — 화면은 아무것도 띄우지 않는다. */
+export function mockClientelingOutreach(payload = {}) {
+  const due = (payload.owned_assets ?? []).filter((a) => a.next_service_months <= 3)
+  if (due.length === 0) {
+    return { message: null, cited_asset_ids: [], cta: 'NONE', reasoning: '계기 없음(오프라인 목업)' }
+  }
+  const asset = [...due].sort(
+    (a, b) => a.next_service_months - b.next_service_months || a.condition_score - b.condition_score,
+  )[0]
+  const headline = asset.findings?.[0]?.note ?? '특이 소견 없음'
+  const when = asset.next_service_months === 0 ? '지금이' : `약 ${asset.next_service_months}개월 뒤가`
+  const year = new Date(asset.purchased_at).getFullYear()
+  return {
+    message:
+      `${year}년에 함께하신 ${asset.product_name}, 컨디션 ${asset.condition_score}점으로 ` +
+      `${when} 케어 권장 시점이에요(${headline}). 다음 방문 때 케어 예약을 함께 잡아 드릴까요?`,
+    cited_asset_ids: [asset.asset_id],
+    cta: 'CARE_BOOKING',
+    reasoning: `케어 임박 자산 ${asset.asset_id} → 선제 케어 제안(오프라인 목업)`,
+  }
+}
+

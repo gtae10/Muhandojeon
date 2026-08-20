@@ -16,12 +16,20 @@ import re
 import time
 from typing import Any
 
+import httpx
+from pydantic import ValidationError
+
 from app.adapters.base import AdapterBase
 from app.adapters.http_base import HttpAdapterBase
-from app.clienteling_rules import build_reply
+from app.clienteling_rules import build_opening, build_reply
 from app.llm import LLMClient, Message, get_llm
 from app.strategies import Strategy, get_strategy
-from contracts.clienteling import ClientelingReplyRequest, ClientelingReplyResponse
+from contracts.clienteling import (
+    ClientelingOutreachRequest,
+    ClientelingOutreachResponse,
+    ClientelingReplyRequest,
+    ClientelingReplyResponse,
+)
 from contracts.common import CTA
 
 # 시드 개체 id 는 4자리(AS-0001), 데이터셋 계열 문서 예시는 6자리다. 둘 다 회수한다.
@@ -158,6 +166,18 @@ class MockClientelingAdapter(AdapterBase):
         )
         return result
 
+    def outreach(self, request: ClientelingOutreachRequest) -> ClientelingOutreachResponse:
+        """선제 오프닝 — 결정적 템플릿만 쓴다.
+
+        LLM 오프닝은 AI2 실서버(`/clienteling/outreach`) 몫이다. 목에서 LLM 을 태우면
+        세션 시작마다 과금이 생기고, 오프닝은 케어 임박이라는 사실만 전달하면 충분하다.
+        """
+        started = time.perf_counter()
+        result = build_opening(request)
+        elapsed = (time.perf_counter() - started) * 1000
+        self.status.record_success(elapsed, "opening" if result.message else "no-trigger")
+        return result
+
 
 def legacy_clienteling_mapper(raw: Any) -> dict[str, Any]:
     """팀 백엔드의 `POST /api/chat` 응답을 계약으로 옮긴다.
@@ -218,6 +238,39 @@ class HttpClientelingAdapter(HttpAdapterBase):
                 ClientelingReplyResponse,
                 legacy_mapper=legacy_clienteling_mapper,
             )
+
+    def outreach(self, request: ClientelingOutreachRequest) -> ClientelingOutreachResponse:
+        """AI2 `/clienteling/outreach`. **400 은 '계기 없음' 규약**이라 message=None 으로
+        흡수한다(에러 아님 — 화면은 오프닝을 띄우지 않는다).
+
+        오프닝은 없어도 대화가 성립하는 선택 요소라 재시도 없이 1회만 시도한다.
+        """
+        from app.adapters.base import UpstreamError
+
+        url = f"{self.base_url}/clienteling/outreach"
+        started = time.perf_counter()
+        try:
+            raw_response = httpx.post(
+                url,
+                json=request.model_dump(mode="json"),
+                timeout=self.settings.upstream_timeout_seconds,
+            )
+        except httpx.HTTPError as exc:
+            elapsed = (time.perf_counter() - started) * 1000
+            self.status.record_failure(elapsed, f"{type(exc).__name__}: {exc}")
+            raise UpstreamError(f"POST {url} 실패: {exc}") from exc
+        elapsed = (time.perf_counter() - started) * 1000
+        if raw_response.status_code == 400:
+            self.status.record_success(elapsed, "no-trigger(400)")
+            return ClientelingOutreachResponse(message=None, reasoning="계기 없음(AI2 400)")
+        try:
+            raw_response.raise_for_status()
+            parsed = ClientelingOutreachResponse.model_validate(raw_response.json())
+        except (httpx.HTTPError, ValueError, ValidationError) as exc:
+            self.status.record_failure(elapsed, f"{type(exc).__name__}: {exc}")
+            raise UpstreamError(f"POST {url} 실패: {exc}") from exc
+        self.status.record_success(elapsed)
+        return parsed
 
 
 def fallback_clienteling(request: ClientelingReplyRequest) -> ClientelingReplyResponse:

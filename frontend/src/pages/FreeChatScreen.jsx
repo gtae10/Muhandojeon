@@ -6,6 +6,7 @@ import {
   getCustomerAssets,
   classifyIntent,
   clientelingReply,
+  clientelingOutreach,
   ApiError,
 } from '../api/client.js'
 import { HESITATION_LABELS, CTA_LABELS, CTA_CONFIRMATIONS } from '../constants.js'
@@ -141,6 +142,31 @@ export default function FreeChatScreen() {
       setSendError(null)
       setCtaConfirmed(new Set())
       setStage('chat')
+
+      // 어드바이저가 먼저 건네는 첫 마디 — 케어 임박 자산이 계기일 때만 온다.
+      // 오프닝은 선택 요소라 실패해도 조용히 생략하고, 그 사이 고객이 먼저
+      // 말을 시작했으면(대화가 비어 있지 않으면) 끼워 넣지 않는다.
+      clientelingOutreach({
+        customer_id: customerId,
+        owned_assets: assetsRes.assets ?? [],
+        hesitation_type: intentRes?.hesitation_type ?? null,
+      })
+        .then((opening) => {
+          if (!opening?.message) return
+          setMessages((prev) =>
+            prev.length > 0
+              ? prev
+              : [
+                  {
+                    role: 'advisor',
+                    content: opening.message,
+                    citedAssetIds: opening.cited_asset_ids,
+                    cta: opening.cta,
+                  },
+                ],
+          )
+        })
+        .catch(() => {})
     } catch (err) {
       setClassifyError(err instanceof ApiError ? err.message : '세션을 시작하지 못했어요')
       setStage('setup')

@@ -113,6 +113,9 @@ def test_hallucinated_citation_is_dropped(store, pinned):
                 reasoning="test",
             )
 
+        def outreach(self, request):  # noqa: ANN001, ANN201 — 포트 충족용, 이 테스트에선 미사용
+            raise NotImplementedError
+
     orch = Orchestrator(clienteling=Liar())
     result = orch.advise(_request(customer.customer_id, product_id, "S2"))
     assert result.cited_asset_ids == []
@@ -136,6 +139,9 @@ def test_upstream_failure_degrades_without_error(store, pinned):
             raise UpstreamError("연결 실패")
 
         def reply(self, request):  # noqa: ANN001, ANN201
+            raise UpstreamError("연결 실패")
+
+        def outreach(self, request):  # noqa: ANN001, ANN201
             raise UpstreamError("연결 실패")
 
     orch = Orchestrator(intent=Broken("intent"), clienteling=Broken("clienteling"))
