@@ -1,0 +1,271 @@
+{
+  "_meta": {
+    "description": "MCM 제품 지식 베이스. 출처는 MCM 공식 사이트(한국) 제품 페이지를 사람이 직접 확인해 옮긴 것.",
+    "collected_at": "2026-08-14",
+    "currency": "KRW",
+    "axis_order": "MCM 공식 표기는 축 라벨 없이 '깊이 x 가로 x 세로' 순서로 통일되어 있음",
+    "axis_verified_by": "Aren 스쿨 토트 제품 이미지의 몸통 가로:세로 비율(약 1.28:1)을 스펙 39:29(1.34:1)와 대조해 확인. 반대 해석은 비율이 맞지 않음",
+    "rule": "여기에 없는 정보는 추측하지 말 것. weight(무게)는 공식 사이트에 표기되지 않아 전 제품 null."
+  },
+
+  "products": [
+    {
+      "product_id": "P001",
+      "name_ko": "Aren 비세토스 스쿨 토트",
+      "name_en": "Aren Visetos School Tote",
+      "sku": "MWTGSTA02BK001",
+      "line": "Aren",
+      "category": "토트",
+      "size_label": "Large",
+      "color": "블랙",
+      "price_krw": 1250000,
+      "dimensions": {
+        "raw": "약 14 x 39 x 29 센티미터",
+        "depth_cm": 14,
+        "width_cm": 39,
+        "height_cm": 29,
+        "handle_drop_cm": 33,
+        "strap_length_cm": null
+      },
+      "weight": null,
+      "materials": {
+        "body": "비세토스 모노그램 캔버스",
+        "trim": "천연 가죽",
+        "lining": "패브릭 안감",
+        "hardware": "실버톤 코발트 브라스"
+      },
+      "features": [
+        "탑핸들",
+        "외부 포켓",
+        "로고 브라스 플레이트",
+        "지퍼 클로저",
+        "내부 포켓",
+        "D링 참 장식 디테일"
+      ],
+      "laptop": {
+        "official_mention": true,
+        "official_sleeve_inch": null,
+        "dimension_based_fit": "가로 39 x 세로 29 x 깊이 14cm 기준, 13인치(약 30.5x21.5cm)는 여유 있게, 16인치(약 35.6x24.8cm)도 치수상 수납 가능. 단 노트북 전용 슬리브는 없음. 이 판단은 실측 기반 계산이며 공식 표기가 아님",
+        "a4_note": "세로 29cm이므로 A4(21x29.7cm)를 세워 넣으면 약 7mm 나옴. 눕히면 여유 있음"
+      },
+      "description_official": "사회인 부터 학생까지 모두에게 어울리는 Aren 스쿨 백은 시그니처 비세토스 모노그램이 더해져 시대를 초월한 미학적 풍요로움이 돋보입니다. 뮌헨 하우스의 아이코닉한 로고가 새겨진 브라스 플레이트로 포인트를 더하였으며, 서류, 노트북와 같이 업무에 필요한 아이템 부터 일상 생활에 필요한 필수품까지 다양한 물건을 수납할 수 있는 넉넉한 공간을 갖추고 있습니다.",
+      "demo_role": "데모 주인공. 도쿄 긴자 매장에서 착장 후 미구매한 제품"
+    },
+
+    {
+      "product_id": "P002",
+      "name_ko": "Aren 노바 모노그램 ECONYL® 백팩",
+      "name_en": "Aren Nova Backpack in Monogram ECONYL®",
+      "sku": "MMKGATA02BK001",
+      "line": "Aren",
+      "category": "백팩",
+      "size_label": "Medium",
+      "color": "블랙",
+      "price_krw": 1450000,
+      "dimensions": {
+        "raw": "약 9 x 31 x 43 센티미터",
+        "depth_cm": 9,
+        "width_cm": 31,
+        "height_cm": 43,
+        "handle_drop_cm": 6,
+        "strap_length_cm": "77 - 92"
+      },
+      "weight": null,
+      "materials": {
+        "body": "ECONYL® 재생 나일론",
+        "trim": "나일론",
+        "lining": "패브릭 안감",
+        "hardware": "다크 실버톤 코발트 메탈"
+      },
+      "features": [
+        "길이 조절이 가능한 숄더 스트랩",
+        "비세토스 모노그램 모티프",
+        "로고 브라스 플레이트",
+        "지퍼 클로저",
+        "내부 지퍼 포켓"
+      ],
+      "laptop": {
+        "official_mention": false,
+        "official_sleeve_inch": null,
+        "dimension_based_fit": "깊이 9cm로 얕은 편. 13인치는 치수상 가능하나 전용 슬리브 없음. 공식 언급이 없으므로 단정하지 말 것",
+        "a4_note": null
+      },
+      "sustainability": "ECONYL® 재생 나일론 사용. MCM의 대체 소재 탐구 사례",
+      "description_official": "휴대성의 새로운 가능성을 제시하는 Aren(아렌) 노바 백팩은 ECONYL® 소재로 제작되어 디자인, 기술, 그리고 여행을 결합한 항공과 비행에서 영감을 받은 미래적인 미학을 선보입니다. 하우스의 헤리티지를 바탕으로, 아이코닉한 로고 브라스 플레이트와 시그니처 비세토스 모노그램이 실루엣을 은은하게 완성합니다.",
+      "demo_role": "Aren 라인 내 대안. 여행·핸즈프리 성향 고객에게 제시"
+    },
+
+    {
+      "product_id": "P003",
+      "name_ko": "Liz 비세토스 리버서블 쇼퍼",
+      "name_en": "Liz Reversible Shopper in Visetos",
+      "sku": "MWPCSVI01BK001",
+      "line": "Liz",
+      "category": "쇼퍼",
+      "size_label": "Medium",
+      "color": "블랙",
+      "price_krw": 1090000,
+      "dimensions": {
+        "raw": "약 17 x 36 x 28 센티미터",
+        "depth_cm": 17,
+        "width_cm": 36,
+        "height_cm": 28,
+        "handle_drop_cm": 24,
+        "strap_length_cm": null
+      },
+      "weight": null,
+      "materials": {
+        "body": "비세토스 모노그램 코티드 캔버스",
+        "trim": "나파 가죽",
+        "lining": "큐빅 모노그램 코튼 캔버스",
+        "hardware": "다크 코발트 메탈"
+      },
+      "features": [
+        "리버서블 디자인",
+        "탈부착 가능한 비세토스 지퍼 파우치와 가죽 어깨 스트랩",
+        "레더 손잡이 부분",
+        "전면의 MCM 로고 플레이트",
+        "보호용 가죽 피트"
+      ],
+      "laptop": {
+        "official_mention": false,
+        "official_sleeve_inch": null,
+        "dimension_based_fit": "13인치는 치수상 가능하나 공식 언급 없음. 단정하지 말 것",
+        "a4_note": null
+      },
+      "wear_points": "가죽 핸들과 나파 가죽 트림 부분이 사용감이 먼저 드러나는 지점",
+      "description_official": "하나의 데일리 아이콘, 두 가지 시그니처 룩. 클래식 비세토스와 나파 가죽으로 제작한 미디엄 리즈 쇼퍼는 뒤집어서 몽환적인 큐빅 모노그램 패턴으로 색다른 룩을 연출할 수 있습니다. 가죽 드로우스트링을 활용하여 현대인의 역동적인 니즈에 맞게 가벼운 실루엣을 확장하거나 축소할 수 있습니다. 짧은 여행에서 따로 지갑으로 사용할 수 있는 탈부착 가능한 파우치 형태로 더 커진 활용성을 자랑합니다.",
+      "demo_role": "고객이 3년 전 구매해 보유 중인 제품. 가죽 핸들 마모 시나리오의 대상"
+    },
+
+    {
+      "product_id": "P004",
+      "name_ko": "Stark 비세토스 사이드 스터드 백팩",
+      "name_en": "Stark Side Studs Backpack in Visetos",
+      "sku": "MMKGSVE01K8001",
+      "line": "Stark",
+      "category": "백팩",
+      "size_label": "Medium",
+      "color": "Khaki Moss",
+      "price_krw": 1890000,
+      "dimensions": {
+        "raw": "약 16 x 33 x 43 센티미터",
+        "depth_cm": 16,
+        "width_cm": 33,
+        "height_cm": 43,
+        "handle_drop_cm": 8,
+        "strap_length_cm": "77 - 92"
+      },
+      "weight": null,
+      "materials": {
+        "body": "비세토스 모노그램 캔버스",
+        "trim": "나파 가죽",
+        "lining": "스웨이드 마감의 극세사",
+        "hardware": "실버톤 코발트 브라스"
+      },
+      "features": [
+        "길이 조절이 가능한 숄더 스트랩",
+        "가죽 탑 핸들",
+        "로고 브라스 플레이트",
+        "앞면 지퍼 포켓",
+        "스터드 장식 디테일이 더해진 외부 측면 포켓",
+        "양방향 지퍼 클로저",
+        "13인치 랩탑과 태블릿 수납을 위한 내부 슬리브"
+      ],
+      "laptop": {
+        "official_mention": true,
+        "official_sleeve_inch": 13,
+        "dimension_based_fit": "공식적으로 13인치 랩탑·태블릿 전용 내부 슬리브 보유. 6개 제품 중 유일하게 노트북 슬리브가 명시된 제품. 본체는 세로 43cm라 16인치도 세워 넣으면 수납되지만, 슬리브는 13인치용이라 16인치 사용자에게는 도움이 되지 않는다. '슬리브가 있어 안전하다'는 이유로 16인치 사용자에게 권하지 말 것",
+        "a4_note": null
+      },
+      "description_official": "글로벌 노마드의 자유로운 정신을 담아낸 세련된 동반자, Stark 백팩. 비세토스 캔버스와 나파 레더의 조화로 완성된 이 아이템은 아이코닉한 디자인은 물론, 다양한 디바이스와 서류, 소지품을 효율적으로 수납할 수 있는 실용성을 갖추었습니다. 피라미드 스터드 디테일이 실루엣을 따라 더해져, 한층 더 돋보이는 마무리를 선사합니다.",
+      "demo_role": "노트북 보호가 중요한 고객에게 제시할 대안. 유일하게 13인치 슬리브 보유"
+    },
+
+    {
+      "product_id": "P005",
+      "name_ko": "Tracy 비세토스 레더 믹스 크로스바디",
+      "name_en": "Tracy Crossbody in Visetos Leather Mix",
+      "sku": "MWRGSXT01BK001",
+      "line": "Tracy",
+      "category": "크로스바디",
+      "size_label": "Mini",
+      "color": "블랙",
+      "price_krw": 1050000,
+      "dimensions": {
+        "raw": "약 5 x 22 x 11 센티미터",
+        "depth_cm": 5,
+        "width_cm": 22,
+        "height_cm": 11,
+        "handle_drop_cm": null,
+        "strap_length_cm": 55
+      },
+      "weight": null,
+      "materials": {
+        "body": "비세토스 모노그램 캔버스",
+        "trim": "이탈리안 카프스킨",
+        "lining": "스웨이드 마감의 극세사",
+        "hardware": "실버톤 코발트 브라스"
+      },
+      "features": [
+        "탈부착 가능한 레더 체인 믹스 스트랩",
+        "라우렐 락 클로저",
+        "내부 카드 슬롯과 지퍼 수납공간"
+      ],
+      "laptop": {
+        "official_mention": false,
+        "official_sleeve_inch": null,
+        "dimension_based_fit": "미니 사이즈. 노트북 수납 불가",
+        "a4_note": null
+      },
+      "description_official": "이탈리아산 카프스킨 레더로 우아하게 마감된 미니 '트레이시' 크로스바디 백은 시그니처 비세토스 캔버스 위에 하우스의 상징적인 라우렐 락 잠금장치로 완성되었습니다. 체인 링크 디자인이 더해진 가죽 스트랩이 사랑스러운 미니 실루엣을 더욱 돋보이게 합니다.",
+      "demo_role": "실루엣이 겹치지 않는 소형 옵션. 이미 대형 백을 보유한 고객에게 제시"
+    },
+
+    {
+      "product_id": "P006",
+      "name_ko": "Pina 비세토스 스터드 장식 토트",
+      "name_en": "Large Pina Studded Tote in Visetos",
+      "sku": "MWTGATA01CO001",
+      "line": "Pina",
+      "category": "토트",
+      "size_label": "Large",
+      "color": "코냑",
+      "price_krw": 1850000,
+      "dimensions": {
+        "raw": "약 18 x 41 x 32 센티미터",
+        "depth_cm": 18,
+        "width_cm": 41,
+        "height_cm": 32,
+        "handle_drop_cm": 12,
+        "strap_length_cm": "112.5 - 136.5"
+      },
+      "weight": null,
+      "materials": {
+        "body": "비세토스 모노그램 캔버스",
+        "trim": "나파 가죽",
+        "lining": "스웨이드 마감의 극세사",
+        "hardware": "24K 골드 도금 브라스"
+      },
+      "features": [
+        "탈부착이 가능하며 길이 조절이 가능한 가죽 스트랩",
+        "가죽 핸들",
+        "로고 브라스 플레이트",
+        "금속 로고 스터드 장식",
+        "양방향 지퍼 클로저",
+        "내부 슬립 포켓 및 지퍼 수납공간",
+        "D링 참 장식 디테일",
+        "가방 바닥 보호에 도움을 주는 메탈 피트"
+      ],
+      "laptop": {
+        "official_mention": false,
+        "official_sleeve_inch": null,
+        "dimension_based_fit": "6개 중 가장 큼(41 x 32 x 18cm). 치수상 16인치까지 가능하나 공식 언급 없음",
+        "a4_note": "세로 32cm로 A4를 세워 넣어도 여유 있음"
+      },
+      "heritage_link": "코냑 컬러 + 바이에른 다이아몬드 + 라우렐 엠블럼. 비세토스의 가장 상징적인 조합",
+      "description_official": "비세토스 캔버스와 부드러운 나파 가죽의 클래식한 조합을 통해 하우스의 시그니처 장인 정신이 돋보이는, 시대를 초월한 보울러 디자인의 백입니다. 코냑 컬러의 실루엣에는 바이에른 다이아몬드와 아이코닉한 라우렐 엠블럼을 형상화한 스터드 장식을 더해 완성하였습니다.",
+      "demo_role": "헤리티지 스토리텔링에 가장 적합. price 망설임 대응용"
+    }
+  ]
+}

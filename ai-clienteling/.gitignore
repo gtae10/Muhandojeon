@@ -1,0 +1,8 @@
+# API 키가 들어있는 파일 — 절대 GitHub에 올라가면 안 됨
+.env
+
+# Python 임시 파일
+__pycache__/
+*.pyc
+venv/
+.venv/
