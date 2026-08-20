@@ -322,6 +322,11 @@ def _book_fitting_cta(reply, message, history):
 # CARE_BOOKING 승격용 케어 어휘 — 접수 어휘(BOOKING_WORDS)와 같은 문장에
 # 있을 때만 본다. "케어 방법을 알려드릴까요"는 정보 동사라 걸리지 않는다.
 CARE_CTA_WORDS = ("케어", "수선", "점검", "클리닝")
+# care_due 분기 전용 — 능력 진술형("도와드릴 수 있습니다")도 실제 제안으로
+# 본다. BOOKING_WORDS(의문형·확정형)와 활용형이 달라 거기엔 안 걸린다.
+# _fitting_offer_in 도 BOOKING_WORDS 를 같이 쓰므로, 여기 어휘를 그쪽에
+# 섞지 않으려고 별도 목록으로 둔다 (2026-08-20, D3 재실측 대응).
+CARE_ABILITY_WORDS = ("도와드릴 수 있습니다", "도와드릴 수 있어요")
 
 
 def _care_booking_cta(reply, message, care_due=False):
@@ -335,29 +340,32 @@ def _care_booking_cta(reply, message, care_due=False):
 
     care_due (2026-08-20, 서버 D3 재테스트에서 "케어 예약도 도와드릴 수
     있습니다" 라는 능력 진술형이 접수 어휘 목록을 비껴가 NONE 이 나왔다):
-    케어 시점 자산이 있는 고객은 답변에 케어 어휘가 등장하기만 하면 승격한다.
-    접수 어휘를 활용형마다 쫓는 대신 데이터(next_service_months≤1, 코드 판정)로
-    여는 것 — D3 판정은 매 실행 cta 를 요구하므로 여기서는 놓침이 "현행
-    유지"가 아니라 FAIL 이다. 케어 언급 자체는 구조가 보장한다: 모델이
-    빠뜨리면 후처리(care_due_sentence)가 케어 문장을 덧붙인다. 거절·보류·
-    닫는 인사에 더해 출처 추궁 턴도 차단 — 추궁 답변은 출처로 "케어 접수
-    기록"을 대므로, 그 단어에 예약 카드가 뜨면 경계심에 얹는 화면이 된다.
+    케어 시점 자산이 있는 고객은 같은 문장에 능력 진술형(CARE_ABILITY_WORDS)이
+    있어도 승격한다 — 접수 어휘를 활용형마다 쫓는 대신 여기만 넓힌다.
+    **문장 안에 케어 언급만 있고 제안 자체가 없는 답변("케어 비용은
+    무료입니다" 같은 정보성 문장)은 여전히 승격하지 않는다** — 답변 전체가
+    아니라 여전히 같은 문장 단위로만 본다(2026-08-20 수정, 이전 버전은
+    문장 분리 없이 reply 전체를 봐서 정보성 언급까지 오탐이 났다).
+    D3 판정은 매 실행 cta 를 요구하므로 여기서는 놓침이 "현행 유지"가 아니라
+    FAIL 이다. 케어 언급 자체는 구조가 보장한다: 모델이 빠뜨리면 후처리
+    (care_due_sentence)가 케어 문장을 덧붙인다. 거절·보류·닫는 인사에 더해
+    출처 추궁 턴도 차단 — 추궁 답변은 출처로 "케어 접수 기록"을 대므로,
+    그 단어에 예약 카드가 뜨면 경계심에 얹는 화면이 된다.
     """
     if any(
         h in (message or "").lower() for h in REFUSAL_HINTS + HOLD_HINTS
     ) or is_closing(message):
         return False
+    challenged = any(h in (message or "").lower() for h in SOURCE_CHALLENGE_HINTS)
     for sentence in re.split(r"[.!?\n]", reply or ""):
-        if any(c in sentence for c in CARE_CTA_WORDS) and any(
-            b in sentence for b in BOOKING_WORDS
+        if not any(c in sentence for c in CARE_CTA_WORDS):
+            continue
+        if any(b in sentence for b in BOOKING_WORDS):
+            return True
+        if care_due and not challenged and any(
+            a in sentence for a in CARE_ABILITY_WORDS
         ):
             return True
-    if (
-        care_due
-        and any(c in (reply or "") for c in CARE_CTA_WORDS)
-        and not any(h in (message or "").lower() for h in SOURCE_CHALLENGE_HINTS)
-    ):
-        return True
     return False
 
 

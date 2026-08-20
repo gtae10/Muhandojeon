@@ -227,6 +227,25 @@ results["p8 care_due 라도 거절 턴은 차단"] = not _care_booking_cta(
 results["p9 care_due 라도 출처 추궁 턴은 차단"] = not _care_booking_cta(
     "제가 먼저 말씀드린 것입니다. 구매 기록과 케어 접수 기록에서 확인했습니다.",
     "제가 그 가방 얘기를 했었나요?", care_due=True)
+# care_due 분기 오탐 수정 (2026-08-20) — 답변 전체가 아니라 같은 문장에
+# 케어 언급 + (접수 어휘 또는 능력 진술형)이 함께 있을 때만 승격한다.
+# 케어 단어만 있고 제안이 없는 정보성 문장은 care_due=True 라도 승격 안 함.
+results["p10 care_due + 정보 동사(여쭘형)는 승격 안 함"] = not _care_booking_cta(
+    "케어 방법을 알려드릴까요?", "관리 어떻게 해요?", care_due=True)
+results["p11 care_due + 정보성 평서문(비용 안내)은 승격 안 함"] = not _care_booking_cta(
+    "케어 비용은 무료입니다.", "케어는 얼마예요?", care_due=True)
+results["p12 care_due + 다른 서비스 제안(스태프 연결)은 승격 안 함"] = not _care_booking_cta(
+    "케어 관련해서는 매장 어드바이저에게 확인을 요청해드릴까요?",
+    "케어가 필요할까요?", care_due=True)
+# 회귀 방지 — 기존 접수 어휘(BOOKING_WORDS) 경로는 care_due 값과 무관하게
+# 그대로 동작해야 한다 (리팩터로 문장 루프를 하나로 합쳤으므로 확인).
+results["p13 care_due + 실제 접수 여쭘(BOOKING_WORDS)은 여전히 승격"] = _care_booking_cta(
+    "케어 예약을 함께 잡아드릴까요?", "재고 있나요?", care_due=True)
+# 출처 추궁 차단이 능력 진술형 경로에도 걸리는지 (기존 p9 은 케어 단어만
+# 있고 제안 어휘가 없는 문장이라 이 분기를 실제로 거치지 않았다).
+results["p14 care_due + 출처 추궁 턴은 능력 진술형이 있어도 차단"] = not _care_booking_cta(
+    "구매 기록에서 확인했습니다. 케어 예약도 도와드릴 수 있습니다.",
+    "제가 그 가방 얘기를 했었나요?", care_due=True)
 
 with _overlay(INTEGRATION_DATA):
     _cust = {"owned_products": [
