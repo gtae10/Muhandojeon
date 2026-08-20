@@ -1,7 +1,12 @@
 # data
 data/raw/
 data/_deferred/processed/images/
-data/fingerprints/
+# 지문 촬영본은 기본적으로 로컬 보관. 단 데모 등록 개체(AS-0001)와 규약 README 는
+# 배포 서버·CI 가 git clone 으로 받아야 해서 레포에 포함한다
+# (/demo/fingerprint-samples 갤러리·백엔드 ORB 등록 DB·회귀 테스트가 이 폴더를 본다).
+data/fingerprints/*
+!data/fingerprints/README.md
+!data/fingerprints/AS-0001/
 *.db
 *.sqlite3
 
