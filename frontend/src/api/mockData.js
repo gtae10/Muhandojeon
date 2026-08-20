@@ -10,17 +10,18 @@ export const MOCK_HEALTH = { status: 'ok', adapter_mode: 'mock', demo_mode: fals
 export const MOCK_CUSTOMERS = {
   total: 6,
   items: [
-    { customer_id: 'CU-0001', display_name: '한지원', tier: 'VIP', asset_count: 5, care_due: 1, min_condition: 71 },
-    { customer_id: 'CU-0002', display_name: '오세린', tier: 'VIP', asset_count: 4, care_due: 0, min_condition: 78 },
-    { customer_id: 'CU-0003', display_name: '박도현', tier: 'ESTABLISHED', asset_count: 3, care_due: 0, min_condition: 81 },
-    { customer_id: 'CU-0004', display_name: '윤소이', tier: 'ESTABLISHED', asset_count: 2, care_due: 0, min_condition: 85 },
-    { customer_id: 'CU-0005', display_name: '정하늘', tier: 'NEW', asset_count: 1, care_due: 0, min_condition: 90 },
-    { customer_id: 'CU-0006', display_name: '강민준', tier: 'NEW', asset_count: 0, care_due: 0, min_condition: null },
+    { customer_id: 'CU-0001', display_name: '한지원', tier: 'VIP', asset_count: 5, care_due: 2, min_condition: 63 },
+    { customer_id: 'CU-0002', display_name: '오세린', tier: 'VIP', asset_count: 4, care_due: 2, min_condition: 54 },
+    { customer_id: 'CU-0003', display_name: '정민서', tier: 'ESTABLISHED', asset_count: 3, care_due: 0, min_condition: 81 },
+    { customer_id: 'CU-0004', display_name: '배도윤', tier: 'ESTABLISHED', asset_count: 3, care_due: 0, min_condition: 82 },
+    { customer_id: 'CU-0005', display_name: '서하람', tier: 'NEW', asset_count: 1, care_due: 0, min_condition: 97 },
+    { customer_id: 'CU-0006', display_name: '문가율', tier: 'ESTABLISHED', asset_count: 2, care_due: 0, min_condition: 84 },
   ],
 }
 
+// 실제 카탈로그는 12종 — 데모 시나리오의 대상 상품 + 인용 자산의 상품만 담았다.
 export const MOCK_CATALOG = {
-  total: 4,
+  total: 5,
   items: [
     {
       product_id: 'LX-0001', name: 'Aurelia Top Handle', category: 'BAG',
@@ -33,14 +34,19 @@ export const MOCK_CATALOG = {
       price_krw: 6400000, image_url: null,
     },
     {
-      product_id: 'LX-0006', name: 'Aurelia Derby', category: 'SHOES',
-      material: '박스카프 / 가죽 밑창', color: 'Noir', collection: 'Maison Nord',
-      price_krw: 2100000, image_url: null,
+      product_id: 'LX-0005', name: 'Aurelia Derby', category: 'SHOES',
+      material: '박스카프 카프스킨 / 굿이어 웰트', color: 'Ebony', collection: 'Maison Nord',
+      price_krw: 2400000, image_url: null,
     },
     {
-      product_id: 'LX-0010', name: 'Lisière Card Holder', category: 'SLG',
-      material: '에피 카프스킨', color: 'Cognac', collection: 'Maison Nord',
-      price_krw: 890000, image_url: null,
+      product_id: 'LX-0006', name: 'Aurelia Oxford', category: 'SHOES',
+      material: '패티나 카프 / 굿이어 웰트', color: 'Cognac', collection: 'Maison Nord',
+      price_krw: 2700000, image_url: null,
+    },
+    {
+      product_id: 'LX-0011', name: 'Lisière Card Holder', category: 'WALLET',
+      material: '그레인 토고 카프스킨', color: 'Noir', collection: 'Atelier Lumière',
+      price_krw: 1500000, image_url: null,
     },
   ],
 }
@@ -79,14 +85,22 @@ const MOCK_ADVISE_BY_SCENARIO = {
   D1: {
     hesitation_type: 'SIZE_UNCERTAIN',
     confidence: 0.95,
-    signals: [{ evidence: '사이즈표 3회 열람, 38.5·39 왕복 조회' }],
+    signals: [
+      { name: 'size_guide_repeat', weight: 0.8, evidence: 'size_guide 3회 조회 (38.5, 39, 39)' },
+      { name: 'cart_without_checkout', weight: 0.2, evidence: '장바구니 담기 후 결제 진입 없음' },
+    ],
     message:
-      '2022년에 맞춰드린 Aurelia Derby(AS-0010)와 같은 라스트라, 그때 사이즈 39가 잘 맞으셨던 기록이 남아있어요. 지금 컨디션도 81점으로 관리가 잘 되어 있으니 이번에도 같은 사이즈로 편하게 진행하셔도 좋을 것 같아요.',
+      '2023년에 함께하신 Aurelia Derby은 3년 사용에 컨디션 81점으로 잘 관리되고 있습니다(앞창 마모 진행). Aurelia Derby과 Aurelia Oxford은 같은 라스트 계열입니다. 그때 맞춰 드린 치수를 그대로 적용하면 편차가 거의 없습니다. 현재 준비된 사이즈는 38.5, 39, 40입니다. 가까운 부티크에서 피팅 시간을 잡아 드릴까요?',
     cta: 'BOOK_FITTING',
+    cited_asset_ids: ['AS-0010', 'AS-0011'],
     citations: [
       {
         asset_id: 'AS-0010', product_name: 'Aurelia Derby', condition_score: 81,
-        headline_finding: '전반적으로 양호, 밑창 교체 이력 없음', next_service_months: 8,
+        headline_finding: '앞창 마모 진행', next_service_months: 6,
+      },
+      {
+        asset_id: 'AS-0011', product_name: 'Vesper Ankle Boot', condition_score: 90,
+        headline_finding: '볼 부분 주름 자연 발생', next_service_months: 24,
       },
     ],
     owned_assets_used: true,
@@ -96,14 +110,18 @@ const MOCK_ADVISE_BY_SCENARIO = {
   D2: {
     hesitation_type: 'PRICE_HESITANT',
     confidence: 0.95,
-    signals: [{ evidence: '가격 필터 하향 조정, 저가 대안 2회 조회 후 장바구니 이탈' }],
+    signals: [
+      { name: 'price_sensitivity', weight: 0.74, evidence: '가격 필터 변경 1회 (상한 4000000원), 동일 카테고리 저가 상품 2회 조회' },
+      { name: 'cart_without_checkout', weight: 0.2, evidence: '장바구니 담기 후 결제 진입 없음' },
+    ],
     message:
-      '2023년에 함께하신 Lisière Card Holder는 2년 사용에 컨디션 82점으로 잘 관리되고 있습니다(엣지 코트 상태 양호). Lisière 라인 특유의 내구성을 이미 직접 경험하고 계신 만큼, 이번 Aurelia Top Handle도 비슷한 관리로 오래 곁에 두실 수 있을 거예요.',
+      '2023년에 함께하신 Lisière Card Holder은 2년 사용에 컨디션 82점으로 잘 관리되고 있습니다(엣지 코트 상태 양호). Lisière Card Holder을 2년 쓰신 지금도 컨디션 82점입니다. 같은 제법이라 연 단위로 보면 유지 비용이 낮습니다. 가까운 부티크에서 피팅 시간을 잡아 드릴까요?',
     cta: 'BOOK_FITTING',
+    cited_asset_ids: ['AS-0013'],
     citations: [
       {
         asset_id: 'AS-0013', product_name: 'Lisière Card Holder', condition_score: 82,
-        headline_finding: '엣지 코트 상태 양호', next_service_months: 6,
+        headline_finding: '엣지 코트 상태 양호', next_service_months: 12,
       },
     ],
     owned_assets_used: true,
@@ -112,15 +130,23 @@ const MOCK_ADVISE_BY_SCENARIO = {
   },
   D3: {
     hesitation_type: 'STOCK_CONCERN',
-    confidence: 0.9,
-    signals: [{ evidence: '재고 조회 2회, 배송 조회 1회' }],
+    confidence: 0.95,
+    signals: [
+      { name: 'availability_check', weight: 0.7, evidence: '재고 조회 2회, 배송 정보 1회' },
+      { name: 'cart_without_checkout', weight: 0.2, evidence: '장바구니 담기 후 결제 진입 없음' },
+    ],
     message:
-      '지금 보시는 Solène Shoulder 25 사이즈는 재고가 있어 바로 안내드릴 수 있어요. 다만 8년째 함께하신 개체(AS-0001)의 핸들 마모가 임계에 가까워, 이번 방문에 케어 예약도 같이 잡아드리면 어떨까 해요.',
-    cta: 'VIEW_STOCK',
+      '2022년에 함께하신 Aurelia Top Handle은 4년 사용에 컨디션 71점, 약 1개월 뒤 케어 권장 시점입니다(핸들 표면 마모 진행, 케어 임계 근접). Solène Shoulder의 현재 가용 사이즈는 25, 30입니다. 남은 수량이 적어 재입고 일정은 확정되지 않았습니다. 케어 예약을 함께 잡아 드릴까요?',
+    cta: 'CARE_BOOKING',
+    cited_asset_ids: ['AS-0001', 'AS-0003'],
     citations: [
       {
         asset_id: 'AS-0001', product_name: 'Aurelia Top Handle', condition_score: 71,
-        headline_finding: '핸들 마모 임계 근접', next_service_months: 0,
+        headline_finding: '핸들 표면 마모 진행, 케어 임계 근접', next_service_months: 1,
+      },
+      {
+        asset_id: 'AS-0003', product_name: 'Marée Tote', condition_score: 92,
+        headline_finding: '외관 결 유지', next_service_months: 30,
       },
     ],
     owned_assets_used: true,
@@ -155,28 +181,85 @@ export function mockAdvise() {
 // ---- 자유 상담(/chat) 오프라인 목업 — 서버 자체에 연결할 수 없을 때만 쓴다 ----
 // (서버가 mock 어댑터로 응답하는 것과는 다르다: 그건 이미 'live' 다.)
 
+// GET /assets/{customer_id} 실제 응답 그대로 (케어 임박 우선 정렬 포함).
 const MOCK_ASSETS_BY_CUSTOMER = {
   'CU-0001': [
     {
-      asset_id: 'AS-0001', customer_id: 'CU-0001', product_id: 'LX-0002', product_name: 'Solène Shoulder',
-      category: 'BAG', purchased_at: '2018-05-02T00:00:00+09:00', condition_score: 71,
-      findings: [{ part: 'handle', severity: 'HIGH', note: '핸들 마모 임계 근접' }],
-      next_service_months: 0, last_scanned_at: '2026-07-01T10:00:00+09:00',
+      asset_id: 'AS-0005', customer_id: 'CU-0001', product_id: 'LX-0010', product_name: 'Lisière Long Wallet',
+      category: 'WALLET', purchased_at: '2020-09-14T00:00:00+09:00', condition_score: 63,
+      findings: [
+        { part: 'edge_coat', severity: 'HIGH', note: '엣지 코트 대부분 손실' },
+        { part: 'stitching', severity: 'MEDIUM', note: '접합부 스티치 이완' },
+      ],
+      next_service_months: 0, last_scanned_at: null,
+    },
+    {
+      asset_id: 'AS-0001', customer_id: 'CU-0001', product_id: 'LX-0001', product_name: 'Aurelia Top Handle',
+      category: 'BAG', purchased_at: '2022-04-16T00:00:00+09:00', condition_score: 71,
+      findings: [
+        { part: 'handle', severity: 'MEDIUM', note: '핸들 표면 마모 진행, 케어 임계 근접' },
+        { part: 'corner', severity: 'MEDIUM', note: '코너 4곳 마찰, 각 세우기 필요' },
+      ],
+      next_service_months: 1, last_scanned_at: '2026-07-03T14:20:00+09:00',
+    },
+    {
+      asset_id: 'AS-0004', customer_id: 'CU-0001', product_id: 'LX-0005', product_name: 'Aurelia Derby',
+      category: 'SHOES', purchased_at: '2023-11-08T00:00:00+09:00', condition_score: 76,
+      findings: [
+        { part: 'sole', severity: 'MEDIUM', note: '앞창 마모 진행' },
+        { part: 'upper', severity: 'LOW', note: '볼 부분 주름 자연 발생' },
+      ],
+      next_service_months: 5, last_scanned_at: '2026-06-30T10:15:00+09:00',
+    },
+    {
+      asset_id: 'AS-0002', customer_id: 'CU-0001', product_id: 'LX-0008', product_name: 'Meridian Chronograph',
+      category: 'WATCH', purchased_at: '2021-06-05T00:00:00+09:00', condition_score: 88,
+      findings: [{ part: 'bracelet', severity: 'LOW', note: '브레이슬릿 유격 없음' }],
+      next_service_months: 22, last_scanned_at: '2026-02-11T11:05:00+09:00',
+    },
+    {
+      asset_id: 'AS-0003', customer_id: 'CU-0001', product_id: 'LX-0003', product_name: 'Marée Tote',
+      category: 'BAG', purchased_at: '2024-03-22T00:00:00+09:00', condition_score: 92,
+      findings: [{ part: 'exterior', severity: 'LOW', note: '외관 결 유지' }],
+      next_service_months: 30, last_scanned_at: '2026-05-20T16:40:00+09:00',
     },
   ],
   'CU-0003': [
     {
-      asset_id: 'AS-0010', customer_id: 'CU-0003', product_id: 'LX-0006', product_name: 'Aurelia Derby',
-      category: 'SHOES', purchased_at: '2022-03-10T00:00:00+09:00', condition_score: 81,
-      findings: [], next_service_months: 8, last_scanned_at: '2026-06-15T10:00:00+09:00',
+      asset_id: 'AS-0010', customer_id: 'CU-0003', product_id: 'LX-0005', product_name: 'Aurelia Derby',
+      category: 'SHOES', purchased_at: '2023-04-18T00:00:00+09:00', condition_score: 81,
+      findings: [{ part: 'sole', severity: 'MEDIUM', note: '앞창 마모 진행' }],
+      next_service_months: 6, last_scanned_at: '2026-06-05T14:00:00+09:00',
+    },
+    {
+      asset_id: 'AS-0011', customer_id: 'CU-0003', product_id: 'LX-0007', product_name: 'Vesper Ankle Boot',
+      category: 'SHOES', purchased_at: '2024-10-02T00:00:00+09:00', condition_score: 90,
+      findings: [{ part: 'upper', severity: 'LOW', note: '볼 부분 주름 자연 발생' }],
+      next_service_months: 24, last_scanned_at: null,
+    },
+    {
+      asset_id: 'AS-0012', customer_id: 'CU-0003', product_id: 'LX-0011', product_name: 'Lisière Card Holder',
+      category: 'WALLET', purchased_at: '2025-01-15T00:00:00+09:00', condition_score: 94,
+      findings: [], next_service_months: 33, last_scanned_at: '2026-01-30T12:20:00+09:00',
     },
   ],
   'CU-0004': [
     {
-      asset_id: 'AS-0013', customer_id: 'CU-0004', product_id: 'LX-0010', product_name: 'Lisière Card Holder',
-      category: 'SLG', purchased_at: '2023-01-20T00:00:00+09:00', condition_score: 82,
+      asset_id: 'AS-0013', customer_id: 'CU-0004', product_id: 'LX-0011', product_name: 'Lisière Card Holder',
+      category: 'WALLET', purchased_at: '2023-09-09T00:00:00+09:00', condition_score: 82,
       findings: [{ part: 'edge_coat', severity: 'LOW', note: '엣지 코트 상태 양호' }],
-      next_service_months: 6, last_scanned_at: '2026-07-10T10:00:00+09:00',
+      next_service_months: 12, last_scanned_at: null,
+    },
+    {
+      asset_id: 'AS-0014', customer_id: 'CU-0004', product_id: 'LX-0012', product_name: 'Cadence Belt',
+      category: 'BELT', purchased_at: '2024-06-21T00:00:00+09:00', condition_score: 87,
+      findings: [{ part: 'exterior', severity: 'LOW', note: '외관 결 유지' }],
+      next_service_months: 16, last_scanned_at: '2026-02-24T17:45:00+09:00',
+    },
+    {
+      asset_id: 'AS-0015', customer_id: 'CU-0004', product_id: 'LX-0010', product_name: 'Lisière Long Wallet',
+      category: 'WALLET', purchased_at: '2025-08-01T00:00:00+09:00', condition_score: 95,
+      findings: [], next_service_months: 36, last_scanned_at: null,
     },
   ],
 }
