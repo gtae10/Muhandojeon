@@ -206,6 +206,28 @@ CONDITION_BASE_URL=http://127.0.0.1:8103
 취급하므로, 전환 전에 그 문서부터 다시 확인할 것을 권한다. 발표에서 이 전환이 꼭 필요한 게 아니라면
 mock 모드로 두는 편이 안전하다(데모가 결정적이고, LLM 크레딧도 안 든다).
 
+## 발표 전 서버 데모 모드 전환 (권장)
+
+현재 배포는 `DEMO_MODE=false` 다. 발표 전에 켜두면 통합 레이어의 LLM 응답이
+`.cache/llm/` 에 디스크 캐시돼, 발표 중 같은 시나리오 재생이 과금 없이·흔들림 없이 돈다
+(AI2 가 죽어도 어댑터 폴백 + 캐시로 화면은 정상). 서버에서:
+
+```bash
+# 1) main/.env 의 DEMO_MODE 를 true 로 (줄이 없으면 추가)
+sudo -u muhandojeon sed -i 's/^DEMO_MODE=.*/DEMO_MODE=true/' /opt/muhandojeon/main/.env
+grep DEMO_MODE /opt/muhandojeon/main/.env   # DEMO_MODE=true 확인
+
+# 2) 시나리오 3종 예비 실행으로 캐시 채우기 (Lab 은 건너뜀 — 과금 방지)
+cd /opt/muhandojeon/main
+sudo -u muhandojeon sh -c 'DEMO_MODE=true .venv/bin/python -m scripts.warm_cache --skip-lab'
+
+# 3) 재시작 + 확인
+sudo systemctl restart muhandojeon-app
+curl -s localhost:8000/health/detail | python3 -c "import sys,json; d=json.load(sys.stdin); print('demo_mode:', d['demo']['demo_mode'], '/ cache:', d['llm'].get('cache_entries'))"
+```
+
+발표가 끝나면 원복은 같은 방법으로 `DEMO_MODE=false`.
+
 ## 코드 갱신할 때 (재배포)
 
 ```bash

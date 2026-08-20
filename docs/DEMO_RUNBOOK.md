@@ -102,12 +102,42 @@ curl -s -X POST localhost:8000/demo/scenarios/D3/run \
 | `X-Degraded: true` | 폴백 중이지만 화면은 정상. 응답 `trace` 에 원인이 있다 |
 | 특정 팀원 서버 죽음 | 그 모듈만 목으로: `INTENT_ADAPTER=mock make dev` |
 | 네트워크 끊김 | 워밍업된 시나리오는 캐시로 돌아간다. 키 없이도 템플릿으로 완주 |
+| 배포 서버 전체 장애 | 발표 노트북으로 5분 내 전환 — 아래 "배포 서버 전체 장애" 절 |
 | 예산 경고(`warn`) | Lab 재실행을 멈추고 `make cache-stats` 로 히트율 확인. 캐시가 살아 있으면 재실행 비용은 0 |
 | 예산 하드(`hard`) | 새 호출은 자동 거부된다. 데모는 캐시·템플릿으로 계속 돌아간다 |
 | 시드가 비어 보인다 | `make fixtures` → `data.load_errors` 확인 |
 | Lab 결과 없음 | `make lab --yes`(약 1초, 규칙 모델) 후 `/lab` 새로고침 |
 | 시나리오 문구가 달라졌다 | `make demo-check` 로 기대값 위반 확인. 픽스처를 고쳤는지 의심 |
 | 포트 충돌 | `make dev PORT=8100` |
+
+## 배포 서버 전체 장애 — 발표 노트북 로컬 폴백
+
+가비아 서버(nginx 포함)가 통째로 죽으면 프론트도 안 뜬다. 발표 노트북에서 5분 내 전환한다.
+개별 모듈 장애는 위 표의 어댑터 폴백으로 충분하고, 이 절은 "URL 자체가 안 열릴 때"용이다.
+
+**사전 준비 (전날까지, 발표 노트북에서 1회)**
+
+```bash
+make setup                          # venv + .env
+make demo-check                     # 시나리오 3종 통과 확인
+DEMO_MODE=true .venv/bin/python -m scripts.warm_cache --skip-lab   # 캐시 채움
+cd frontend && npm ci && npm run build && cd ..                   # 프론트 빌드까지 확인
+```
+
+**당일 전환 (서버가 안 열릴 때)**
+
+```bash
+# 터미널 1 — 통합 레이어 (캐시 워밍업 + :8000)
+make demo
+
+# 터미널 2 — 프론트 (vite 가 /session 등 API 를 :8000 으로 프록시한다)
+cd frontend && npm run dev          # http://localhost:5173
+```
+
+- 화면은 `localhost:5173`. 헤더 배지가 "서버 연결됨"이면 전환 완료.
+- 모든 팀원 모듈은 목으로 돌아간다(고정 시나리오 3종·자유 상담·개체 식별 전부 동작).
+  AI2 실연결 대비 문구 품질만 낮아진다 — 발표에서는 결정적 템플릿 기준선이라고 말하면 된다.
+- 인터넷이 아예 없어도 된다: 폰트 셀프호스팅 + LLM 미연결 템플릿 폴백 전제로 설계돼 있다.
 
 ## 절대 하지 말 것
 
