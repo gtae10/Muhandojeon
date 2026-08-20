@@ -21,7 +21,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 
-from app.config import PROCESSED_DIR, get_settings
+from app.config import FINGERPRINT_DIR, PROCESSED_DIR, get_settings
 from app.db import init_db
 from app.routers import catalog, demo, health, lab, modules, ops, session
 from app.store import get_store
@@ -80,6 +80,14 @@ app.include_router(lab.router)
 app.include_router(demo.router)
 app.include_router(ops.router)
 
+# 등록 지문 이미지 — 지문 매칭 데모 화면의 갤러리용. /static 보다 먼저 마운트해야
+# /static/fingerprints/* 가 PROCESSED_DIR 쪽 마운트에 삼켜지지 않는다.
+if FINGERPRINT_DIR.exists():
+    app.mount(
+        "/static/fingerprints",
+        StaticFiles(directory=FINGERPRINT_DIR),
+        name="static-fingerprints",
+    )
 if PROCESSED_DIR.exists():
     app.mount("/static", StaticFiles(directory=PROCESSED_DIR), name="static")
 

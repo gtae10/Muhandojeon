@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
+import { useSearchParams } from 'react-router-dom'
 import {
   getCustomers,
   getCatalog,
@@ -68,7 +69,9 @@ export default function FreeChatScreen() {
   const [products, setProducts] = useState([])
   const [loadStatus, setLoadStatus] = useState('loading') // loading | ready | error
   const [loadError, setLoadError] = useState(null)
-  const [customerId, setCustomerId] = useState('')
+  // 개체 식별(/identify)에서 "이 고객으로 상담 시작"으로 넘어오면 고객이 미리 채워진다
+  const [searchParams] = useSearchParams()
+  const [customerId, setCustomerId] = useState(() => searchParams.get('customer') ?? '')
   const [productId, setProductId] = useState('')
   const [classifyError, setClassifyError] = useState(null)
 

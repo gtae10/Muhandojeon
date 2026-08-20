@@ -121,3 +121,18 @@ select:focus-visible {
   outline: 1.5px solid var(--color-accent);
   outline-offset: 2px;
 }
+
+/* 개체 지문 판독 시퀀스 — 질의 이미지 위를 지나는 골드 스캔라인.
+   실제 메커니즘(미세 텍스처 대조)을 표현하는 유일한 장식 모션이다. */
+@keyframes fp-scan {
+  from { top: -3px; }
+  to { top: calc(100% + 3px); }
+}
+.fp-scanline {
+  animation: fp-scan 1.1s linear infinite;
+}
+@media (prefers-reduced-motion: reduce) {
+  .fp-scanline {
+    display: none;
+  }
+}

@@ -74,6 +74,16 @@ export default function Layout() {
         </Link>
         <div className="flex items-center gap-3 sm:gap-5 text-xs shrink-0">
           <Link
+            to="/identify"
+            className={`font-display font-bold whitespace-nowrap text-sm sm:text-base ${
+              location.pathname === '/identify'
+                ? 'text-[var(--color-accent)]'
+                : 'text-[var(--color-muted)] hover:text-[var(--color-accent)]'
+            }`}
+          >
+            개체 식별
+          </Link>
+          <Link
             to="/consult"
             className={`font-display font-bold whitespace-nowrap text-sm sm:text-base ${
               location.pathname === '/consult'

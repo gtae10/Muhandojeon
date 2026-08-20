@@ -8,6 +8,8 @@ import {
   mockCustomerAssets,
   mockClassifyIntent,
   mockClientelingReply,
+  MOCK_FINGERPRINT_SAMPLES,
+  mockFingerprintMatch,
 } from './mockData.js'
 
 const TIMEOUT_MS = 2500
@@ -31,18 +33,20 @@ export class ApiError extends Error {
 }
 
 async function request(path, options = {}) {
+  // 지문 매칭(ORB 특징점 대조)처럼 오래 걸리는 호출은 개별 타임아웃을 넘긴다.
+  const { timeoutMs = TIMEOUT_MS, ...fetchOptions } = options
   const controller = new AbortController()
-  const timer = setTimeout(() => controller.abort(), TIMEOUT_MS)
+  const timer = setTimeout(() => controller.abort(), timeoutMs)
   let res
   try {
     res = await fetch(path, {
       headers: { 'Content-Type': 'application/json' },
       signal: controller.signal,
-      ...options,
+      ...fetchOptions,
     })
   } catch (err) {
     if (err.name === 'AbortError') {
-      throw new NetworkUnavailableError(`요청 시간이 초과됐어요 (${TIMEOUT_MS}ms): ${path}`, {
+      throw new NetworkUnavailableError(`요청 시간이 초과됐어요 (${timeoutMs}ms): ${path}`, {
         cause: err,
       })
     }
@@ -177,5 +181,23 @@ export function clientelingReply(payload) {
   return withFallback(
     () => request('/clienteling/reply', { method: 'POST', body: JSON.stringify(payload) }),
     () => mockClientelingReply(),
+  )
+}
+
+/** 지문 등록 개체 샘플 — 개체 식별 화면(/identify)의 "등록 개체로 시연" 갤러리. */
+export function getFingerprintSamples() {
+  return withFallback(() => request('/demo/fingerprint-samples'), MOCK_FINGERPRINT_SAMPLES)
+}
+
+/** 개체 지문 매칭. 서버의 특징점 대조가 수 초 걸릴 수 있어 타임아웃을 넉넉히 잡는다. */
+export function fingerprintMatch(payload) {
+  return withFallback(
+    () =>
+      request('/fingerprint/match', {
+        method: 'POST',
+        body: JSON.stringify(payload),
+        timeoutMs: 8000,
+      }),
+    () => mockFingerprintMatch(payload),
   )
 }

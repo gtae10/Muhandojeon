@@ -285,3 +285,50 @@ export function mockClientelingReply() {
     reasoning: '',
   }
 }
+
+// ---- 개체 지문(/identify 화면) 오프라인 목업 ----
+// GET /demo/fingerprint-samples 실제 응답 그대로. 오프라인에서는 이미지 url 이
+// 로드되지 않으므로 화면이 라벨 타일로 대체해 그린다.
+
+export const MOCK_FINGERPRINT_SAMPLES = {
+  total: 1,
+  items: [
+    {
+      asset_id: 'AS-0001',
+      product_name: 'Aurelia Top Handle',
+      category: 'BAG',
+      condition_score: 71,
+      next_service_months: 1,
+      headline_finding: '핸들 표면 마모 진행, 케어 임계 근접',
+      customer_id: 'CU-0001',
+      customer_name: '한지원',
+      tier: 'VIP',
+      images: ['corner_01', 'corner_02', 'handle_01', 'handle_02', 'hardware_01', 'hardware_02', 'stitching_01', 'stitching_02'].map(
+        (label) => ({
+          path: `data/fingerprints/AS-0001/${label}.jpg`,
+          url: `/static/fingerprints/AS-0001/${label}.jpg`,
+          label,
+        }),
+      ),
+    },
+  ],
+}
+
+/** 목 어댑터와 같은 판정 원칙: 경로 규약에 등록 개체 id 가 있으면 매칭, 아니면 미매칭. */
+export function mockFingerprintMatch(payload = {}) {
+  const found = /AS-\d{4,6}/.exec(payload.image_path ?? '')
+  const knownId = found?.[0]
+  const registered =
+    knownId && MOCK_FINGERPRINT_SAMPLES.items.some((s) => s.asset_id === knownId)
+  if (registered) {
+    return {
+      matched_asset_id: knownId,
+      similarity: 0.94,
+      is_match: true,
+      candidates: [{ asset_id: knownId, similarity: 0.94 }],
+      threshold: 0.75,
+    }
+  }
+  return { matched_asset_id: null, similarity: 0.31, is_match: false, candidates: [], threshold: 0.75 }
+}
+

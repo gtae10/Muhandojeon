@@ -24,6 +24,8 @@ export default defineConfig({
       // 자유 상담(/chat)이 직접 부르는 계약 엔드포인트.
       '/assets': 'http://localhost:8000',
       '/intent': 'http://localhost:8000',
+      // 개체 식별 화면(/fingerprint 페이지)이 부르는 매칭 엔드포인트
+      '/fingerprint': 'http://localhost:8000',
       '/clienteling': 'http://localhost:8000',
     },
   },
