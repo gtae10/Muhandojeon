@@ -1,0 +1,57 @@
+# 머지 게이트 — 로컬 `make verify` 와 같은 검증을 push/PR 마다 돌린다.
+# 통합 레이어(레포 루트)와 frontend/ 만 검사한다. backend/·ai-clienteling/·AI/ 는
+# 각자 규약을 따르는 다른 파트 코드라 대상이 아니다(pyproject 제외 목록과 동일 원칙).
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  integration:
+    name: 통합 레이어 (ruff · mypy · 픽스처 · pytest · 데모)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+      - name: 의존성 설치
+        run: pip install -e ".[dev]"
+      - name: ruff (린트 + 포맷)
+        run: |
+          ruff check .
+          ruff format --check .
+      - name: mypy
+        run: mypy .
+      - name: 시드 픽스처 검증
+        run: python -m scripts.validate_fixtures
+      - name: pytest
+        run: pytest -q
+      - name: 헬스체크 (인프로세스)
+        run: python -m scripts.healthcheck
+      - name: 데모 시나리오 3종
+        run: python -m scripts.check_demo
+
+  frontend:
+    name: 프론트 (oxlint · vite build)
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: frontend
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+      - run: npm ci
+      - run: npm run lint
+      - run: npm run build
